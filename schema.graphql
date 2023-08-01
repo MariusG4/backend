@@ -254,6 +254,157 @@ input TagCreateInput {
   posts: PostRelateToManyForCreateInput
 }
 
+type Job {
+  id: ID!
+  title: String
+  company: String
+  date: CalendarDay
+  industry: String
+  description: String
+  requierments: String
+  whyWork: String
+  applyForm(where: ApplyFormWhereInput! = {}, orderBy: [ApplyFormOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: ApplyFormWhereUniqueInput): [ApplyForm!]
+  applyFormCount(where: ApplyFormWhereInput! = {}): Int
+}
+
+scalar CalendarDay @specifiedBy(url: "https://datatracker.ietf.org/doc/html/rfc3339#section-5.6")
+
+input JobWhereUniqueInput {
+  id: ID
+}
+
+input JobWhereInput {
+  AND: [JobWhereInput!]
+  OR: [JobWhereInput!]
+  NOT: [JobWhereInput!]
+  id: IDFilter
+  title: StringFilter
+  company: StringFilter
+  date: CalendarDayNullableFilter
+  industry: StringFilter
+  description: StringFilter
+  requierments: StringFilter
+  whyWork: StringFilter
+  applyForm: ApplyFormManyRelationFilter
+}
+
+input CalendarDayNullableFilter {
+  equals: CalendarDay
+  in: [CalendarDay!]
+  notIn: [CalendarDay!]
+  lt: CalendarDay
+  lte: CalendarDay
+  gt: CalendarDay
+  gte: CalendarDay
+  not: CalendarDayNullableFilter
+}
+
+input ApplyFormManyRelationFilter {
+  every: ApplyFormWhereInput
+  some: ApplyFormWhereInput
+  none: ApplyFormWhereInput
+}
+
+input JobOrderByInput {
+  id: OrderDirection
+  title: OrderDirection
+  company: OrderDirection
+  date: OrderDirection
+  industry: OrderDirection
+  description: OrderDirection
+  requierments: OrderDirection
+  whyWork: OrderDirection
+}
+
+input JobUpdateInput {
+  title: String
+  company: String
+  date: CalendarDay
+  industry: String
+  description: String
+  requierments: String
+  whyWork: String
+  applyForm: ApplyFormRelateToManyForUpdateInput
+}
+
+input ApplyFormRelateToManyForUpdateInput {
+  disconnect: [ApplyFormWhereUniqueInput!]
+  set: [ApplyFormWhereUniqueInput!]
+  create: [ApplyFormCreateInput!]
+  connect: [ApplyFormWhereUniqueInput!]
+}
+
+input JobUpdateArgs {
+  where: JobWhereUniqueInput!
+  data: JobUpdateInput!
+}
+
+input JobCreateInput {
+  title: String
+  company: String
+  date: CalendarDay
+  industry: String
+  description: String
+  requierments: String
+  whyWork: String
+  applyForm: ApplyFormRelateToManyForCreateInput
+}
+
+input ApplyFormRelateToManyForCreateInput {
+  create: [ApplyFormCreateInput!]
+  connect: [ApplyFormWhereUniqueInput!]
+}
+
+type ApplyForm {
+  id: ID!
+  name: String
+  email: String
+  message: String
+  createdAt: DateTime
+}
+
+input ApplyFormWhereUniqueInput {
+  id: ID
+}
+
+input ApplyFormWhereInput {
+  AND: [ApplyFormWhereInput!]
+  OR: [ApplyFormWhereInput!]
+  NOT: [ApplyFormWhereInput!]
+  id: IDFilter
+  name: StringFilter
+  email: StringFilter
+  message: StringFilter
+  createdAt: DateTimeNullableFilter
+}
+
+input ApplyFormOrderByInput {
+  id: OrderDirection
+  name: OrderDirection
+  email: OrderDirection
+  message: OrderDirection
+  createdAt: OrderDirection
+}
+
+input ApplyFormUpdateInput {
+  name: String
+  email: String
+  message: String
+  createdAt: DateTime
+}
+
+input ApplyFormUpdateArgs {
+  where: ApplyFormWhereUniqueInput!
+  data: ApplyFormUpdateInput!
+}
+
+input ApplyFormCreateInput {
+  name: String
+  email: String
+  message: String
+  createdAt: DateTime
+}
+
 """
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
@@ -278,6 +429,18 @@ type Mutation {
   updateTags(data: [TagUpdateArgs!]!): [Tag]
   deleteTag(where: TagWhereUniqueInput!): Tag
   deleteTags(where: [TagWhereUniqueInput!]!): [Tag]
+  createJob(data: JobCreateInput!): Job
+  createJobs(data: [JobCreateInput!]!): [Job]
+  updateJob(where: JobWhereUniqueInput!, data: JobUpdateInput!): Job
+  updateJobs(data: [JobUpdateArgs!]!): [Job]
+  deleteJob(where: JobWhereUniqueInput!): Job
+  deleteJobs(where: [JobWhereUniqueInput!]!): [Job]
+  createApplyForm(data: ApplyFormCreateInput!): ApplyForm
+  createApplyForms(data: [ApplyFormCreateInput!]!): [ApplyForm]
+  updateApplyForm(where: ApplyFormWhereUniqueInput!, data: ApplyFormUpdateInput!): ApplyForm
+  updateApplyForms(data: [ApplyFormUpdateArgs!]!): [ApplyForm]
+  deleteApplyForm(where: ApplyFormWhereUniqueInput!): ApplyForm
+  deleteApplyForms(where: [ApplyFormWhereUniqueInput!]!): [ApplyForm]
   endSession: Boolean!
   authenticateUserWithPassword(email: String!, password: String!): UserAuthenticationWithPasswordResult
   createInitialUser(data: CreateInitialUserInput!): UserAuthenticationWithPasswordSuccess!
@@ -310,6 +473,12 @@ type Query {
   tags(where: TagWhereInput! = {}, orderBy: [TagOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: TagWhereUniqueInput): [Tag!]
   tag(where: TagWhereUniqueInput!): Tag
   tagsCount(where: TagWhereInput! = {}): Int
+  jobs(where: JobWhereInput! = {}, orderBy: [JobOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: JobWhereUniqueInput): [Job!]
+  job(where: JobWhereUniqueInput!): Job
+  jobsCount(where: JobWhereInput! = {}): Int
+  applyForms(where: ApplyFormWhereInput! = {}, orderBy: [ApplyFormOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: ApplyFormWhereUniqueInput): [ApplyForm!]
+  applyForm(where: ApplyFormWhereUniqueInput!): ApplyForm
+  applyFormsCount(where: ApplyFormWhereInput! = {}): Int
   keystone: KeystoneMeta!
   authenticatedItem: AuthenticatedItem
 }

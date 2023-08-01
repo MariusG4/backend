@@ -36,3 +36,24 @@ model Tag {
   name  String @default("")
   posts Post[] @relation("Post_tags")
 }
+
+model Job {
+  id           String      @id @default(cuid())
+  title        String      @default("")
+  company      String      @default("")
+  date         String?
+  industry     String      @default("")
+  description  String      @default("")
+  requierments String      @default("")
+  whyWork      String      @default("")
+  applyForm    ApplyForm[] @relation("Job_applyForm")
+}
+
+model ApplyForm {
+  id                 String    @id @default(cuid())
+  name               String    @default("")
+  email              String    @default("")
+  message            String    @default("")
+  createdAt          DateTime? @default(now())
+  from_Job_applyForm Job[]     @relation("Job_applyForm")
+}

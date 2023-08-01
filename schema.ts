@@ -16,6 +16,7 @@ import {
   password,
   timestamp,
   select,
+  calendarDay,
 } from '@keystone-6/core/fields';
 
 // the document field is a more complicated field, so it has it's own package
@@ -145,5 +146,38 @@ export const lists: Lists = {
       // this can be helpful to find out all the Posts associated with a Tag
       posts: relationship({ ref: 'Post.tags', many: true }),
     },
+  }),
+
+  Job: list({
+
+    access: allowAll,
+    
+    fields:{
+      title: text(),
+      company: text(),
+      date: calendarDay(),
+      industry: text(),
+      description: text(),
+      requierments: text(),
+      whyWork: text(),
+      applyForm: relationship({
+        ref: 'ApplyForm',
+        many: true,
+      }),
+
+    }
+
+
+  }),
+
+  ApplyForm: list({
+    access:allowAll,
+    fields: {
+      name: text({ validation: { isRequired: true } }),
+      email: text({ validation: { isRequired: true, isEmail: true } }),
+      message: text({ validation: { isRequired: true }, 
+        ui: { displayMode: 'textarea' } }),
+      createdAt: timestamp({ defaultValue: () => new Date().toISOString(), 
+        ui: { isHidden: true } }),}
   }),
 };

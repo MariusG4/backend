@@ -132,6 +132,37 @@ var lists = {
       // this can be helpful to find out all the Posts associated with a Tag
       posts: (0, import_fields.relationship)({ ref: "Post.tags", many: true })
     }
+  }),
+  Job: (0, import_core.list)({
+    access: import_access.allowAll,
+    fields: {
+      title: (0, import_fields.text)(),
+      company: (0, import_fields.text)(),
+      date: (0, import_fields.calendarDay)(),
+      industry: (0, import_fields.text)(),
+      description: (0, import_fields.text)(),
+      requierments: (0, import_fields.text)(),
+      whyWork: (0, import_fields.text)(),
+      applyForm: (0, import_fields.relationship)({
+        ref: "ApplyForm",
+        many: true
+      })
+    }
+  }),
+  ApplyForm: (0, import_core.list)({
+    access: import_access.allowAll,
+    fields: {
+      name: (0, import_fields.text)({ validation: { isRequired: true } }),
+      email: (0, import_fields.text)({ validation: { isRequired: true, isEmail: true } }),
+      message: (0, import_fields.text)({
+        validation: { isRequired: true },
+        ui: { displayMode: "textarea" }
+      }),
+      createdAt: (0, import_fields.timestamp)({
+        defaultValue: () => (/* @__PURE__ */ new Date()).toISOString(),
+        ui: { isHidden: true }
+      })
+    }
   })
 };
 
