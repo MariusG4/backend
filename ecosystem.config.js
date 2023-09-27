@@ -1,7 +1,7 @@
 module.exports = {
     apps: [
       {
-        name: 'my-keystone',
+        name: 'humansource_back',
         script: './node_modules/@keystone-6/core/bin/cli.js',
         args: 'start',
   
