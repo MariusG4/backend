@@ -23,148 +23,7 @@ __export(keystone_exports, {
   default: () => keystone_default
 });
 module.exports = __toCommonJS(keystone_exports);
-var import_core2 = require("@keystone-6/core");
-
-// schema.ts
-var import_core = require("@keystone-6/core");
-var import_access = require("@keystone-6/core/access");
-var import_fields = require("@keystone-6/core/fields");
-var import_fields_document = require("@keystone-6/fields-document");
-var lists = {
-  User: (0, import_core.list)({
-    // WARNING
-    //   for this starter project, anyone can create, query, update and delete anything
-    //   if you want to prevent random people on the internet from accessing your data,
-    //   you can find out more at https://keystonejs.com/docs/guides/auth-and-access-control
-    access: import_access.allowAll,
-    // this is the fields for our User list
-    fields: {
-      // by adding isRequired, we enforce that every User should have a name
-      //   if no name is provided, an error will be displayed
-      name: (0, import_fields.text)({ validation: { isRequired: true } }),
-      email: (0, import_fields.text)({
-        validation: { isRequired: true },
-        // by adding isIndexed: 'unique', we're saying that no user can have the same
-        // email as another user - this may or may not be a good idea for your project
-        isIndexed: "unique"
-      }),
-      password: (0, import_fields.password)({ validation: { isRequired: true } }),
-      // we can use this field to see what Posts this User has authored
-      //   more on that in the Post list below
-      posts: (0, import_fields.relationship)({ ref: "Post.author", many: true }),
-      createdAt: (0, import_fields.timestamp)({
-        // this sets the timestamp to Date.now() when the user is first created
-        defaultValue: { kind: "now" }
-      })
-    }
-  }),
-  Post: (0, import_core.list)({
-    // WARNING
-    //   for this starter project, anyone can create, query, update and delete anything
-    //   if you want to prevent random people on the internet from accessing your data,
-    //   you can find out more at https://keystonejs.com/docs/guides/auth-and-access-control
-    access: import_access.allowAll,
-    // this is the fields for our Post list
-    fields: {
-      title: (0, import_fields.text)({ validation: { isRequired: true } }),
-      // the document field can be used for making rich editable content
-      //   you can find out more at https://keystonejs.com/docs/guides/document-fields
-      content: (0, import_fields_document.document)({
-        formatting: true,
-        layouts: [
-          [1, 1],
-          [1, 1, 1],
-          [2, 1],
-          [1, 2],
-          [1, 2, 1]
-        ],
-        links: true,
-        dividers: true
-      }),
-      // with this field, you can set a User as the author for a Post
-      author: (0, import_fields.relationship)({
-        // we could have used 'User', but then the relationship would only be 1-way
-        ref: "User.posts",
-        // this is some customisations for changing how this will look in the AdminUI
-        ui: {
-          displayMode: "cards",
-          cardFields: ["name", "email"],
-          inlineEdit: { fields: ["name", "email"] },
-          linkToItem: true,
-          inlineConnect: true
-        },
-        // a Post can only have one author
-        //   this is the default, but we show it here for verbosity
-        many: false
-      }),
-      // with this field, you can add some Tags to Posts
-      tags: (0, import_fields.relationship)({
-        // we could have used 'Tag', but then the relationship would only be 1-way
-        ref: "Tag.posts",
-        // a Post can have many Tags, not just one
-        many: true,
-        // this is some customisations for changing how this will look in the AdminUI
-        ui: {
-          displayMode: "cards",
-          cardFields: ["name"],
-          inlineEdit: { fields: ["name"] },
-          linkToItem: true,
-          inlineConnect: true,
-          inlineCreate: { fields: ["name"] }
-        }
-      })
-    }
-  }),
-  // this last list is our Tag list, it only has a name field for now
-  Tag: (0, import_core.list)({
-    // WARNING
-    //   for this starter project, anyone can create, query, update and delete anything
-    //   if you want to prevent random people on the internet from accessing your data,
-    //   you can find out more at https://keystonejs.com/docs/guides/auth-and-access-control
-    access: import_access.allowAll,
-    // setting this to isHidden for the user interface prevents this list being visible in the Admin UI
-    ui: {
-      isHidden: true
-    },
-    // this is the fields for our Tag list
-    fields: {
-      name: (0, import_fields.text)(),
-      // this can be helpful to find out all the Posts associated with a Tag
-      posts: (0, import_fields.relationship)({ ref: "Post.tags", many: true })
-    }
-  }),
-  Job: (0, import_core.list)({
-    access: import_access.allowAll,
-    fields: {
-      title: (0, import_fields.text)(),
-      company: (0, import_fields.text)(),
-      date: (0, import_fields.calendarDay)(),
-      industry: (0, import_fields.text)(),
-      description: (0, import_fields.text)(),
-      requierments: (0, import_fields.text)(),
-      whyWork: (0, import_fields.text)(),
-      applyForm: (0, import_fields.relationship)({
-        ref: "ApplyForm",
-        many: true
-      })
-    }
-  }),
-  ApplyForm: (0, import_core.list)({
-    access: import_access.allowAll,
-    fields: {
-      name: (0, import_fields.text)({ validation: { isRequired: true } }),
-      email: (0, import_fields.text)({ validation: { isRequired: true, isEmail: true } }),
-      message: (0, import_fields.text)({
-        validation: { isRequired: true },
-        ui: { displayMode: "textarea" }
-      }),
-      createdAt: (0, import_fields.timestamp)({
-        defaultValue: () => (/* @__PURE__ */ new Date()).toISOString(),
-        ui: { isHidden: true }
-      })
-    }
-  })
-};
+var import_core7 = require("@keystone-6/core");
 
 // auth.ts
 var import_crypto = require("crypto");
@@ -199,17 +58,268 @@ var session = (0, import_session.statelessSessions)({
   secret: sessionSecret
 });
 
+// schemas/Language.ts
+var import_access = require("@keystone-6/core/access");
+var import_core = require("@keystone-6/core");
+var import_fields = require("@keystone-6/core/fields");
+var Language = (0, import_core.list)({
+  access: import_access.allowAll,
+  fields: {
+    languages: (0, import_fields.select)({
+      type: "string",
+      options: [
+        { label: "IT", value: "IT" },
+        { label: "RO", value: "RO" }
+      ],
+      defaultValue: "RO",
+      validation: { isRequired: true },
+      isIndexed: "unique",
+      ui: { displayMode: "select" }
+    }),
+    blog: (0, import_fields.relationship)({ ref: "Blog.language" })
+  }
+});
+
+// schemas/Blog.ts
+var import_core2 = require("@keystone-6/core");
+var import_access2 = require("@keystone-6/core/access");
+var import_fields2 = require("@keystone-6/core/fields");
+var import_fields_document = require("@keystone-6/fields-document");
+var Blog = (0, import_core2.list)({
+  access: import_access2.allowAll,
+  ui: {
+    listView: {
+      initialColumns: ["title", "status", "dateModified", "author", "categories"],
+      initialSort: { field: "start", direction: "DESC" }
+    }
+  },
+  fields: {
+    title: (0, import_fields2.text)({ validation: { isRequired: true } }),
+    slug: (0, import_fields2.text)({ isIndexed: "unique", validation: { isRequired: true } }),
+    dateCreated: (0, import_fields2.timestamp)({ defaultValue: { kind: "now" } }),
+    dateModified: (0, import_fields2.timestamp)({ defaultValue: { kind: "now" } }),
+    status: (0, import_fields2.select)({
+      options: [
+        { label: "Draft", value: "DRAFT" },
+        { label: "Published", value: "PUBLISHED" },
+        { label: "Private", value: "PRIVATE" }
+      ],
+      defaultValue: "DRAFT",
+      ui: {
+        displayMode: "segmented-control",
+        createView: { fieldMode: "edit" }
+      }
+    }),
+    featured_image: (0, import_fields2.text)(),
+    content: (0, import_fields_document.document)({
+      formatting: {
+        inlineMarks: {
+          bold: true,
+          italic: true,
+          underline: true,
+          strikethrough: true,
+          code: true,
+          superscript: true,
+          keyboard: true
+        },
+        listTypes: {
+          ordered: true,
+          unordered: true
+        },
+        alignment: {
+          center: true,
+          end: true
+        },
+        headingLevels: [1, 2, 3, 4, 5, 6],
+        blockTypes: {
+          blockquote: true,
+          code: true
+        },
+        softBreaks: true
+      },
+      layouts: [
+        [1, 1],
+        [1, 1, 1],
+        [2, 1],
+        [1, 2],
+        [1, 2, 1]
+      ],
+      links: true,
+      dividers: true
+    }),
+    author: (0, import_fields2.relationship)({
+      ref: "User.blog",
+      ui: {
+        displayMode: "cards",
+        cardFields: ["name", "email"],
+        inlineEdit: { fields: ["name", "email"] },
+        linkToItem: true,
+        inlineConnect: true
+      },
+      many: false
+    }),
+    categories: (0, import_fields2.relationship)({
+      ref: "Category.blog",
+      many: true
+    }),
+    tags: (0, import_fields2.relationship)({
+      ref: "Tag.blog",
+      many: true
+    }),
+    photo: (0, import_fields2.relationship)({
+      ref: "MediaGalery.blog",
+      ui: {
+        displayMode: "cards",
+        cardFields: ["image", "altText", "filename"],
+        inlineCreate: { fields: ["image", "altText", "filename"] },
+        inlineEdit: { fields: ["image", "altText", "filename"] }
+      }
+    }),
+    language: (0, import_fields2.relationship)({
+      ref: "Language.blog",
+      ui: {
+        displayMode: "cards",
+        cardFields: ["languages"],
+        inlineCreate: { fields: ["languages"] },
+        inlineEdit: { fields: ["languages"] }
+      }
+    })
+  }
+});
+
+// schemas/Users.ts
+var import_core3 = require("@keystone-6/core");
+var import_access3 = require("@keystone-6/core/access");
+var import_fields3 = require("@keystone-6/core/fields");
+var User = (0, import_core3.list)({
+  access: import_access3.allowAll,
+  ui: {},
+  fields: {
+    name: (0, import_fields3.text)({ validation: { isRequired: true } }),
+    nameLast: (0, import_fields3.text)(),
+    email: (0, import_fields3.text)({
+      validation: { isRequired: true },
+      isIndexed: "unique"
+    }),
+    password: (0, import_fields3.password)({ validation: { isRequired: true } }),
+    isAdmin: (0, import_fields3.checkbox)({ defaultValue: false }),
+    isActive: (0, import_fields3.checkbox)({ defaultValue: true }),
+    blog: (0, import_fields3.relationship)({ ref: "Blog.author", many: true }),
+    createdAt: (0, import_fields3.timestamp)({
+      defaultValue: { kind: "now" }
+    }),
+    dateModified: (0, import_fields3.timestamp)({ defaultValue: { kind: "now" } })
+  }
+});
+
+// schemas/Tag.ts
+var import_core4 = require("@keystone-6/core");
+var import_access4 = require("@keystone-6/core/access");
+var import_fields4 = require("@keystone-6/core/fields");
+var Tag = (0, import_core4.list)({
+  access: import_access4.allowAll,
+  fields: {
+    name: (0, import_fields4.text)({ isIndexed: "unique", validation: { isRequired: true } }),
+    blog: (0, import_fields4.relationship)({ ref: "Blog.tags", many: true })
+  }
+});
+
+// schemas/Category.ts
+var import_core5 = require("@keystone-6/core");
+var import_access5 = require("@keystone-6/core/access");
+var import_fields5 = require("@keystone-6/core/fields");
+var Category = (0, import_core5.list)({
+  access: import_access5.allowAll,
+  fields: {
+    name: (0, import_fields5.text)({ isIndexed: "unique", validation: { isRequired: true } }),
+    excerpt: (0, import_fields5.text)({
+      ui: {
+        displayMode: "textarea"
+      }
+    }),
+    blog: (0, import_fields5.relationship)({ ref: "Blog.categories", many: true })
+  }
+});
+
+// schemas/MediaGalery.ts
+var import_core6 = require("@keystone-6/core");
+var import_fields6 = require("@keystone-6/core/fields");
+var import_access6 = require("@keystone-6/core/access");
+var MediaGalery = (0, import_core6.list)({
+  access: import_access6.allowAll,
+  fields: {
+    //image: cloudinaryImage({
+    //   cloudinary,
+    //   label:'Source'
+    // }),
+    image: (0, import_fields6.image)({ storage: "my_local_storage" }),
+    altText: (0, import_fields6.text)(),
+    filename: (0, import_fields6.text)({
+      isIndexed: "unique",
+      validation: {
+        isRequired: true
+      }
+    }),
+    blog: (0, import_fields6.relationship)({ ref: "Blog.photo" })
+  },
+  ui: {
+    listView: {
+      initialColumns: ["image", "altText", "product"]
+    }
+  }
+});
+
+// schema.ts
+var lists = {
+  User,
+  Blog,
+  Tag,
+  Category,
+  MediaGalery,
+  Language
+};
+
 // keystone.ts
+require("dotenv").config();
+var DATABASE_URL = process.env.DATABASE_URL;
+var DB_PROTOCOL = process.env.DB_PROTOCOL;
+var DB_USER = process.env.DB_USER;
+var DB_PASSWORD = process.env.DB_PASSWORD;
+var DB_DOMAIN = process.env.DB_DOMAIN;
+var DB_PORT = ":" + process.env.DB_PORT;
+var DB_COLLECTION = process.env.DB_COLLECTION;
+var BACKEND_URL = process.env.BACKEND_URL;
+var BACKEN_PORT = process.env.BACKEND_PORT;
+var FRONTEND_URL = process.env.FRONTEND_URL;
+var DB_URL = DB_PROTOCOL + DB_USER + ":" + DB_PASSWORD + "@" + DB_DOMAIN + DB_PORT + "/";
+var db = {
+  provider: "mysql",
+  url: DB_URL + DB_COLLECTION + "?connect_timeout=300",
+  async onConnect(context) {
+    console.log("--- MariaDB CONNECTED ---");
+  },
+  enableLogging: true,
+  idField: { kind: "uuid" }
+};
 var keystone_default = withAuth(
-  (0, import_core2.config)({
-    db: {
-      // we're using sqlite for the fastest startup experience
-      //   for more information on what database might be appropriate for you
-      //   see https://keystonejs.com/docs/guides/choosing-a-database#title
-      provider: "sqlite",
-      url: "file:./keystone.db"
+  (0, import_core7.config)({
+    server: {
+      port: Number(BACKEN_PORT),
+      cors: { origin: [FRONTEND_URL], credentials: true }
     },
+    db,
     lists,
-    session
+    session,
+    storage: {
+      my_local_storage: {
+        kind: "local",
+        type: "image",
+        generateUrl: (path) => `${BACKEND_URL}:${BACKEN_PORT}/assets/images${path}`,
+        serverRoute: {
+          path: "/assets/images"
+        },
+        storagePath: "public/assets/images"
+      }
+    }
   })
 );

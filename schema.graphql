@@ -4,11 +4,15 @@
 type User {
   id: ID!
   name: String
+  nameLast: String
   email: String
   password: PasswordState
-  posts(where: PostWhereInput! = {}, orderBy: [PostOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: PostWhereUniqueInput): [Post!]
-  postsCount(where: PostWhereInput! = {}): Int
+  isAdmin: Boolean
+  isActive: Boolean
+  blog(where: BlogWhereInput! = {}, orderBy: [BlogOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: BlogWhereUniqueInput): [Blog!]
+  blogCount(where: BlogWhereInput! = {}): Int
   createdAt: DateTime
+  dateModified: DateTime
 }
 
 type PasswordState {
@@ -28,9 +32,13 @@ input UserWhereInput {
   NOT: [UserWhereInput!]
   id: IDFilter
   name: StringFilter
+  nameLast: StringFilter
   email: StringFilter
-  posts: PostManyRelationFilter
+  isAdmin: BooleanFilter
+  isActive: BooleanFilter
+  blog: BlogManyRelationFilter
   createdAt: DateTimeNullableFilter
+  dateModified: DateTimeNullableFilter
 }
 
 input IDFilter {
@@ -72,10 +80,15 @@ input NestedStringFilter {
   not: NestedStringFilter
 }
 
-input PostManyRelationFilter {
-  every: PostWhereInput
-  some: PostWhereInput
-  none: PostWhereInput
+input BooleanFilter {
+  equals: Boolean
+  not: BooleanFilter
+}
+
+input BlogManyRelationFilter {
+  every: BlogWhereInput
+  some: BlogWhereInput
+  none: BlogWhereInput
 }
 
 input DateTimeNullableFilter {
@@ -92,8 +105,12 @@ input DateTimeNullableFilter {
 input UserOrderByInput {
   id: OrderDirection
   name: OrderDirection
+  nameLast: OrderDirection
   email: OrderDirection
+  isAdmin: OrderDirection
+  isActive: OrderDirection
   createdAt: OrderDirection
+  dateModified: OrderDirection
 }
 
 enum OrderDirection {
@@ -103,17 +120,21 @@ enum OrderDirection {
 
 input UserUpdateInput {
   name: String
+  nameLast: String
   email: String
   password: String
-  posts: PostRelateToManyForUpdateInput
+  isAdmin: Boolean
+  isActive: Boolean
+  blog: BlogRelateToManyForUpdateInput
   createdAt: DateTime
+  dateModified: DateTime
 }
 
-input PostRelateToManyForUpdateInput {
-  disconnect: [PostWhereUniqueInput!]
-  set: [PostWhereUniqueInput!]
-  create: [PostCreateInput!]
-  connect: [PostWhereUniqueInput!]
+input BlogRelateToManyForUpdateInput {
+  disconnect: [BlogWhereUniqueInput!]
+  set: [BlogWhereUniqueInput!]
+  create: [BlogCreateInput!]
+  connect: [BlogWhereUniqueInput!]
 }
 
 input UserUpdateArgs {
@@ -123,42 +144,84 @@ input UserUpdateArgs {
 
 input UserCreateInput {
   name: String
+  nameLast: String
   email: String
   password: String
-  posts: PostRelateToManyForCreateInput
+  isAdmin: Boolean
+  isActive: Boolean
+  blog: BlogRelateToManyForCreateInput
   createdAt: DateTime
+  dateModified: DateTime
 }
 
-input PostRelateToManyForCreateInput {
-  create: [PostCreateInput!]
-  connect: [PostWhereUniqueInput!]
+input BlogRelateToManyForCreateInput {
+  create: [BlogCreateInput!]
+  connect: [BlogWhereUniqueInput!]
 }
 
-type Post {
+type Blog {
   id: ID!
   title: String
-  content: Post_content_Document
+  slug: String
+  dateCreated: DateTime
+  dateModified: DateTime
+  status: String
+  featured_image: String
+  content: Blog_content_Document
   author: User
+  categories(where: CategoryWhereInput! = {}, orderBy: [CategoryOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CategoryWhereUniqueInput): [Category!]
+  categoriesCount(where: CategoryWhereInput! = {}): Int
   tags(where: TagWhereInput! = {}, orderBy: [TagOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: TagWhereUniqueInput): [Tag!]
   tagsCount(where: TagWhereInput! = {}): Int
+  photo: MediaGalery
+  language: Language
 }
 
-type Post_content_Document {
+type Blog_content_Document {
   document(hydrateRelationships: Boolean! = false): JSON!
 }
 
-input PostWhereUniqueInput {
+input BlogWhereUniqueInput {
   id: ID
+  slug: String
 }
 
-input PostWhereInput {
-  AND: [PostWhereInput!]
-  OR: [PostWhereInput!]
-  NOT: [PostWhereInput!]
+input BlogWhereInput {
+  AND: [BlogWhereInput!]
+  OR: [BlogWhereInput!]
+  NOT: [BlogWhereInput!]
   id: IDFilter
   title: StringFilter
+  slug: StringFilter
+  dateCreated: DateTimeNullableFilter
+  dateModified: DateTimeNullableFilter
+  status: StringNullableFilter
+  featured_image: StringFilter
   author: UserWhereInput
+  categories: CategoryManyRelationFilter
   tags: TagManyRelationFilter
+  photo: MediaGaleryWhereInput
+  language: LanguageWhereInput
+}
+
+input StringNullableFilter {
+  equals: String
+  in: [String!]
+  notIn: [String!]
+  lt: String
+  lte: String
+  gt: String
+  gte: String
+  contains: String
+  startsWith: String
+  endsWith: String
+  not: StringNullableFilter
+}
+
+input CategoryManyRelationFilter {
+  every: CategoryWhereInput
+  some: CategoryWhereInput
+  none: CategoryWhereInput
 }
 
 input TagManyRelationFilter {
@@ -167,22 +230,42 @@ input TagManyRelationFilter {
   none: TagWhereInput
 }
 
-input PostOrderByInput {
+input BlogOrderByInput {
   id: OrderDirection
   title: OrderDirection
+  slug: OrderDirection
+  dateCreated: OrderDirection
+  dateModified: OrderDirection
+  status: OrderDirection
+  featured_image: OrderDirection
 }
 
-input PostUpdateInput {
+input BlogUpdateInput {
   title: String
+  slug: String
+  dateCreated: DateTime
+  dateModified: DateTime
+  status: String
+  featured_image: String
   content: JSON
   author: UserRelateToOneForUpdateInput
+  categories: CategoryRelateToManyForUpdateInput
   tags: TagRelateToManyForUpdateInput
+  photo: MediaGaleryRelateToOneForUpdateInput
+  language: LanguageRelateToOneForUpdateInput
 }
 
 input UserRelateToOneForUpdateInput {
   create: UserCreateInput
   connect: UserWhereUniqueInput
   disconnect: Boolean
+}
+
+input CategoryRelateToManyForUpdateInput {
+  disconnect: [CategoryWhereUniqueInput!]
+  set: [CategoryWhereUniqueInput!]
+  create: [CategoryCreateInput!]
+  connect: [CategoryWhereUniqueInput!]
 }
 
 input TagRelateToManyForUpdateInput {
@@ -192,16 +275,36 @@ input TagRelateToManyForUpdateInput {
   connect: [TagWhereUniqueInput!]
 }
 
-input PostUpdateArgs {
-  where: PostWhereUniqueInput!
-  data: PostUpdateInput!
+input MediaGaleryRelateToOneForUpdateInput {
+  create: MediaGaleryCreateInput
+  connect: MediaGaleryWhereUniqueInput
+  disconnect: Boolean
 }
 
-input PostCreateInput {
+input LanguageRelateToOneForUpdateInput {
+  create: LanguageCreateInput
+  connect: LanguageWhereUniqueInput
+  disconnect: Boolean
+}
+
+input BlogUpdateArgs {
+  where: BlogWhereUniqueInput!
+  data: BlogUpdateInput!
+}
+
+input BlogCreateInput {
   title: String
+  slug: String
+  dateCreated: DateTime
+  dateModified: DateTime
+  status: String
+  featured_image: String
   content: JSON
   author: UserRelateToOneForCreateInput
+  categories: CategoryRelateToManyForCreateInput
   tags: TagRelateToManyForCreateInput
+  photo: MediaGaleryRelateToOneForCreateInput
+  language: LanguageRelateToOneForCreateInput
 }
 
 input UserRelateToOneForCreateInput {
@@ -209,20 +312,36 @@ input UserRelateToOneForCreateInput {
   connect: UserWhereUniqueInput
 }
 
+input CategoryRelateToManyForCreateInput {
+  create: [CategoryCreateInput!]
+  connect: [CategoryWhereUniqueInput!]
+}
+
 input TagRelateToManyForCreateInput {
   create: [TagCreateInput!]
   connect: [TagWhereUniqueInput!]
 }
 
+input MediaGaleryRelateToOneForCreateInput {
+  create: MediaGaleryCreateInput
+  connect: MediaGaleryWhereUniqueInput
+}
+
+input LanguageRelateToOneForCreateInput {
+  create: LanguageCreateInput
+  connect: LanguageWhereUniqueInput
+}
+
 type Tag {
   id: ID!
   name: String
-  posts(where: PostWhereInput! = {}, orderBy: [PostOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: PostWhereUniqueInput): [Post!]
-  postsCount(where: PostWhereInput! = {}): Int
+  blog(where: BlogWhereInput! = {}, orderBy: [BlogOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: BlogWhereUniqueInput): [Blog!]
+  blogCount(where: BlogWhereInput! = {}): Int
 }
 
 input TagWhereUniqueInput {
   id: ID
+  name: String
 }
 
 input TagWhereInput {
@@ -231,7 +350,7 @@ input TagWhereInput {
   NOT: [TagWhereInput!]
   id: IDFilter
   name: StringFilter
-  posts: PostManyRelationFilter
+  blog: BlogManyRelationFilter
 }
 
 input TagOrderByInput {
@@ -241,7 +360,7 @@ input TagOrderByInput {
 
 input TagUpdateInput {
   name: String
-  posts: PostRelateToManyForUpdateInput
+  blog: BlogRelateToManyForUpdateInput
 }
 
 input TagUpdateArgs {
@@ -251,158 +370,175 @@ input TagUpdateArgs {
 
 input TagCreateInput {
   name: String
-  posts: PostRelateToManyForCreateInput
+  blog: BlogRelateToManyForCreateInput
 }
 
-type Job {
-  id: ID!
-  title: String
-  company: String
-  date: CalendarDay
-  industry: String
-  description: String
-  requierments: String
-  whyWork: String
-  applyForm(where: ApplyFormWhereInput! = {}, orderBy: [ApplyFormOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: ApplyFormWhereUniqueInput): [ApplyForm!]
-  applyFormCount(where: ApplyFormWhereInput! = {}): Int
-}
-
-scalar CalendarDay @specifiedBy(url: "https://datatracker.ietf.org/doc/html/rfc3339#section-5.6")
-
-input JobWhereUniqueInput {
-  id: ID
-}
-
-input JobWhereInput {
-  AND: [JobWhereInput!]
-  OR: [JobWhereInput!]
-  NOT: [JobWhereInput!]
-  id: IDFilter
-  title: StringFilter
-  company: StringFilter
-  date: CalendarDayNullableFilter
-  industry: StringFilter
-  description: StringFilter
-  requierments: StringFilter
-  whyWork: StringFilter
-  applyForm: ApplyFormManyRelationFilter
-}
-
-input CalendarDayNullableFilter {
-  equals: CalendarDay
-  in: [CalendarDay!]
-  notIn: [CalendarDay!]
-  lt: CalendarDay
-  lte: CalendarDay
-  gt: CalendarDay
-  gte: CalendarDay
-  not: CalendarDayNullableFilter
-}
-
-input ApplyFormManyRelationFilter {
-  every: ApplyFormWhereInput
-  some: ApplyFormWhereInput
-  none: ApplyFormWhereInput
-}
-
-input JobOrderByInput {
-  id: OrderDirection
-  title: OrderDirection
-  company: OrderDirection
-  date: OrderDirection
-  industry: OrderDirection
-  description: OrderDirection
-  requierments: OrderDirection
-  whyWork: OrderDirection
-}
-
-input JobUpdateInput {
-  title: String
-  company: String
-  date: CalendarDay
-  industry: String
-  description: String
-  requierments: String
-  whyWork: String
-  applyForm: ApplyFormRelateToManyForUpdateInput
-}
-
-input ApplyFormRelateToManyForUpdateInput {
-  disconnect: [ApplyFormWhereUniqueInput!]
-  set: [ApplyFormWhereUniqueInput!]
-  create: [ApplyFormCreateInput!]
-  connect: [ApplyFormWhereUniqueInput!]
-}
-
-input JobUpdateArgs {
-  where: JobWhereUniqueInput!
-  data: JobUpdateInput!
-}
-
-input JobCreateInput {
-  title: String
-  company: String
-  date: CalendarDay
-  industry: String
-  description: String
-  requierments: String
-  whyWork: String
-  applyForm: ApplyFormRelateToManyForCreateInput
-}
-
-input ApplyFormRelateToManyForCreateInput {
-  create: [ApplyFormCreateInput!]
-  connect: [ApplyFormWhereUniqueInput!]
-}
-
-type ApplyForm {
+type Category {
   id: ID!
   name: String
-  email: String
-  message: String
-  createdAt: DateTime
+  excerpt: String
+  blog(where: BlogWhereInput! = {}, orderBy: [BlogOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: BlogWhereUniqueInput): [Blog!]
+  blogCount(where: BlogWhereInput! = {}): Int
 }
 
-input ApplyFormWhereUniqueInput {
+input CategoryWhereUniqueInput {
   id: ID
+  name: String
 }
 
-input ApplyFormWhereInput {
-  AND: [ApplyFormWhereInput!]
-  OR: [ApplyFormWhereInput!]
-  NOT: [ApplyFormWhereInput!]
+input CategoryWhereInput {
+  AND: [CategoryWhereInput!]
+  OR: [CategoryWhereInput!]
+  NOT: [CategoryWhereInput!]
   id: IDFilter
   name: StringFilter
-  email: StringFilter
-  message: StringFilter
-  createdAt: DateTimeNullableFilter
+  excerpt: StringFilter
+  blog: BlogManyRelationFilter
 }
 
-input ApplyFormOrderByInput {
+input CategoryOrderByInput {
   id: OrderDirection
   name: OrderDirection
-  email: OrderDirection
-  message: OrderDirection
-  createdAt: OrderDirection
+  excerpt: OrderDirection
 }
 
-input ApplyFormUpdateInput {
+input CategoryUpdateInput {
   name: String
-  email: String
-  message: String
-  createdAt: DateTime
+  excerpt: String
+  blog: BlogRelateToManyForUpdateInput
 }
 
-input ApplyFormUpdateArgs {
-  where: ApplyFormWhereUniqueInput!
-  data: ApplyFormUpdateInput!
+input CategoryUpdateArgs {
+  where: CategoryWhereUniqueInput!
+  data: CategoryUpdateInput!
 }
 
-input ApplyFormCreateInput {
+input CategoryCreateInput {
   name: String
-  email: String
-  message: String
-  createdAt: DateTime
+  excerpt: String
+  blog: BlogRelateToManyForCreateInput
+}
+
+type MediaGalery {
+  id: ID!
+  image: ImageFieldOutput
+  altText: String
+  filename: String
+  blog: Blog
+}
+
+type ImageFieldOutput {
+  id: ID!
+  filesize: Int!
+  width: Int!
+  height: Int!
+  extension: ImageExtension!
+  url: String!
+}
+
+enum ImageExtension {
+  jpg
+  png
+  webp
+  gif
+}
+
+input MediaGaleryWhereUniqueInput {
+  id: ID
+  filename: String
+}
+
+input MediaGaleryWhereInput {
+  AND: [MediaGaleryWhereInput!]
+  OR: [MediaGaleryWhereInput!]
+  NOT: [MediaGaleryWhereInput!]
+  id: IDFilter
+  altText: StringFilter
+  filename: StringFilter
+  blog: BlogWhereInput
+}
+
+input MediaGaleryOrderByInput {
+  id: OrderDirection
+  altText: OrderDirection
+  filename: OrderDirection
+}
+
+input MediaGaleryUpdateInput {
+  image: ImageFieldInput
+  altText: String
+  filename: String
+  blog: BlogRelateToOneForUpdateInput
+}
+
+input ImageFieldInput {
+  upload: Upload!
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+input BlogRelateToOneForUpdateInput {
+  create: BlogCreateInput
+  connect: BlogWhereUniqueInput
+  disconnect: Boolean
+}
+
+input MediaGaleryUpdateArgs {
+  where: MediaGaleryWhereUniqueInput!
+  data: MediaGaleryUpdateInput!
+}
+
+input MediaGaleryCreateInput {
+  image: ImageFieldInput
+  altText: String
+  filename: String
+  blog: BlogRelateToOneForCreateInput
+}
+
+input BlogRelateToOneForCreateInput {
+  create: BlogCreateInput
+  connect: BlogWhereUniqueInput
+}
+
+type Language {
+  id: ID!
+  languages: String
+  blog: Blog
+}
+
+input LanguageWhereUniqueInput {
+  id: ID
+  languages: String
+}
+
+input LanguageWhereInput {
+  AND: [LanguageWhereInput!]
+  OR: [LanguageWhereInput!]
+  NOT: [LanguageWhereInput!]
+  id: IDFilter
+  languages: StringFilter
+  blog: BlogWhereInput
+}
+
+input LanguageOrderByInput {
+  id: OrderDirection
+  languages: OrderDirection
+}
+
+input LanguageUpdateInput {
+  languages: String
+  blog: BlogRelateToOneForUpdateInput
+}
+
+input LanguageUpdateArgs {
+  where: LanguageWhereUniqueInput!
+  data: LanguageUpdateInput!
+}
+
+input LanguageCreateInput {
+  languages: String
+  blog: BlogRelateToOneForCreateInput
 }
 
 """
@@ -417,30 +553,36 @@ type Mutation {
   updateUsers(data: [UserUpdateArgs!]!): [User]
   deleteUser(where: UserWhereUniqueInput!): User
   deleteUsers(where: [UserWhereUniqueInput!]!): [User]
-  createPost(data: PostCreateInput!): Post
-  createPosts(data: [PostCreateInput!]!): [Post]
-  updatePost(where: PostWhereUniqueInput!, data: PostUpdateInput!): Post
-  updatePosts(data: [PostUpdateArgs!]!): [Post]
-  deletePost(where: PostWhereUniqueInput!): Post
-  deletePosts(where: [PostWhereUniqueInput!]!): [Post]
+  createBlog(data: BlogCreateInput!): Blog
+  createBlogs(data: [BlogCreateInput!]!): [Blog]
+  updateBlog(where: BlogWhereUniqueInput!, data: BlogUpdateInput!): Blog
+  updateBlogs(data: [BlogUpdateArgs!]!): [Blog]
+  deleteBlog(where: BlogWhereUniqueInput!): Blog
+  deleteBlogs(where: [BlogWhereUniqueInput!]!): [Blog]
   createTag(data: TagCreateInput!): Tag
   createTags(data: [TagCreateInput!]!): [Tag]
   updateTag(where: TagWhereUniqueInput!, data: TagUpdateInput!): Tag
   updateTags(data: [TagUpdateArgs!]!): [Tag]
   deleteTag(where: TagWhereUniqueInput!): Tag
   deleteTags(where: [TagWhereUniqueInput!]!): [Tag]
-  createJob(data: JobCreateInput!): Job
-  createJobs(data: [JobCreateInput!]!): [Job]
-  updateJob(where: JobWhereUniqueInput!, data: JobUpdateInput!): Job
-  updateJobs(data: [JobUpdateArgs!]!): [Job]
-  deleteJob(where: JobWhereUniqueInput!): Job
-  deleteJobs(where: [JobWhereUniqueInput!]!): [Job]
-  createApplyForm(data: ApplyFormCreateInput!): ApplyForm
-  createApplyForms(data: [ApplyFormCreateInput!]!): [ApplyForm]
-  updateApplyForm(where: ApplyFormWhereUniqueInput!, data: ApplyFormUpdateInput!): ApplyForm
-  updateApplyForms(data: [ApplyFormUpdateArgs!]!): [ApplyForm]
-  deleteApplyForm(where: ApplyFormWhereUniqueInput!): ApplyForm
-  deleteApplyForms(where: [ApplyFormWhereUniqueInput!]!): [ApplyForm]
+  createCategory(data: CategoryCreateInput!): Category
+  createCategories(data: [CategoryCreateInput!]!): [Category]
+  updateCategory(where: CategoryWhereUniqueInput!, data: CategoryUpdateInput!): Category
+  updateCategories(data: [CategoryUpdateArgs!]!): [Category]
+  deleteCategory(where: CategoryWhereUniqueInput!): Category
+  deleteCategories(where: [CategoryWhereUniqueInput!]!): [Category]
+  createMediaGalery(data: MediaGaleryCreateInput!): MediaGalery
+  createMediaGaleries(data: [MediaGaleryCreateInput!]!): [MediaGalery]
+  updateMediaGalery(where: MediaGaleryWhereUniqueInput!, data: MediaGaleryUpdateInput!): MediaGalery
+  updateMediaGaleries(data: [MediaGaleryUpdateArgs!]!): [MediaGalery]
+  deleteMediaGalery(where: MediaGaleryWhereUniqueInput!): MediaGalery
+  deleteMediaGaleries(where: [MediaGaleryWhereUniqueInput!]!): [MediaGalery]
+  createLanguage(data: LanguageCreateInput!): Language
+  createLanguages(data: [LanguageCreateInput!]!): [Language]
+  updateLanguage(where: LanguageWhereUniqueInput!, data: LanguageUpdateInput!): Language
+  updateLanguages(data: [LanguageUpdateArgs!]!): [Language]
+  deleteLanguage(where: LanguageWhereUniqueInput!): Language
+  deleteLanguages(where: [LanguageWhereUniqueInput!]!): [Language]
   endSession: Boolean!
   authenticateUserWithPassword(email: String!, password: String!): UserAuthenticationWithPasswordResult
   createInitialUser(data: CreateInitialUserInput!): UserAuthenticationWithPasswordSuccess!
@@ -467,18 +609,21 @@ type Query {
   users(where: UserWhereInput! = {}, orderBy: [UserOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: UserWhereUniqueInput): [User!]
   user(where: UserWhereUniqueInput!): User
   usersCount(where: UserWhereInput! = {}): Int
-  posts(where: PostWhereInput! = {}, orderBy: [PostOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: PostWhereUniqueInput): [Post!]
-  post(where: PostWhereUniqueInput!): Post
-  postsCount(where: PostWhereInput! = {}): Int
+  blogs(where: BlogWhereInput! = {}, orderBy: [BlogOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: BlogWhereUniqueInput): [Blog!]
+  blog(where: BlogWhereUniqueInput!): Blog
+  blogsCount(where: BlogWhereInput! = {}): Int
   tags(where: TagWhereInput! = {}, orderBy: [TagOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: TagWhereUniqueInput): [Tag!]
   tag(where: TagWhereUniqueInput!): Tag
   tagsCount(where: TagWhereInput! = {}): Int
-  jobs(where: JobWhereInput! = {}, orderBy: [JobOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: JobWhereUniqueInput): [Job!]
-  job(where: JobWhereUniqueInput!): Job
-  jobsCount(where: JobWhereInput! = {}): Int
-  applyForms(where: ApplyFormWhereInput! = {}, orderBy: [ApplyFormOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: ApplyFormWhereUniqueInput): [ApplyForm!]
-  applyForm(where: ApplyFormWhereUniqueInput!): ApplyForm
-  applyFormsCount(where: ApplyFormWhereInput! = {}): Int
+  categories(where: CategoryWhereInput! = {}, orderBy: [CategoryOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CategoryWhereUniqueInput): [Category!]
+  category(where: CategoryWhereUniqueInput!): Category
+  categoriesCount(where: CategoryWhereInput! = {}): Int
+  mediaGaleries(where: MediaGaleryWhereInput! = {}, orderBy: [MediaGaleryOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: MediaGaleryWhereUniqueInput): [MediaGalery!]
+  mediaGalery(where: MediaGaleryWhereUniqueInput!): MediaGalery
+  mediaGaleriesCount(where: MediaGaleryWhereInput! = {}): Int
+  languages(where: LanguageWhereInput! = {}, orderBy: [LanguageOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: LanguageWhereUniqueInput): [Language!]
+  language(where: LanguageWhereUniqueInput!): Language
+  languagesCount(where: LanguageWhereInput! = {}): Int
   keystone: KeystoneMeta!
   authenticatedItem: AuthenticatedItem
 }
