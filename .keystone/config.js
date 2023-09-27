@@ -292,6 +292,8 @@ var BACKEND_URL = process.env.BACKEND_URL;
 var BACKEN_PORT = process.env.BACKEND_PORT;
 var FRONTEND_URL = process.env.FRONTEND_URL;
 var DB_URL = DB_PROTOCOL + DB_USER + ":" + DB_PASSWORD + "@" + DB_DOMAIN + DB_PORT + "/";
+console.log("\u{1F4BE} \u{1F4BE} \u{1F4BE}" + DB_URL + DB_COLLECTION);
+console.log(BACKEND_URL + BACKEN_PORT);
 var db = {
   provider: "mysql",
   url: DB_URL + DB_COLLECTION + "?connect_timeout=300",
