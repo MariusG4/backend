@@ -105,11 +105,12 @@ export const Blog:Lists.Blog = list({
         language:relationship({
             ref:'Language.blog',
             ui:{
-                displayMode:'cards',
-                cardFields:['languages'],
-                inlineCreate:{fields:['languages']},
-                inlineEdit:{fields:['languages']},
+               hideCreate:true,
+               displayMode:'select',
+               labelField:'languages',
+                
             },
+            many:false,
         }),
      },
       

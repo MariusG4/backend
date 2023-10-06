@@ -1,7 +1,9 @@
+
 import { list } from "@keystone-6/core";
 import { text, image, relationship } from "@keystone-6/core/fields";
 import { allowAll } from "@keystone-6/core/access";
 import type { Lists } from ".keystone/types";
+import {cloudinaryImage} from 'keystone-6/cloudinary'
 
 
 export const MediaGalery:Lists.MediaGalery = list ({

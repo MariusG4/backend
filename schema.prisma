@@ -40,9 +40,10 @@ model Blog {
   photo          MediaGalery? @relation("Blog_photo", fields: [photoId], references: [id])
   photoId        String?      @unique @map("photo")
   language       Language?    @relation("Blog_language", fields: [languageId], references: [id])
-  languageId     String?      @unique @map("language")
+  languageId     String?      @map("language")
 
   @@index([authorId])
+  @@index([languageId])
 }
 
 model Tag {
@@ -56,6 +57,7 @@ model Category {
   name    String @unique @default("")
   excerpt String @default("")
   blog    Blog[] @relation("Blog_categories")
+  job     Job[]  @relation("Job_category")
 }
 
 model MediaGalery {
@@ -72,6 +74,33 @@ model MediaGalery {
 
 model Language {
   id        String @id @default(uuid())
-  languages String @unique @default("RO")
-  blog      Blog?  @relation("Blog_language")
+  languages String @default("RO")
+  blog      Blog[] @relation("Blog_language")
+}
+
+model Job {
+  id           String           @id @default(uuid())
+  title        String           @default("")
+  company      String           @default("")
+  date         DateTime?        @mysql.Date
+  category     Category?        @relation("Job_category", fields: [categoryId], references: [id])
+  categoryId   String?          @map("category")
+  description  String           @default("")
+  requierments String           @default("")
+  whyWork      String           @default("")
+  applyForm    JobApplication[] @relation("JobApplication_job")
+
+  @@index([categoryId])
+}
+
+model JobApplication {
+  id        String    @id @default(uuid())
+  name      String    @default("")
+  email     String    @default("")
+  message   String    @default("")
+  createdAt DateTime? @default(now())
+  job       Job?      @relation("JobApplication_job", fields: [jobId], references: [id])
+  jobId     String?   @map("job")
+
+  @@index([jobId])
 }

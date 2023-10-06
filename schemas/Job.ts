@@ -11,16 +11,22 @@ export const Job:Lists.Job = list({
       title: text(),
       company: text(),
       date: calendarDay(),
-      industry: text(),
-      description: text(),
-      requierments: text(),
-      whyWork: text(),
+      category : relationship({ref:'Category.job', many:false}),
+      description: text({
+        ui:{displayMode:"textarea"}
+      }),
+      requierments: text({
+        ui:{displayMode:"textarea"}
+      }),
+      whyWork:  text({
+        ui:{displayMode:"textarea"}
+      }),
       applyForm: relationship({
-        ref: 'JobApplications',
+        ref: 'JobApplication.job',
         many: true,
       }),
 
     }
 
 
-  }),
+  })

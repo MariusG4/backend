@@ -1,3 +1,5 @@
+import { JobApplication } from './schemas/JobApplication';
+import { Job } from './schemas/Job';
 import { Language } from './schemas/Language';
 import type { Lists } from '.keystone/types';
 import { Blog } from './schemas/Blog';
@@ -15,4 +17,6 @@ export const lists: Lists = {
   Category,
   MediaGalery,
   Language,
+  Job,
+  JobApplication,
 };

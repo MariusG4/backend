@@ -13,6 +13,7 @@ export const Category:Lists.Category = list({
             }
         }),
         blog : relationship({ref:'Blog.categories', many:true}),
+        job : relationship ({ref:'Job.category', many:true}),
     },
    
 

@@ -379,6 +379,8 @@ type Category {
   excerpt: String
   blog(where: BlogWhereInput! = {}, orderBy: [BlogOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: BlogWhereUniqueInput): [Blog!]
   blogCount(where: BlogWhereInput! = {}): Int
+  job(where: JobWhereInput! = {}, orderBy: [JobOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: JobWhereUniqueInput): [Job!]
+  jobCount(where: JobWhereInput! = {}): Int
 }
 
 input CategoryWhereUniqueInput {
@@ -394,6 +396,13 @@ input CategoryWhereInput {
   name: StringFilter
   excerpt: StringFilter
   blog: BlogManyRelationFilter
+  job: JobManyRelationFilter
+}
+
+input JobManyRelationFilter {
+  every: JobWhereInput
+  some: JobWhereInput
+  none: JobWhereInput
 }
 
 input CategoryOrderByInput {
@@ -406,6 +415,14 @@ input CategoryUpdateInput {
   name: String
   excerpt: String
   blog: BlogRelateToManyForUpdateInput
+  job: JobRelateToManyForUpdateInput
+}
+
+input JobRelateToManyForUpdateInput {
+  disconnect: [JobWhereUniqueInput!]
+  set: [JobWhereUniqueInput!]
+  create: [JobCreateInput!]
+  connect: [JobWhereUniqueInput!]
 }
 
 input CategoryUpdateArgs {
@@ -417,6 +434,12 @@ input CategoryCreateInput {
   name: String
   excerpt: String
   blog: BlogRelateToManyForCreateInput
+  job: JobRelateToManyForCreateInput
+}
+
+input JobRelateToManyForCreateInput {
+  create: [JobCreateInput!]
+  connect: [JobWhereUniqueInput!]
 }
 
 type MediaGalery {
@@ -504,12 +527,12 @@ input BlogRelateToOneForCreateInput {
 type Language {
   id: ID!
   languages: String
-  blog: Blog
+  blog(where: BlogWhereInput! = {}, orderBy: [BlogOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: BlogWhereUniqueInput): [Blog!]
+  blogCount(where: BlogWhereInput! = {}): Int
 }
 
 input LanguageWhereUniqueInput {
   id: ID
-  languages: String
 }
 
 input LanguageWhereInput {
@@ -518,7 +541,7 @@ input LanguageWhereInput {
   NOT: [LanguageWhereInput!]
   id: IDFilter
   languages: StringFilter
-  blog: BlogWhereInput
+  blog: BlogManyRelationFilter
 }
 
 input LanguageOrderByInput {
@@ -528,7 +551,7 @@ input LanguageOrderByInput {
 
 input LanguageUpdateInput {
   languages: String
-  blog: BlogRelateToOneForUpdateInput
+  blog: BlogRelateToManyForUpdateInput
 }
 
 input LanguageUpdateArgs {
@@ -538,7 +561,183 @@ input LanguageUpdateArgs {
 
 input LanguageCreateInput {
   languages: String
-  blog: BlogRelateToOneForCreateInput
+  blog: BlogRelateToManyForCreateInput
+}
+
+type Job {
+  id: ID!
+  title: String
+  company: String
+  date: CalendarDay
+  category: Category
+  description: String
+  requierments: String
+  whyWork: String
+  applyForm(where: JobApplicationWhereInput! = {}, orderBy: [JobApplicationOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: JobApplicationWhereUniqueInput): [JobApplication!]
+  applyFormCount(where: JobApplicationWhereInput! = {}): Int
+}
+
+scalar CalendarDay @specifiedBy(url: "https://datatracker.ietf.org/doc/html/rfc3339#section-5.6")
+
+input JobWhereUniqueInput {
+  id: ID
+}
+
+input JobWhereInput {
+  AND: [JobWhereInput!]
+  OR: [JobWhereInput!]
+  NOT: [JobWhereInput!]
+  id: IDFilter
+  title: StringFilter
+  company: StringFilter
+  date: CalendarDayNullableFilter
+  category: CategoryWhereInput
+  description: StringFilter
+  requierments: StringFilter
+  whyWork: StringFilter
+  applyForm: JobApplicationManyRelationFilter
+}
+
+input CalendarDayNullableFilter {
+  equals: CalendarDay
+  in: [CalendarDay!]
+  notIn: [CalendarDay!]
+  lt: CalendarDay
+  lte: CalendarDay
+  gt: CalendarDay
+  gte: CalendarDay
+  not: CalendarDayNullableFilter
+}
+
+input JobApplicationManyRelationFilter {
+  every: JobApplicationWhereInput
+  some: JobApplicationWhereInput
+  none: JobApplicationWhereInput
+}
+
+input JobOrderByInput {
+  id: OrderDirection
+  title: OrderDirection
+  company: OrderDirection
+  date: OrderDirection
+  description: OrderDirection
+  requierments: OrderDirection
+  whyWork: OrderDirection
+}
+
+input JobUpdateInput {
+  title: String
+  company: String
+  date: CalendarDay
+  category: CategoryRelateToOneForUpdateInput
+  description: String
+  requierments: String
+  whyWork: String
+  applyForm: JobApplicationRelateToManyForUpdateInput
+}
+
+input CategoryRelateToOneForUpdateInput {
+  create: CategoryCreateInput
+  connect: CategoryWhereUniqueInput
+  disconnect: Boolean
+}
+
+input JobApplicationRelateToManyForUpdateInput {
+  disconnect: [JobApplicationWhereUniqueInput!]
+  set: [JobApplicationWhereUniqueInput!]
+  create: [JobApplicationCreateInput!]
+  connect: [JobApplicationWhereUniqueInput!]
+}
+
+input JobUpdateArgs {
+  where: JobWhereUniqueInput!
+  data: JobUpdateInput!
+}
+
+input JobCreateInput {
+  title: String
+  company: String
+  date: CalendarDay
+  category: CategoryRelateToOneForCreateInput
+  description: String
+  requierments: String
+  whyWork: String
+  applyForm: JobApplicationRelateToManyForCreateInput
+}
+
+input CategoryRelateToOneForCreateInput {
+  create: CategoryCreateInput
+  connect: CategoryWhereUniqueInput
+}
+
+input JobApplicationRelateToManyForCreateInput {
+  create: [JobApplicationCreateInput!]
+  connect: [JobApplicationWhereUniqueInput!]
+}
+
+type JobApplication {
+  id: ID!
+  name: String
+  email: String
+  message: String
+  createdAt: DateTime
+  job: Job
+}
+
+input JobApplicationWhereUniqueInput {
+  id: ID
+}
+
+input JobApplicationWhereInput {
+  AND: [JobApplicationWhereInput!]
+  OR: [JobApplicationWhereInput!]
+  NOT: [JobApplicationWhereInput!]
+  id: IDFilter
+  name: StringFilter
+  email: StringFilter
+  message: StringFilter
+  createdAt: DateTimeNullableFilter
+  job: JobWhereInput
+}
+
+input JobApplicationOrderByInput {
+  id: OrderDirection
+  name: OrderDirection
+  email: OrderDirection
+  message: OrderDirection
+  createdAt: OrderDirection
+}
+
+input JobApplicationUpdateInput {
+  name: String
+  email: String
+  message: String
+  createdAt: DateTime
+  job: JobRelateToOneForUpdateInput
+}
+
+input JobRelateToOneForUpdateInput {
+  create: JobCreateInput
+  connect: JobWhereUniqueInput
+  disconnect: Boolean
+}
+
+input JobApplicationUpdateArgs {
+  where: JobApplicationWhereUniqueInput!
+  data: JobApplicationUpdateInput!
+}
+
+input JobApplicationCreateInput {
+  name: String
+  email: String
+  message: String
+  createdAt: DateTime
+  job: JobRelateToOneForCreateInput
+}
+
+input JobRelateToOneForCreateInput {
+  create: JobCreateInput
+  connect: JobWhereUniqueInput
 }
 
 """
@@ -583,6 +782,18 @@ type Mutation {
   updateLanguages(data: [LanguageUpdateArgs!]!): [Language]
   deleteLanguage(where: LanguageWhereUniqueInput!): Language
   deleteLanguages(where: [LanguageWhereUniqueInput!]!): [Language]
+  createJob(data: JobCreateInput!): Job
+  createJobs(data: [JobCreateInput!]!): [Job]
+  updateJob(where: JobWhereUniqueInput!, data: JobUpdateInput!): Job
+  updateJobs(data: [JobUpdateArgs!]!): [Job]
+  deleteJob(where: JobWhereUniqueInput!): Job
+  deleteJobs(where: [JobWhereUniqueInput!]!): [Job]
+  createJobApplication(data: JobApplicationCreateInput!): JobApplication
+  createJobApplications(data: [JobApplicationCreateInput!]!): [JobApplication]
+  updateJobApplication(where: JobApplicationWhereUniqueInput!, data: JobApplicationUpdateInput!): JobApplication
+  updateJobApplications(data: [JobApplicationUpdateArgs!]!): [JobApplication]
+  deleteJobApplication(where: JobApplicationWhereUniqueInput!): JobApplication
+  deleteJobApplications(where: [JobApplicationWhereUniqueInput!]!): [JobApplication]
   endSession: Boolean!
   authenticateUserWithPassword(email: String!, password: String!): UserAuthenticationWithPasswordResult
   createInitialUser(data: CreateInitialUserInput!): UserAuthenticationWithPasswordSuccess!
@@ -624,6 +835,12 @@ type Query {
   languages(where: LanguageWhereInput! = {}, orderBy: [LanguageOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: LanguageWhereUniqueInput): [Language!]
   language(where: LanguageWhereUniqueInput!): Language
   languagesCount(where: LanguageWhereInput! = {}): Int
+  jobs(where: JobWhereInput! = {}, orderBy: [JobOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: JobWhereUniqueInput): [Job!]
+  job(where: JobWhereUniqueInput!): Job
+  jobsCount(where: JobWhereInput! = {}): Int
+  jobApplications(where: JobApplicationWhereInput! = {}, orderBy: [JobApplicationOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: JobApplicationWhereUniqueInput): [JobApplication!]
+  jobApplication(where: JobApplicationWhereUniqueInput!): JobApplication
+  jobApplicationsCount(where: JobApplicationWhereInput! = {}): Int
   keystone: KeystoneMeta!
   authenticatedItem: AuthenticatedItem
 }
