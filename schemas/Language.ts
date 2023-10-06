@@ -16,9 +16,11 @@ export const Language:Lists.Language = list ({
             defaultValue:'RO',
             validation:{isRequired:true},
             isIndexed:'unique',
-            ui:{displayMode:'select'}
+            ui:{
+                displayMode:'segmented-control',
+                createView:{fieldMode:'edit'}}
         }),
-        blog:relationship({ref:'Blog.language'}),
+        blog:relationship({ref:'Blog.language', many:true}),
     },
 
 })
