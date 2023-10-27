@@ -11,8 +11,13 @@ type User {
   isActive: Boolean
   blog(where: BlogWhereInput! = {}, orderBy: [BlogOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: BlogWhereUniqueInput): [Blog!]
   blogCount(where: BlogWhereInput! = {}): Int
+  job: Job
+  role: Role
   createdAt: DateTime
   dateModified: DateTime
+  passwordResetToken: PasswordState
+  passwordResetIssuedAt: DateTime
+  passwordResetRedeemedAt: DateTime
 }
 
 type PasswordState {
@@ -37,8 +42,13 @@ input UserWhereInput {
   isAdmin: BooleanFilter
   isActive: BooleanFilter
   blog: BlogManyRelationFilter
+  job: JobWhereInput
+  role: RoleWhereInput
   createdAt: DateTimeNullableFilter
   dateModified: DateTimeNullableFilter
+  passwordResetToken: PasswordFilter
+  passwordResetIssuedAt: DateTimeNullableFilter
+  passwordResetRedeemedAt: DateTimeNullableFilter
 }
 
 input IDFilter {
@@ -102,6 +112,10 @@ input DateTimeNullableFilter {
   not: DateTimeNullableFilter
 }
 
+input PasswordFilter {
+  isSet: Boolean!
+}
+
 input UserOrderByInput {
   id: OrderDirection
   name: OrderDirection
@@ -111,6 +125,8 @@ input UserOrderByInput {
   isActive: OrderDirection
   createdAt: OrderDirection
   dateModified: OrderDirection
+  passwordResetIssuedAt: OrderDirection
+  passwordResetRedeemedAt: OrderDirection
 }
 
 enum OrderDirection {
@@ -126,8 +142,13 @@ input UserUpdateInput {
   isAdmin: Boolean
   isActive: Boolean
   blog: BlogRelateToManyForUpdateInput
+  job: JobRelateToOneForUpdateInput
+  role: RoleRelateToOneForUpdateInput
   createdAt: DateTime
   dateModified: DateTime
+  passwordResetToken: String
+  passwordResetIssuedAt: DateTime
+  passwordResetRedeemedAt: DateTime
 }
 
 input BlogRelateToManyForUpdateInput {
@@ -135,6 +156,18 @@ input BlogRelateToManyForUpdateInput {
   set: [BlogWhereUniqueInput!]
   create: [BlogCreateInput!]
   connect: [BlogWhereUniqueInput!]
+}
+
+input JobRelateToOneForUpdateInput {
+  create: JobCreateInput
+  connect: JobWhereUniqueInput
+  disconnect: Boolean
+}
+
+input RoleRelateToOneForUpdateInput {
+  create: RoleCreateInput
+  connect: RoleWhereUniqueInput
+  disconnect: Boolean
 }
 
 input UserUpdateArgs {
@@ -150,13 +183,28 @@ input UserCreateInput {
   isAdmin: Boolean
   isActive: Boolean
   blog: BlogRelateToManyForCreateInput
+  job: JobRelateToOneForCreateInput
+  role: RoleRelateToOneForCreateInput
   createdAt: DateTime
   dateModified: DateTime
+  passwordResetToken: String
+  passwordResetIssuedAt: DateTime
+  passwordResetRedeemedAt: DateTime
 }
 
 input BlogRelateToManyForCreateInput {
   create: [BlogCreateInput!]
   connect: [BlogWhereUniqueInput!]
+}
+
+input JobRelateToOneForCreateInput {
+  create: JobCreateInput
+  connect: JobWhereUniqueInput
+}
+
+input RoleRelateToOneForCreateInput {
+  create: RoleCreateInput
+  connect: RoleWhereUniqueInput
 }
 
 type Blog {
@@ -379,13 +427,12 @@ type Category {
   excerpt: String
   blog(where: BlogWhereInput! = {}, orderBy: [BlogOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: BlogWhereUniqueInput): [Blog!]
   blogCount(where: BlogWhereInput! = {}): Int
-  job(where: JobWhereInput! = {}, orderBy: [JobOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: JobWhereUniqueInput): [Job!]
-  jobCount(where: JobWhereInput! = {}): Int
+  jobCategories(where: JobCategoryWhereInput! = {}, orderBy: [JobCategoryOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: JobCategoryWhereUniqueInput): [JobCategory!]
+  jobCategoriesCount(where: JobCategoryWhereInput! = {}): Int
 }
 
 input CategoryWhereUniqueInput {
   id: ID
-  name: String
 }
 
 input CategoryWhereInput {
@@ -396,13 +443,13 @@ input CategoryWhereInput {
   name: StringFilter
   excerpt: StringFilter
   blog: BlogManyRelationFilter
-  job: JobManyRelationFilter
+  jobCategories: JobCategoryManyRelationFilter
 }
 
-input JobManyRelationFilter {
-  every: JobWhereInput
-  some: JobWhereInput
-  none: JobWhereInput
+input JobCategoryManyRelationFilter {
+  every: JobCategoryWhereInput
+  some: JobCategoryWhereInput
+  none: JobCategoryWhereInput
 }
 
 input CategoryOrderByInput {
@@ -415,14 +462,14 @@ input CategoryUpdateInput {
   name: String
   excerpt: String
   blog: BlogRelateToManyForUpdateInput
-  job: JobRelateToManyForUpdateInput
+  jobCategories: JobCategoryRelateToManyForUpdateInput
 }
 
-input JobRelateToManyForUpdateInput {
-  disconnect: [JobWhereUniqueInput!]
-  set: [JobWhereUniqueInput!]
-  create: [JobCreateInput!]
-  connect: [JobWhereUniqueInput!]
+input JobCategoryRelateToManyForUpdateInput {
+  disconnect: [JobCategoryWhereUniqueInput!]
+  set: [JobCategoryWhereUniqueInput!]
+  create: [JobCategoryCreateInput!]
+  connect: [JobCategoryWhereUniqueInput!]
 }
 
 input CategoryUpdateArgs {
@@ -434,36 +481,68 @@ input CategoryCreateInput {
   name: String
   excerpt: String
   blog: BlogRelateToManyForCreateInput
-  job: JobRelateToManyForCreateInput
+  jobCategories: JobCategoryRelateToManyForCreateInput
 }
 
-input JobRelateToManyForCreateInput {
-  create: [JobCreateInput!]
-  connect: [JobWhereUniqueInput!]
+input JobCategoryRelateToManyForCreateInput {
+  create: [JobCategoryCreateInput!]
+  connect: [JobCategoryWhereUniqueInput!]
 }
 
 type MediaGalery {
   id: ID!
-  image: ImageFieldOutput
+  image: CloudinaryImage_File
   altText: String
   filename: String
   blog: Blog
 }
 
-type ImageFieldOutput {
-  id: ID!
-  filesize: Int!
-  width: Int!
-  height: Int!
-  extension: ImageExtension!
-  url: String!
+type CloudinaryImage_File {
+  id: ID
+  filename: String
+  originalFilename: String
+  mimetype: String
+  encoding: String
+  publicUrl: String
+  publicUrlTransformed(transformation: CloudinaryImageFormat): String
 }
 
-enum ImageExtension {
-  jpg
-  png
-  webp
-  gif
+"""
+Mirrors the formatting options [Cloudinary provides](https://cloudinary.com/documentation/image_transformation_reference).
+All options are strings as they ultimately end up in a URL.
+"""
+input CloudinaryImageFormat {
+  """ Rewrites the filename to be this pretty string. Do not include `/` or `.`
+  """
+  prettyName: String
+  width: String
+  height: String
+  crop: String
+  aspect_ratio: String
+  gravity: String
+  zoom: String
+  x: String
+  y: String
+  format: String
+  fetch_format: String
+  quality: String
+  radius: String
+  angle: String
+  effect: String
+  opacity: String
+  border: String
+  background: String
+  overlay: String
+  underlay: String
+  default_image: String
+  delay: String
+  color: String
+  color_space: String
+  dpr: String
+  page: String
+  density: String
+  flags: String
+  transformation: String
 }
 
 input MediaGaleryWhereUniqueInput {
@@ -488,14 +567,10 @@ input MediaGaleryOrderByInput {
 }
 
 input MediaGaleryUpdateInput {
-  image: ImageFieldInput
+  image: Upload
   altText: String
   filename: String
   blog: BlogRelateToOneForUpdateInput
-}
-
-input ImageFieldInput {
-  upload: Upload!
 }
 
 """The `Upload` scalar type represents a file upload."""
@@ -513,7 +588,7 @@ input MediaGaleryUpdateArgs {
 }
 
 input MediaGaleryCreateInput {
-  image: ImageFieldInput
+  image: Upload
   altText: String
   filename: String
   blog: BlogRelateToOneForCreateInput
@@ -529,10 +604,13 @@ type Language {
   languages: String
   blog(where: BlogWhereInput! = {}, orderBy: [BlogOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: BlogWhereUniqueInput): [Blog!]
   blogCount(where: BlogWhereInput! = {}): Int
+  job(where: JobWhereInput! = {}, orderBy: [JobOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: JobWhereUniqueInput): [Job!]
+  jobCount(where: JobWhereInput! = {}): Int
 }
 
 input LanguageWhereUniqueInput {
   id: ID
+  languages: String
 }
 
 input LanguageWhereInput {
@@ -542,6 +620,13 @@ input LanguageWhereInput {
   id: IDFilter
   languages: StringFilter
   blog: BlogManyRelationFilter
+  job: JobManyRelationFilter
+}
+
+input JobManyRelationFilter {
+  every: JobWhereInput
+  some: JobWhereInput
+  none: JobWhereInput
 }
 
 input LanguageOrderByInput {
@@ -552,6 +637,14 @@ input LanguageOrderByInput {
 input LanguageUpdateInput {
   languages: String
   blog: BlogRelateToManyForUpdateInput
+  job: JobRelateToManyForUpdateInput
+}
+
+input JobRelateToManyForUpdateInput {
+  disconnect: [JobWhereUniqueInput!]
+  set: [JobWhereUniqueInput!]
+  create: [JobCreateInput!]
+  connect: [JobWhereUniqueInput!]
 }
 
 input LanguageUpdateArgs {
@@ -562,19 +655,29 @@ input LanguageUpdateArgs {
 input LanguageCreateInput {
   languages: String
   blog: BlogRelateToManyForCreateInput
+  job: JobRelateToManyForCreateInput
+}
+
+input JobRelateToManyForCreateInput {
+  create: [JobCreateInput!]
+  connect: [JobWhereUniqueInput!]
 }
 
 type Job {
   id: ID!
   title: String
   company: String
+  salary: String
   date: CalendarDay
-  category: Category
+  jobCategory: JobCategory
+  location: Location
   description: String
   requierments: String
   whyWork: String
   applyForm(where: JobApplicationWhereInput! = {}, orderBy: [JobApplicationOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: JobApplicationWhereUniqueInput): [JobApplication!]
   applyFormCount(where: JobApplicationWhereInput! = {}): Int
+  language: Language
+  user: User
 }
 
 scalar CalendarDay @specifiedBy(url: "https://datatracker.ietf.org/doc/html/rfc3339#section-5.6")
@@ -590,12 +693,16 @@ input JobWhereInput {
   id: IDFilter
   title: StringFilter
   company: StringFilter
+  salary: StringFilter
   date: CalendarDayNullableFilter
-  category: CategoryWhereInput
+  jobCategory: JobCategoryWhereInput
+  location: LocationWhereInput
   description: StringFilter
   requierments: StringFilter
   whyWork: StringFilter
   applyForm: JobApplicationManyRelationFilter
+  language: LanguageWhereInput
+  user: UserWhereInput
 }
 
 input CalendarDayNullableFilter {
@@ -619,6 +726,7 @@ input JobOrderByInput {
   id: OrderDirection
   title: OrderDirection
   company: OrderDirection
+  salary: OrderDirection
   date: OrderDirection
   description: OrderDirection
   requierments: OrderDirection
@@ -628,17 +736,27 @@ input JobOrderByInput {
 input JobUpdateInput {
   title: String
   company: String
+  salary: String
   date: CalendarDay
-  category: CategoryRelateToOneForUpdateInput
+  jobCategory: JobCategoryRelateToOneForUpdateInput
+  location: LocationRelateToOneForUpdateInput
   description: String
   requierments: String
   whyWork: String
   applyForm: JobApplicationRelateToManyForUpdateInput
+  language: LanguageRelateToOneForUpdateInput
+  user: UserRelateToOneForUpdateInput
 }
 
-input CategoryRelateToOneForUpdateInput {
-  create: CategoryCreateInput
-  connect: CategoryWhereUniqueInput
+input JobCategoryRelateToOneForUpdateInput {
+  create: JobCategoryCreateInput
+  connect: JobCategoryWhereUniqueInput
+  disconnect: Boolean
+}
+
+input LocationRelateToOneForUpdateInput {
+  create: LocationCreateInput
+  connect: LocationWhereUniqueInput
   disconnect: Boolean
 }
 
@@ -657,17 +775,26 @@ input JobUpdateArgs {
 input JobCreateInput {
   title: String
   company: String
+  salary: String
   date: CalendarDay
-  category: CategoryRelateToOneForCreateInput
+  jobCategory: JobCategoryRelateToOneForCreateInput
+  location: LocationRelateToOneForCreateInput
   description: String
   requierments: String
   whyWork: String
   applyForm: JobApplicationRelateToManyForCreateInput
+  language: LanguageRelateToOneForCreateInput
+  user: UserRelateToOneForCreateInput
 }
 
-input CategoryRelateToOneForCreateInput {
-  create: CategoryCreateInput
-  connect: CategoryWhereUniqueInput
+input JobCategoryRelateToOneForCreateInput {
+  create: JobCategoryCreateInput
+  connect: JobCategoryWhereUniqueInput
+}
+
+input LocationRelateToOneForCreateInput {
+  create: LocationCreateInput
+  connect: LocationWhereUniqueInput
 }
 
 input JobApplicationRelateToManyForCreateInput {
@@ -680,6 +807,8 @@ type JobApplication {
   name: String
   email: String
   message: String
+  birthDate: CalendarDay
+  phone: String
   createdAt: DateTime
   job: Job
 }
@@ -696,8 +825,21 @@ input JobApplicationWhereInput {
   name: StringFilter
   email: StringFilter
   message: StringFilter
+  birthDate: CalendarDayFilter
+  phone: StringFilter
   createdAt: DateTimeNullableFilter
   job: JobWhereInput
+}
+
+input CalendarDayFilter {
+  equals: CalendarDay
+  in: [CalendarDay!]
+  notIn: [CalendarDay!]
+  lt: CalendarDay
+  lte: CalendarDay
+  gt: CalendarDay
+  gte: CalendarDay
+  not: CalendarDayFilter
 }
 
 input JobApplicationOrderByInput {
@@ -705,6 +847,8 @@ input JobApplicationOrderByInput {
   name: OrderDirection
   email: OrderDirection
   message: OrderDirection
+  birthDate: OrderDirection
+  phone: OrderDirection
   createdAt: OrderDirection
 }
 
@@ -712,14 +856,10 @@ input JobApplicationUpdateInput {
   name: String
   email: String
   message: String
+  birthDate: CalendarDay
+  phone: String
   createdAt: DateTime
   job: JobRelateToOneForUpdateInput
-}
-
-input JobRelateToOneForUpdateInput {
-  create: JobCreateInput
-  connect: JobWhereUniqueInput
-  disconnect: Boolean
 }
 
 input JobApplicationUpdateArgs {
@@ -731,13 +871,540 @@ input JobApplicationCreateInput {
   name: String
   email: String
   message: String
+  birthDate: CalendarDay
+  phone: String
   createdAt: DateTime
   job: JobRelateToOneForCreateInput
 }
 
-input JobRelateToOneForCreateInput {
-  create: JobCreateInput
-  connect: JobWhereUniqueInput
+type ContactForm {
+  id: ID!
+  name: String
+  email: String
+  phone: String
+  message: String
+}
+
+input ContactFormWhereUniqueInput {
+  id: ID
+}
+
+input ContactFormWhereInput {
+  AND: [ContactFormWhereInput!]
+  OR: [ContactFormWhereInput!]
+  NOT: [ContactFormWhereInput!]
+  id: IDFilter
+  name: StringFilter
+  email: StringFilter
+  phone: StringFilter
+  message: StringFilter
+}
+
+input ContactFormOrderByInput {
+  id: OrderDirection
+  name: OrderDirection
+  email: OrderDirection
+  phone: OrderDirection
+  message: OrderDirection
+}
+
+input ContactFormUpdateInput {
+  name: String
+  email: String
+  phone: String
+  message: String
+}
+
+input ContactFormUpdateArgs {
+  where: ContactFormWhereUniqueInput!
+  data: ContactFormUpdateInput!
+}
+
+input ContactFormCreateInput {
+  name: String
+  email: String
+  phone: String
+  message: String
+}
+
+type Role {
+  id: ID!
+  name: String
+  canManageJobs: Boolean
+  canManageBlogs: Boolean
+  canManageLanguages: Boolean
+  canManageTags: Boolean
+  canManageJobApplications: Boolean
+  canManageContactForms: Boolean
+  canManageCategories: Boolean
+  canSeeOtherUsers: Boolean
+  canManageUsers: Boolean
+  canManageRoles: Boolean
+  canManageWorkerForms: Boolean
+  canManageEmployerForms: Boolean
+  canManageLocations: Boolean
+  assignedTo(where: UserWhereInput! = {}, orderBy: [UserOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: UserWhereUniqueInput): [User!]
+  assignedToCount(where: UserWhereInput! = {}): Int
+}
+
+input RoleWhereUniqueInput {
+  id: ID
+}
+
+input RoleWhereInput {
+  AND: [RoleWhereInput!]
+  OR: [RoleWhereInput!]
+  NOT: [RoleWhereInput!]
+  id: IDFilter
+  name: StringFilter
+  canManageJobs: BooleanFilter
+  canManageBlogs: BooleanFilter
+  canManageLanguages: BooleanFilter
+  canManageTags: BooleanFilter
+  canManageJobApplications: BooleanFilter
+  canManageContactForms: BooleanFilter
+  canManageCategories: BooleanFilter
+  canSeeOtherUsers: BooleanFilter
+  canManageUsers: BooleanFilter
+  canManageRoles: BooleanFilter
+  canManageWorkerForms: BooleanFilter
+  canManageEmployerForms: BooleanFilter
+  canManageLocations: BooleanFilter
+  assignedTo: UserManyRelationFilter
+}
+
+input UserManyRelationFilter {
+  every: UserWhereInput
+  some: UserWhereInput
+  none: UserWhereInput
+}
+
+input RoleOrderByInput {
+  id: OrderDirection
+  name: OrderDirection
+  canManageJobs: OrderDirection
+  canManageBlogs: OrderDirection
+  canManageLanguages: OrderDirection
+  canManageTags: OrderDirection
+  canManageJobApplications: OrderDirection
+  canManageContactForms: OrderDirection
+  canManageCategories: OrderDirection
+  canSeeOtherUsers: OrderDirection
+  canManageUsers: OrderDirection
+  canManageRoles: OrderDirection
+  canManageWorkerForms: OrderDirection
+  canManageEmployerForms: OrderDirection
+  canManageLocations: OrderDirection
+}
+
+input RoleUpdateInput {
+  name: String
+  canManageJobs: Boolean
+  canManageBlogs: Boolean
+  canManageLanguages: Boolean
+  canManageTags: Boolean
+  canManageJobApplications: Boolean
+  canManageContactForms: Boolean
+  canManageCategories: Boolean
+  canSeeOtherUsers: Boolean
+  canManageUsers: Boolean
+  canManageRoles: Boolean
+  canManageWorkerForms: Boolean
+  canManageEmployerForms: Boolean
+  canManageLocations: Boolean
+  assignedTo: UserRelateToManyForUpdateInput
+}
+
+input UserRelateToManyForUpdateInput {
+  disconnect: [UserWhereUniqueInput!]
+  set: [UserWhereUniqueInput!]
+  create: [UserCreateInput!]
+  connect: [UserWhereUniqueInput!]
+}
+
+input RoleUpdateArgs {
+  where: RoleWhereUniqueInput!
+  data: RoleUpdateInput!
+}
+
+input RoleCreateInput {
+  name: String
+  canManageJobs: Boolean
+  canManageBlogs: Boolean
+  canManageLanguages: Boolean
+  canManageTags: Boolean
+  canManageJobApplications: Boolean
+  canManageContactForms: Boolean
+  canManageCategories: Boolean
+  canSeeOtherUsers: Boolean
+  canManageUsers: Boolean
+  canManageRoles: Boolean
+  canManageWorkerForms: Boolean
+  canManageEmployerForms: Boolean
+  canManageLocations: Boolean
+  assignedTo: UserRelateToManyForCreateInput
+}
+
+input UserRelateToManyForCreateInput {
+  create: [UserCreateInput!]
+  connect: [UserWhereUniqueInput!]
+}
+
+type Location {
+  id: ID!
+  name: String
+  country(where: CountryWhereInput! = {}, orderBy: [CountryOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CountryWhereUniqueInput): [Country!]
+  countryCount(where: CountryWhereInput! = {}): Int
+  cityRO(where: CityROWhereInput! = {}, orderBy: [CityROOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CityROWhereUniqueInput): [CityRO!]
+  cityROCount(where: CityROWhereInput! = {}): Int
+  cityIT(where: CityITWhereInput! = {}, orderBy: [CityITOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CityITWhereUniqueInput): [CityIT!]
+  cityITCount(where: CityITWhereInput! = {}): Int
+  zone: String
+  jobs(where: JobWhereInput! = {}, orderBy: [JobOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: JobWhereUniqueInput): [Job!]
+  jobsCount(where: JobWhereInput! = {}): Int
+}
+
+input LocationWhereUniqueInput {
+  id: ID
+}
+
+input LocationWhereInput {
+  AND: [LocationWhereInput!]
+  OR: [LocationWhereInput!]
+  NOT: [LocationWhereInput!]
+  id: IDFilter
+  name: StringFilter
+  country: CountryManyRelationFilter
+  cityRO: CityROManyRelationFilter
+  cityIT: CityITManyRelationFilter
+  zone: StringNullableFilter
+  jobs: JobManyRelationFilter
+}
+
+input CountryManyRelationFilter {
+  every: CountryWhereInput
+  some: CountryWhereInput
+  none: CountryWhereInput
+}
+
+input CityROManyRelationFilter {
+  every: CityROWhereInput
+  some: CityROWhereInput
+  none: CityROWhereInput
+}
+
+input CityITManyRelationFilter {
+  every: CityITWhereInput
+  some: CityITWhereInput
+  none: CityITWhereInput
+}
+
+input LocationOrderByInput {
+  id: OrderDirection
+  name: OrderDirection
+  zone: OrderDirection
+}
+
+input LocationUpdateInput {
+  name: String
+  country: CountryRelateToManyForUpdateInput
+  cityRO: CityRORelateToManyForUpdateInput
+  cityIT: CityITRelateToManyForUpdateInput
+  zone: String
+  jobs: JobRelateToManyForUpdateInput
+}
+
+input CountryRelateToManyForUpdateInput {
+  disconnect: [CountryWhereUniqueInput!]
+  set: [CountryWhereUniqueInput!]
+  create: [CountryCreateInput!]
+  connect: [CountryWhereUniqueInput!]
+}
+
+input CityRORelateToManyForUpdateInput {
+  disconnect: [CityROWhereUniqueInput!]
+  set: [CityROWhereUniqueInput!]
+  create: [CityROCreateInput!]
+  connect: [CityROWhereUniqueInput!]
+}
+
+input CityITRelateToManyForUpdateInput {
+  disconnect: [CityITWhereUniqueInput!]
+  set: [CityITWhereUniqueInput!]
+  create: [CityITCreateInput!]
+  connect: [CityITWhereUniqueInput!]
+}
+
+input LocationUpdateArgs {
+  where: LocationWhereUniqueInput!
+  data: LocationUpdateInput!
+}
+
+input LocationCreateInput {
+  name: String
+  country: CountryRelateToManyForCreateInput
+  cityRO: CityRORelateToManyForCreateInput
+  cityIT: CityITRelateToManyForCreateInput
+  zone: String
+  jobs: JobRelateToManyForCreateInput
+}
+
+input CountryRelateToManyForCreateInput {
+  create: [CountryCreateInput!]
+  connect: [CountryWhereUniqueInput!]
+}
+
+input CityRORelateToManyForCreateInput {
+  create: [CityROCreateInput!]
+  connect: [CityROWhereUniqueInput!]
+}
+
+input CityITRelateToManyForCreateInput {
+  create: [CityITCreateInput!]
+  connect: [CityITWhereUniqueInput!]
+}
+
+type Country {
+  id: ID!
+  name: String
+}
+
+input CountryWhereUniqueInput {
+  id: ID
+}
+
+input CountryWhereInput {
+  AND: [CountryWhereInput!]
+  OR: [CountryWhereInput!]
+  NOT: [CountryWhereInput!]
+  id: IDFilter
+  name: StringFilter
+}
+
+input CountryOrderByInput {
+  id: OrderDirection
+  name: OrderDirection
+}
+
+input CountryUpdateInput {
+  name: String
+}
+
+input CountryUpdateArgs {
+  where: CountryWhereUniqueInput!
+  data: CountryUpdateInput!
+}
+
+input CountryCreateInput {
+  name: String
+}
+
+type CityRO {
+  id: ID!
+  name: String
+  createdAt: DateTime
+}
+
+input CityROWhereUniqueInput {
+  id: ID
+}
+
+input CityROWhereInput {
+  AND: [CityROWhereInput!]
+  OR: [CityROWhereInput!]
+  NOT: [CityROWhereInput!]
+  id: IDFilter
+  name: StringFilter
+  createdAt: DateTimeFilter
+}
+
+input DateTimeFilter {
+  equals: DateTime
+  in: [DateTime!]
+  notIn: [DateTime!]
+  lt: DateTime
+  lte: DateTime
+  gt: DateTime
+  gte: DateTime
+  not: DateTimeFilter
+}
+
+input CityROOrderByInput {
+  id: OrderDirection
+  name: OrderDirection
+  createdAt: OrderDirection
+}
+
+input CityROUpdateInput {
+  name: String
+  createdAt: DateTime
+}
+
+input CityROUpdateArgs {
+  where: CityROWhereUniqueInput!
+  data: CityROUpdateInput!
+}
+
+input CityROCreateInput {
+  name: String
+  createdAt: DateTime
+}
+
+type CityIT {
+  id: ID!
+  name: String
+  createdAt: DateTime
+}
+
+input CityITWhereUniqueInput {
+  id: ID
+}
+
+input CityITWhereInput {
+  AND: [CityITWhereInput!]
+  OR: [CityITWhereInput!]
+  NOT: [CityITWhereInput!]
+  id: IDFilter
+  name: StringFilter
+  createdAt: DateTimeFilter
+}
+
+input CityITOrderByInput {
+  id: OrderDirection
+  name: OrderDirection
+  createdAt: OrderDirection
+}
+
+input CityITUpdateInput {
+  name: String
+  createdAt: DateTime
+}
+
+input CityITUpdateArgs {
+  where: CityITWhereUniqueInput!
+  data: CityITUpdateInput!
+}
+
+input CityITCreateInput {
+  name: String
+  createdAt: DateTime
+}
+
+type SubCategory {
+  id: ID!
+  name: String
+  category: Category
+}
+
+input SubCategoryWhereUniqueInput {
+  id: ID
+}
+
+input SubCategoryWhereInput {
+  AND: [SubCategoryWhereInput!]
+  OR: [SubCategoryWhereInput!]
+  NOT: [SubCategoryWhereInput!]
+  id: IDFilter
+  name: StringFilter
+  category: CategoryWhereInput
+}
+
+input SubCategoryOrderByInput {
+  id: OrderDirection
+  name: OrderDirection
+}
+
+input SubCategoryUpdateInput {
+  name: String
+  category: CategoryRelateToOneForUpdateInput
+}
+
+input CategoryRelateToOneForUpdateInput {
+  create: CategoryCreateInput
+  connect: CategoryWhereUniqueInput
+  disconnect: Boolean
+}
+
+input SubCategoryUpdateArgs {
+  where: SubCategoryWhereUniqueInput!
+  data: SubCategoryUpdateInput!
+}
+
+input SubCategoryCreateInput {
+  name: String
+  category: CategoryRelateToOneForCreateInput
+}
+
+input CategoryRelateToOneForCreateInput {
+  create: CategoryCreateInput
+  connect: CategoryWhereUniqueInput
+}
+
+type JobCategory {
+  id: ID!
+  name: String
+  category: Category
+  subcategories(where: SubCategoryWhereInput! = {}, orderBy: [SubCategoryOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: SubCategoryWhereUniqueInput): [SubCategory!]
+  subcategoriesCount(where: SubCategoryWhereInput! = {}): Int
+  jobs(where: JobWhereInput! = {}, orderBy: [JobOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: JobWhereUniqueInput): [Job!]
+  jobsCount(where: JobWhereInput! = {}): Int
+}
+
+input JobCategoryWhereUniqueInput {
+  id: ID
+}
+
+input JobCategoryWhereInput {
+  AND: [JobCategoryWhereInput!]
+  OR: [JobCategoryWhereInput!]
+  NOT: [JobCategoryWhereInput!]
+  id: IDFilter
+  name: StringFilter
+  category: CategoryWhereInput
+  subcategories: SubCategoryManyRelationFilter
+  jobs: JobManyRelationFilter
+}
+
+input SubCategoryManyRelationFilter {
+  every: SubCategoryWhereInput
+  some: SubCategoryWhereInput
+  none: SubCategoryWhereInput
+}
+
+input JobCategoryOrderByInput {
+  id: OrderDirection
+  name: OrderDirection
+}
+
+input JobCategoryUpdateInput {
+  name: String
+  category: CategoryRelateToOneForUpdateInput
+  subcategories: SubCategoryRelateToManyForUpdateInput
+  jobs: JobRelateToManyForUpdateInput
+}
+
+input SubCategoryRelateToManyForUpdateInput {
+  disconnect: [SubCategoryWhereUniqueInput!]
+  set: [SubCategoryWhereUniqueInput!]
+  create: [SubCategoryCreateInput!]
+  connect: [SubCategoryWhereUniqueInput!]
+}
+
+input JobCategoryUpdateArgs {
+  where: JobCategoryWhereUniqueInput!
+  data: JobCategoryUpdateInput!
+}
+
+input JobCategoryCreateInput {
+  name: String
+  category: CategoryRelateToOneForCreateInput
+  subcategories: SubCategoryRelateToManyForCreateInput
+  jobs: JobRelateToManyForCreateInput
+}
+
+input SubCategoryRelateToManyForCreateInput {
+  create: [SubCategoryCreateInput!]
+  connect: [SubCategoryWhereUniqueInput!]
 }
 
 """
@@ -794,9 +1461,59 @@ type Mutation {
   updateJobApplications(data: [JobApplicationUpdateArgs!]!): [JobApplication]
   deleteJobApplication(where: JobApplicationWhereUniqueInput!): JobApplication
   deleteJobApplications(where: [JobApplicationWhereUniqueInput!]!): [JobApplication]
+  createContactForm(data: ContactFormCreateInput!): ContactForm
+  createContactForms(data: [ContactFormCreateInput!]!): [ContactForm]
+  updateContactForm(where: ContactFormWhereUniqueInput!, data: ContactFormUpdateInput!): ContactForm
+  updateContactForms(data: [ContactFormUpdateArgs!]!): [ContactForm]
+  deleteContactForm(where: ContactFormWhereUniqueInput!): ContactForm
+  deleteContactForms(where: [ContactFormWhereUniqueInput!]!): [ContactForm]
+  createRole(data: RoleCreateInput!): Role
+  createRoles(data: [RoleCreateInput!]!): [Role]
+  updateRole(where: RoleWhereUniqueInput!, data: RoleUpdateInput!): Role
+  updateRoles(data: [RoleUpdateArgs!]!): [Role]
+  deleteRole(where: RoleWhereUniqueInput!): Role
+  deleteRoles(where: [RoleWhereUniqueInput!]!): [Role]
+  createLocation(data: LocationCreateInput!): Location
+  createLocations(data: [LocationCreateInput!]!): [Location]
+  updateLocation(where: LocationWhereUniqueInput!, data: LocationUpdateInput!): Location
+  updateLocations(data: [LocationUpdateArgs!]!): [Location]
+  deleteLocation(where: LocationWhereUniqueInput!): Location
+  deleteLocations(where: [LocationWhereUniqueInput!]!): [Location]
+  createCountry(data: CountryCreateInput!): Country
+  createCountries(data: [CountryCreateInput!]!): [Country]
+  updateCountry(where: CountryWhereUniqueInput!, data: CountryUpdateInput!): Country
+  updateCountries(data: [CountryUpdateArgs!]!): [Country]
+  deleteCountry(where: CountryWhereUniqueInput!): Country
+  deleteCountries(where: [CountryWhereUniqueInput!]!): [Country]
+  createCityRO(data: CityROCreateInput!): CityRO
+  createCityROS(data: [CityROCreateInput!]!): [CityRO]
+  updateCityRO(where: CityROWhereUniqueInput!, data: CityROUpdateInput!): CityRO
+  updateCityROS(data: [CityROUpdateArgs!]!): [CityRO]
+  deleteCityRO(where: CityROWhereUniqueInput!): CityRO
+  deleteCityROS(where: [CityROWhereUniqueInput!]!): [CityRO]
+  createCityIT(data: CityITCreateInput!): CityIT
+  createCityITS(data: [CityITCreateInput!]!): [CityIT]
+  updateCityIT(where: CityITWhereUniqueInput!, data: CityITUpdateInput!): CityIT
+  updateCityITS(data: [CityITUpdateArgs!]!): [CityIT]
+  deleteCityIT(where: CityITWhereUniqueInput!): CityIT
+  deleteCityITS(where: [CityITWhereUniqueInput!]!): [CityIT]
+  createSubCategory(data: SubCategoryCreateInput!): SubCategory
+  createSubCategories(data: [SubCategoryCreateInput!]!): [SubCategory]
+  updateSubCategory(where: SubCategoryWhereUniqueInput!, data: SubCategoryUpdateInput!): SubCategory
+  updateSubCategories(data: [SubCategoryUpdateArgs!]!): [SubCategory]
+  deleteSubCategory(where: SubCategoryWhereUniqueInput!): SubCategory
+  deleteSubCategories(where: [SubCategoryWhereUniqueInput!]!): [SubCategory]
+  createJobCategory(data: JobCategoryCreateInput!): JobCategory
+  createJobCategories(data: [JobCategoryCreateInput!]!): [JobCategory]
+  updateJobCategory(where: JobCategoryWhereUniqueInput!, data: JobCategoryUpdateInput!): JobCategory
+  updateJobCategories(data: [JobCategoryUpdateArgs!]!): [JobCategory]
+  deleteJobCategory(where: JobCategoryWhereUniqueInput!): JobCategory
+  deleteJobCategories(where: [JobCategoryWhereUniqueInput!]!): [JobCategory]
   endSession: Boolean!
   authenticateUserWithPassword(email: String!, password: String!): UserAuthenticationWithPasswordResult
   createInitialUser(data: CreateInitialUserInput!): UserAuthenticationWithPasswordSuccess!
+  sendUserPasswordResetLink(email: String!): Boolean!
+  redeemUserPasswordResetToken(email: String!, token: String!, password: String!): RedeemUserPasswordResetTokenResult
 }
 
 union UserAuthenticationWithPasswordResult = UserAuthenticationWithPasswordSuccess | UserAuthenticationWithPasswordFailure
@@ -814,6 +1531,17 @@ input CreateInitialUserInput {
   name: String
   email: String
   password: String
+}
+
+type RedeemUserPasswordResetTokenResult {
+  code: PasswordResetRedemptionErrorCode!
+  message: String!
+}
+
+enum PasswordResetRedemptionErrorCode {
+  FAILURE
+  TOKEN_EXPIRED
+  TOKEN_REDEEMED
 }
 
 type Query {
@@ -841,11 +1569,41 @@ type Query {
   jobApplications(where: JobApplicationWhereInput! = {}, orderBy: [JobApplicationOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: JobApplicationWhereUniqueInput): [JobApplication!]
   jobApplication(where: JobApplicationWhereUniqueInput!): JobApplication
   jobApplicationsCount(where: JobApplicationWhereInput! = {}): Int
+  contactForms(where: ContactFormWhereInput! = {}, orderBy: [ContactFormOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: ContactFormWhereUniqueInput): [ContactForm!]
+  contactForm(where: ContactFormWhereUniqueInput!): ContactForm
+  contactFormsCount(where: ContactFormWhereInput! = {}): Int
+  roles(where: RoleWhereInput! = {}, orderBy: [RoleOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: RoleWhereUniqueInput): [Role!]
+  role(where: RoleWhereUniqueInput!): Role
+  rolesCount(where: RoleWhereInput! = {}): Int
+  locations(where: LocationWhereInput! = {}, orderBy: [LocationOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: LocationWhereUniqueInput): [Location!]
+  location(where: LocationWhereUniqueInput!): Location
+  locationsCount(where: LocationWhereInput! = {}): Int
+  countries(where: CountryWhereInput! = {}, orderBy: [CountryOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CountryWhereUniqueInput): [Country!]
+  country(where: CountryWhereUniqueInput!): Country
+  countriesCount(where: CountryWhereInput! = {}): Int
+  cityROS(where: CityROWhereInput! = {}, orderBy: [CityROOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CityROWhereUniqueInput): [CityRO!]
+  cityRO(where: CityROWhereUniqueInput!): CityRO
+  cityROSCount(where: CityROWhereInput! = {}): Int
+  cityITS(where: CityITWhereInput! = {}, orderBy: [CityITOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CityITWhereUniqueInput): [CityIT!]
+  cityIT(where: CityITWhereUniqueInput!): CityIT
+  cityITSCount(where: CityITWhereInput! = {}): Int
+  subCategories(where: SubCategoryWhereInput! = {}, orderBy: [SubCategoryOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: SubCategoryWhereUniqueInput): [SubCategory!]
+  subCategory(where: SubCategoryWhereUniqueInput!): SubCategory
+  subCategoriesCount(where: SubCategoryWhereInput! = {}): Int
+  jobCategories(where: JobCategoryWhereInput! = {}, orderBy: [JobCategoryOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: JobCategoryWhereUniqueInput): [JobCategory!]
+  jobCategory(where: JobCategoryWhereUniqueInput!): JobCategory
+  jobCategoriesCount(where: JobCategoryWhereInput! = {}): Int
   keystone: KeystoneMeta!
   authenticatedItem: AuthenticatedItem
+  validateUserPasswordResetToken(email: String!, token: String!): ValidateUserPasswordResetTokenResult
 }
 
 union AuthenticatedItem = User
+
+type ValidateUserPasswordResetTokenResult {
+  code: PasswordResetRedemptionErrorCode!
+  message: String!
+}
 
 type KeystoneMeta {
   adminMeta: KeystoneAdminMeta!
