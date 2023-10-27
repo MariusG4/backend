@@ -23,24 +23,135 @@ __export(keystone_exports, {
   default: () => keystone_default
 });
 module.exports = __toCommonJS(keystone_exports);
-var import_core7 = require("@keystone-6/core");
+var import_core18 = require("@keystone-6/core");
 
 // auth.ts
 var import_crypto = require("crypto");
 var import_auth = require("@keystone-6/auth");
 var import_session = require("@keystone-6/core/session");
+
+// lib/mail.ts
+var import_nodemailer = require("nodemailer");
+var transport = (0, import_nodemailer.createTransport)({
+  host: process.env.MAIL_HOST,
+  port: process.env.MAIL_PORT,
+  auth: {
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS
+  }
+});
+function makeNiceEmail(text16) {
+  return `
+    <div style="
+        border: 1px solid black;
+        padding: 20px;
+        font-family: sans-serif;
+        line-height: 2;
+        font-size: 20px;
+    ">
+    <h2>Hello There!</h2>
+    <p>${text16}</p>
+    <p>\u{1F618}, Humansource</p>
+    </div>
+    `;
+}
+async function sendPasswordResetEmail(resetToken, to) {
+  const info = await transport.sendMail({
+    to,
+    from: "backend@humansource.ro",
+    subject: "Your password reset token!",
+    html: makeNiceEmail(`Your Password Reset Token is here!
+        <a href="${process.env.FRONTEND_URL}/reset?token=${resetToken}">Click Here to Reset</a>
+        `)
+  });
+  console.log(info);
+}
+
+// schemas/permissions.ts
+var import_fields = require("@keystone-6/core/fields");
+var permissionFields = {
+  canManageJobs: (0, import_fields.checkbox)({
+    defaultValue: false,
+    label: "Manage Jobs: Can update and delete any job"
+  }),
+  canManageBlogs: (0, import_fields.checkbox)({
+    defaultValue: false,
+    label: "Manage Blogs: Can update and delete any blog"
+  }),
+  canManageLanguages: (0, import_fields.checkbox)({
+    defaultValue: false,
+    label: "Manage Languages: Can update and delete any langauge"
+  }),
+  canManageTags: (0, import_fields.checkbox)({
+    defaultValue: false,
+    label: "Manage Tags: Can update and delete any tag"
+  }),
+  canManageJobApplications: (0, import_fields.checkbox)({
+    defaultValue: false,
+    label: "Manage Job Applications: Can update and delete any job application"
+  }),
+  canManageContactForms: (0, import_fields.checkbox)({
+    defaultValue: false,
+    label: "Manage Contact Forms: Can update and delete any contact form"
+  }),
+  canManageCategories: (0, import_fields.checkbox)({
+    defaultValue: false,
+    label: "Manage Categorys: Can update and delete any category"
+  }),
+  canSeeOtherUsers: (0, import_fields.checkbox)({
+    defaultValue: false,
+    label: "View Users: Can query any User"
+  }),
+  canManageUsers: (0, import_fields.checkbox)({
+    defaultValue: false,
+    label: "Manage Users: Can edit any User"
+  }),
+  canManageRoles: (0, import_fields.checkbox)({
+    defaultValue: false,
+    label: "Manage Roles: Can create / read / update / delete any Role"
+  }),
+  canManageWorkerForms: (0, import_fields.checkbox)({
+    defaultValue: false,
+    label: "Manage Worker Forms: Can see and manage any Worker Form"
+  }),
+  canManageEmployerForms: (0, import_fields.checkbox)({
+    defaultValue: false,
+    label: "Manage Employer Forms: Can see and manage any Employer Form"
+  }),
+  canManageLocations: (0, import_fields.checkbox)({
+    defaultValue: false,
+    label: "Manage Locations: Can see and manage any location"
+  })
+};
+var permissionsList = Object.keys(
+  permissionFields
+);
+
+// auth.ts
 var sessionSecret = process.env.SESSION_SECRET;
 if (!sessionSecret && process.env.NODE_ENV !== "production") {
   sessionSecret = (0, import_crypto.randomBytes)(32).toString("hex");
 }
+var db = {
+  provider: "mysql",
+  url: process.env.DATABASE_URL
+};
 var { withAuth } = (0, import_auth.createAuth)({
   listKey: "User",
   identityField: "email",
   // this is a GraphQL query fragment for fetching what data will be attached to a context.session
   //   this can be helpful for when you are writing your access control functions
   //   you can find out more at https://keystonejs.com/docs/guides/auth-and-access-control
-  sessionData: "name createdAt",
+  sessionData: `name createdAt isAdmin role { id name ${permissionsList.join(
+    " "
+  )}}`,
   secretField: "password",
+  passwordResetLink: {
+    sendToken: async ({ itemId, identity, token, context }) => {
+      await sendPasswordResetEmail(token, identity);
+    },
+    tokensValidForMins: 60
+  },
   // WARNING: remove initFirstItem functionality in production
   //   see https://keystonejs.com/docs/config/auth#init-first-item for more
   initFirstItem: {
@@ -58,14 +169,397 @@ var session = (0, import_session.statelessSessions)({
   secret: sessionSecret
 });
 
-// schemas/Language.ts
-var import_access = require("@keystone-6/core/access");
+// schemas/location/CityRO.ts
 var import_core = require("@keystone-6/core");
-var import_fields = require("@keystone-6/core/fields");
-var Language = (0, import_core.list)({
-  access: import_access.allowAll,
+var import_fields2 = require("@keystone-6/core/fields");
+
+// access.ts
+function isSignedIn({ session: session2 }) {
+  return !!session2;
+}
+var generatedPermissions = Object.fromEntries(
+  permissionsList.map((permission) => [
+    permission,
+    function({ session: session2 }) {
+      return !!session2?.data.role?.[permission];
+    }
+  ])
+);
+var permissions = {
+  ...generatedPermissions
+};
+var rules = {
+  canManageBlogs({ session: session2 }) {
+    if (!isSignedIn({ session: session2 })) {
+      return false;
+    }
+    if (permissions.canManageBlogs({ session: session2 })) {
+      return true;
+    }
+    return { author: { id: { equals: session2?.itemId } } };
+  },
+  canManageUsers({ session: session2 }) {
+    if (!isSignedIn({ session: session2 })) {
+      return false;
+    }
+    if (permissions.canManageUsers({ session: session2 })) {
+      return true;
+    }
+    return { id: { equals: session2?.itemId } };
+  },
+  canManageJobs({ session: session2 }) {
+    if (!isSignedIn({ session: session2 })) {
+      return false;
+    }
+    if (permissions.canManageJobs({ session: session2 })) {
+      return true;
+    }
+    return { user: { id: { equals: session2?.itemId } } };
+  },
+  canManageJobApplications({ session: session2 }) {
+    if (!isSignedIn({ session: session2 })) {
+      return false;
+    }
+    if (permissions.canManageJobApplications({ session: session2 })) {
+      return true;
+    }
+    return { job: { user: { id: { equals: session2?.itemId } } } };
+  },
+  canSeeUser({ session: session2 }) {
+    if (!isSignedIn({ session: session2 })) {
+      return false;
+    }
+    if (permissions.canSeeOtherUsers({ session: session2 })) {
+      return true;
+    }
+    return { blog: { author: { id: { equals: session2?.itemId } } } };
+  }
+};
+
+// schemas/location/CityRO.ts
+var CityRO = (0, import_core.list)({
+  access: {
+    operation: {
+      query: () => true,
+      update: permissions.canManageLocations,
+      create: permissions.canManageLocations,
+      delete: permissions.canManageLocations
+    }
+  },
   fields: {
-    languages: (0, import_fields.select)({
+    name: (0, import_fields2.text)({
+      validation: { isRequired: true }
+    }),
+    createdAt: (0, import_fields2.timestamp)({
+      defaultValue: { kind: "now" },
+      validation: { isRequired: true },
+      isIndexed: true
+    })
+  }
+});
+
+// schemas/location/Country.ts
+var import_core2 = require("@keystone-6/core");
+var import_fields3 = require("@keystone-6/core/fields");
+var Country = (0, import_core2.list)({
+  access: {
+    operation: {
+      create: () => true,
+      query: permissions.canManageLocations,
+      update: permissions.canManageLocations,
+      delete: permissions.canManageLocations
+    }
+  },
+  fields: {
+    name: (0, import_fields3.text)({
+      validation: {
+        isRequired: true
+      }
+    })
+  }
+});
+
+// schemas/location/Location.ts
+var import_core3 = require("@keystone-6/core");
+var import_fields4 = require("@keystone-6/core/fields");
+var Location = (0, import_core3.list)({
+  access: {
+    operation: {
+      query: () => true,
+      create: permissions.canManageLocations,
+      update: permissions.canManageLocations,
+      delete: permissions.canManageLocations
+    }
+  },
+  fields: {
+    name: (0, import_fields4.text)(),
+    country: (0, import_fields4.relationship)({
+      ref: "Country",
+      many: true,
+      ui: {
+        displayMode: "select",
+        labelField: "name"
+      }
+    }),
+    //create a virtual field that returns the city names from the country relationship
+    cityRO: (0, import_fields4.relationship)({
+      ref: "CityRO",
+      many: true,
+      ui: {
+        displayMode: "select",
+        labelField: "name",
+        searchFields: ["name"]
+      }
+    }),
+    cityIT: (0, import_fields4.relationship)({
+      ref: "CityIT",
+      many: true,
+      ui: {
+        displayMode: "select",
+        labelField: "name",
+        searchFields: ["name"]
+      }
+    }),
+    zone: (0, import_fields4.select)({
+      type: "string",
+      options: [
+        { label: "Local", value: "Local" },
+        { label: "International", value: "International" },
+        { label: "Tur-retur", value: "Tur-retur" }
+      ]
+    }),
+    jobs: (0, import_fields4.relationship)({
+      ref: "Job.location",
+      many: true
+    })
+  }
+});
+
+// schemas/Role.ts
+var import_fields5 = require("@keystone-6/core/fields");
+var import_core4 = require("@keystone-6/core");
+var Role = (0, import_core4.list)({
+  access: {
+    operation: {
+      query: permissions.canManageRoles,
+      create: permissions.canManageRoles,
+      update: permissions.canManageRoles,
+      delete: permissions.canManageRoles
+    }
+  },
+  fields: {
+    name: (0, import_fields5.text)({
+      validation: { isRequired: true }
+    }),
+    ...permissionFields,
+    assignedTo: (0, import_fields5.relationship)({
+      ref: "User.role",
+      many: true,
+      ui: {
+        itemView: { fieldMode: "edit" }
+      }
+    })
+  }
+});
+
+// schemas/forms/ContactForm.ts
+var import_core5 = require("@keystone-6/core");
+var import_fields6 = require("@keystone-6/core/fields");
+var ContactForm = (0, import_core5.list)({
+  access: {
+    operation: {
+      query: () => false,
+      create: () => true,
+      update: () => false,
+      delete: () => false
+    }
+  },
+  fields: {
+    name: (0, import_fields6.text)({
+      validation: {
+        isRequired: true
+      }
+    }),
+    email: (0, import_fields6.text)({
+      validation: {
+        isRequired: true,
+        match: { regex: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/ }
+      }
+    }),
+    phone: (0, import_fields6.text)({
+      validation: {
+        isRequired: true,
+        match: { regex: /^\d{1,3}\s?\d{1,14}$/ }
+      }
+    }),
+    message: (0, import_fields6.text)({
+      validation: { isRequired: true },
+      ui: { displayMode: "textarea" }
+    })
+  }
+});
+
+// schemas/job/JobApplication.ts
+var import_core6 = require("@keystone-6/core");
+var import_fields7 = require("@keystone-6/core/fields");
+var JobApplication = (0, import_core6.list)({
+  access: {
+    operation: {
+      query: permissions.canManageJobApplications,
+      create: () => true,
+      update: permissions.canManageJobApplications,
+      delete: permissions.canManageJobApplications
+    },
+    filter: {
+      query: rules.canManageJobApplications,
+      update: rules.canManageJobApplications,
+      delete: rules.canManageJobApplications
+      //create: () => true,
+    }
+  },
+  fields: {
+    name: (0, import_fields7.text)({ validation: { isRequired: true } }),
+    email: (0, import_fields7.text)({
+      validation: {
+        isRequired: true,
+        match: { regex: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/ }
+      }
+    }),
+    message: (0, import_fields7.text)({
+      validation: { isRequired: true },
+      ui: { displayMode: "textarea" }
+    }),
+    birthDate: (0, import_fields7.calendarDay)({
+      validation: { isRequired: true }
+    }),
+    phone: (0, import_fields7.text)({
+      validation: {
+        isRequired: true,
+        match: { regex: /^\d{1,3}\s?\d{1,14}$/ }
+      }
+    }),
+    createdAt: (0, import_fields7.timestamp)({
+      defaultValue: { kind: "now" },
+      ui: {
+        itemView: { fieldMode: "hidden" },
+        createView: { fieldMode: "hidden" }
+      }
+    }),
+    job: (0, import_fields7.relationship)({ ref: "Job.applyForm", many: false })
+  }
+});
+
+// schemas/job/Job.ts
+var import_core7 = require("@keystone-6/core");
+var import_fields8 = require("@keystone-6/core/fields");
+var Job = (0, import_core7.list)({
+  access: {
+    operation: {
+      query: () => true,
+      update: permissions.canManageJobs,
+      create: permissions.canManageJobs,
+      delete: permissions.canManageJobs
+    },
+    filter: {
+      query: () => true,
+      create: rules.canManageJobs,
+      update: rules.canManageJobs,
+      delete: rules.canManageJobs
+    }
+  },
+  fields: {
+    title: (0, import_fields8.text)({
+      validation: {
+        isRequired: true
+      }
+    }),
+    company: (0, import_fields8.text)({
+      validation: {
+        isRequired: true
+      }
+    }),
+    salary: (0, import_fields8.text)({
+      validation: {
+        isRequired: true,
+        match: { regex: /^\d+(?:\.\d+)?€?$/ }
+      }
+    }),
+    date: (0, import_fields8.calendarDay)(),
+    jobCategory: (0, import_fields8.relationship)({
+      ref: "JobCategory.jobs",
+      many: false
+    }),
+    location: (0, import_fields8.relationship)({
+      ref: "Location.jobs",
+      many: false,
+      ui: {
+        displayMode: "select",
+        labelField: "name"
+      }
+    }),
+    description: (0, import_fields8.text)({
+      ui: { displayMode: "textarea" }
+    }),
+    requierments: (0, import_fields8.text)({
+      ui: { displayMode: "textarea" }
+    }),
+    whyWork: (0, import_fields8.text)({
+      ui: { displayMode: "textarea" }
+    }),
+    applyForm: (0, import_fields8.relationship)({
+      ref: "JobApplication.job",
+      many: true,
+      ui: {
+        itemView: { fieldMode: "hidden" },
+        createView: { fieldMode: "hidden" }
+      }
+    }),
+    language: (0, import_fields8.relationship)({
+      ref: "Language.job",
+      many: false,
+      ui: {
+        hideCreate: true,
+        displayMode: "select",
+        labelField: "languages"
+      }
+    }),
+    user: (0, import_fields8.relationship)({
+      ref: "User.job",
+      many: false,
+      ui: {
+        itemView: { fieldMode: "hidden" },
+        createView: { fieldMode: "hidden" }
+      }
+    })
+  },
+  hooks: {
+    beforeOperation: async ({ operation, resolvedData, context, item }) => {
+      try {
+        if (resolvedData && !resolvedData.user) {
+          const currentUserId = await context.session.itemId;
+          resolvedData.user = { connect: { id: currentUserId } };
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }
+});
+
+// schemas/Language.ts
+var import_core8 = require("@keystone-6/core");
+var import_fields9 = require("@keystone-6/core/fields");
+var Language = (0, import_core8.list)({
+  access: {
+    operation: {
+      query: () => true,
+      create: permissions.canManageLanguage,
+      update: permissions.canManageLanguage,
+      delete: permissions.canManageLanguage
+    }
+  },
+  fields: {
+    languages: (0, import_fields9.select)({
       type: "string",
       options: [
         { label: "IT", value: "IT" },
@@ -74,31 +568,113 @@ var Language = (0, import_core.list)({
       defaultValue: "RO",
       validation: { isRequired: true },
       isIndexed: "unique",
-      ui: { displayMode: "select" }
+      ui: {
+        displayMode: "segmented-control",
+        createView: { fieldMode: "edit" }
+      }
     }),
-    blog: (0, import_fields.relationship)({ ref: "Blog.language" })
+    blog: (0, import_fields9.relationship)({ ref: "Blog.language", many: true }),
+    job: (0, import_fields9.relationship)({ ref: "Job.language", many: true })
   }
 });
 
-// schemas/Blog.ts
-var import_core2 = require("@keystone-6/core");
-var import_access2 = require("@keystone-6/core/access");
-var import_fields2 = require("@keystone-6/core/fields");
+// schemas/blog/Blog.ts
+var import_core10 = require("@keystone-6/core");
+var import_fields10 = require("@keystone-6/core/fields");
 var import_fields_document = require("@keystone-6/fields-document");
-var Blog = (0, import_core2.list)({
-  access: import_access2.allowAll,
+
+// blocks/image.tsx
+var import_core9 = require("@keystone-ui/core");
+var import_component_blocks = require("@keystone-6/fields-document/component-blocks");
+var image = (0, import_component_blocks.component)({
+  label: "Image",
+  schema: {
+    imageCld: import_component_blocks.fields.relationship({
+      label: "Image",
+      listKey: "MediaGalery",
+      selection: "id "
+    }),
+    imageSrc: import_component_blocks.fields.url({
+      label: "Image URL",
+      defaultValue: "https://images.unsplash.com/photo-1579546929518-9e396f3cc809"
+    }),
+    color: import_component_blocks.fields.text({
+      label: "Fallback background color",
+      defaultValue: "lightgray"
+    }),
+    padding: import_component_blocks.fields.integer({
+      label: "Frame Padding",
+      defaultValue: 20
+    }),
+    border: import_component_blocks.fields.integer({
+      label: "Frame Border",
+      defaultValue: 0
+    }),
+    width: import_component_blocks.fields.integer({
+      label: "Frame Width",
+      defaultValue: 500
+    })
+  },
+  preview: function Quote(props) {
+    return /* @__PURE__ */ (0, import_core9.jsx)("figure", { style: {
+      padding: props.fields.padding.value,
+      border: `solid lightgrey ${props.fields.border.value}px`,
+      margin: "0",
+      backgroundColor: props.fields.color.value,
+      backgroundImage: props.fields.imageSrc.value,
+      width: props.fields.width.value + "px",
+      marginInline: "auto"
+    } }, /* @__PURE__ */ (0, import_core9.jsx)(
+      "img",
+      {
+        src: props.fields.imageSrc.value,
+        style: {
+          width: "100%",
+          objectFit: "contain"
+        }
+      }
+    ));
+  }
+});
+
+// blocks/index.tsx
+var componentBlocks = {
+  image
+};
+
+// schemas/blog/Blog.ts
+var Blog = (0, import_core10.list)({
+  access: {
+    operation: {
+      query: () => true,
+      update: permissions.canManageBlogs,
+      create: permissions.canManageBlogs,
+      delete: permissions.canManageBlogs
+    },
+    filter: {
+      query: () => true,
+      update: rules.canManageBlogs,
+      delete: rules.canManageBlogs
+    }
+  },
   ui: {
     listView: {
-      initialColumns: ["title", "status", "dateModified", "author", "categories"],
+      initialColumns: [
+        "title",
+        "status",
+        "dateModified",
+        "author",
+        "categories"
+      ],
       initialSort: { field: "start", direction: "DESC" }
     }
   },
   fields: {
-    title: (0, import_fields2.text)({ validation: { isRequired: true } }),
-    slug: (0, import_fields2.text)({ isIndexed: "unique", validation: { isRequired: true } }),
-    dateCreated: (0, import_fields2.timestamp)({ defaultValue: { kind: "now" } }),
-    dateModified: (0, import_fields2.timestamp)({ defaultValue: { kind: "now" } }),
-    status: (0, import_fields2.select)({
+    title: (0, import_fields10.text)({ validation: { isRequired: true } }),
+    slug: (0, import_fields10.text)({ isIndexed: "unique", validation: { isRequired: true } }),
+    dateCreated: (0, import_fields10.timestamp)({ defaultValue: { kind: "now" } }),
+    dateModified: (0, import_fields10.timestamp)({ defaultValue: { kind: "now" } }),
+    status: (0, import_fields10.select)({
       options: [
         { label: "Draft", value: "DRAFT" },
         { label: "Published", value: "PUBLISHED" },
@@ -110,8 +686,12 @@ var Blog = (0, import_core2.list)({
         createView: { fieldMode: "edit" }
       }
     }),
-    featured_image: (0, import_fields2.text)(),
+    featured_image: (0, import_fields10.text)(),
     content: (0, import_fields_document.document)({
+      componentBlocks,
+      ui: {
+        views: "./blocks"
+      },
       formatting: {
         inlineMarks: {
           bold: true,
@@ -147,125 +727,271 @@ var Blog = (0, import_core2.list)({
       links: true,
       dividers: true
     }),
-    author: (0, import_fields2.relationship)({
+    author: (0, import_fields10.relationship)({
       ref: "User.blog",
-      ui: {
-        displayMode: "cards",
-        cardFields: ["name", "email"],
-        inlineEdit: { fields: ["name", "email"] },
-        linkToItem: true,
-        inlineConnect: true
-      },
-      many: false
+      many: false,
+      access: {
+        read: () => true
+      }
     }),
-    categories: (0, import_fields2.relationship)({
+    categories: (0, import_fields10.relationship)({
       ref: "Category.blog",
       many: true
     }),
-    tags: (0, import_fields2.relationship)({
+    tags: (0, import_fields10.relationship)({
       ref: "Tag.blog",
       many: true
     }),
-    photo: (0, import_fields2.relationship)({
+    photo: (0, import_fields10.relationship)({
       ref: "MediaGalery.blog",
       ui: {
         displayMode: "cards",
         cardFields: ["image", "altText", "filename"],
         inlineCreate: { fields: ["image", "altText", "filename"] },
-        inlineEdit: { fields: ["image", "altText", "filename"] }
+        inlineEdit: { fields: ["image", "altText", "filename"] },
+        inlineConnect: true
       }
     }),
-    language: (0, import_fields2.relationship)({
+    language: (0, import_fields10.relationship)({
       ref: "Language.blog",
       ui: {
-        displayMode: "cards",
-        cardFields: ["languages"],
-        inlineCreate: { fields: ["languages"] },
-        inlineEdit: { fields: ["languages"] }
-      }
+        hideCreate: true,
+        displayMode: "select",
+        labelField: "languages"
+      },
+      many: false
     })
+  },
+  hooks: {
+    beforeOperation: async ({ operation, resolvedData, context, item }) => {
+      try {
+        if (resolvedData && !resolvedData.author) {
+          const currentUserId = await context.session.itemId;
+          resolvedData.author = { connect: { id: currentUserId } };
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }
   }
 });
 
 // schemas/Users.ts
-var import_core3 = require("@keystone-6/core");
-var import_access3 = require("@keystone-6/core/access");
-var import_fields3 = require("@keystone-6/core/fields");
-var User = (0, import_core3.list)({
-  access: import_access3.allowAll,
+var import_core11 = require("@keystone-6/core");
+var import_fields11 = require("@keystone-6/core/fields");
+var User = (0, import_core11.list)({
+  access: {
+    operation: {
+      query: () => true,
+      create: permissions.canManageUsers,
+      update: permissions.canManageUsers,
+      delete: permissions.canManageUsers
+    }
+  },
   ui: {},
   fields: {
-    name: (0, import_fields3.text)({ validation: { isRequired: true } }),
-    nameLast: (0, import_fields3.text)(),
-    email: (0, import_fields3.text)({
+    name: (0, import_fields11.text)({
       validation: { isRequired: true },
-      isIndexed: "unique"
+      access: {
+        read: () => true
+      }
     }),
-    password: (0, import_fields3.password)({ validation: { isRequired: true } }),
-    isAdmin: (0, import_fields3.checkbox)({ defaultValue: false }),
-    isActive: (0, import_fields3.checkbox)({ defaultValue: true }),
-    blog: (0, import_fields3.relationship)({ ref: "Blog.author", many: true }),
-    createdAt: (0, import_fields3.timestamp)({
+    nameLast: (0, import_fields11.text)(),
+    email: (0, import_fields11.text)({
+      validation: { isRequired: true },
+      isIndexed: "unique",
+      access: {
+        read: permissions.canManageUsers
+      }
+    }),
+    password: (0, import_fields11.password)({ validation: { isRequired: true } }),
+    isAdmin: (0, import_fields11.checkbox)({ defaultValue: false }),
+    isActive: (0, import_fields11.checkbox)({ defaultValue: true }),
+    blog: (0, import_fields11.relationship)({
+      ref: "Blog.author",
+      many: true,
+      access: {
+        read: () => true
+      }
+    }),
+    job: (0, import_fields11.relationship)({ ref: "Job.user" }),
+    role: (0, import_fields11.relationship)({
+      ref: "Role.assignedTo",
+      many: false,
+      access: {
+        read: permissions.canManageRoles
+      }
+    }),
+    createdAt: (0, import_fields11.timestamp)({
       defaultValue: { kind: "now" }
     }),
-    dateModified: (0, import_fields3.timestamp)({ defaultValue: { kind: "now" } })
+    dateModified: (0, import_fields11.timestamp)({ defaultValue: { kind: "now" } })
   }
 });
 
-// schemas/Tag.ts
-var import_core4 = require("@keystone-6/core");
-var import_access4 = require("@keystone-6/core/access");
-var import_fields4 = require("@keystone-6/core/fields");
-var Tag = (0, import_core4.list)({
-  access: import_access4.allowAll,
+// schemas/blog/Tag.ts
+var import_core12 = require("@keystone-6/core");
+var import_fields12 = require("@keystone-6/core/fields");
+var Tag = (0, import_core12.list)({
+  access: {
+    operation: {
+      query: () => true,
+      create: permissions.canManageTags,
+      update: permissions.canManageTags,
+      delete: permissions.canManageTags
+    }
+  },
   fields: {
-    name: (0, import_fields4.text)({ isIndexed: "unique", validation: { isRequired: true } }),
-    blog: (0, import_fields4.relationship)({ ref: "Blog.tags", many: true })
+    name: (0, import_fields12.text)({ isIndexed: "unique", validation: { isRequired: true } }),
+    blog: (0, import_fields12.relationship)({ ref: "Blog.tags", many: true })
   }
 });
 
-// schemas/Category.ts
-var import_core5 = require("@keystone-6/core");
-var import_access5 = require("@keystone-6/core/access");
-var import_fields5 = require("@keystone-6/core/fields");
-var Category = (0, import_core5.list)({
-  access: import_access5.allowAll,
+// schemas/categories/Category.ts
+var import_core13 = require("@keystone-6/core");
+var import_fields13 = require("@keystone-6/core/fields");
+var Category = (0, import_core13.list)({
+  access: {
+    operation: {
+      query: () => true,
+      create: permissions.canManageCategories,
+      update: permissions.canManageCategories,
+      delete: permissions.canManageCategories
+    }
+  },
   fields: {
-    name: (0, import_fields5.text)({ isIndexed: "unique", validation: { isRequired: true } }),
-    excerpt: (0, import_fields5.text)({
+    name: (0, import_fields13.text)({ validation: { isRequired: true } }),
+    excerpt: (0, import_fields13.text)({
       ui: {
         displayMode: "textarea"
       }
     }),
-    blog: (0, import_fields5.relationship)({ ref: "Blog.categories", many: true })
+    blog: (0, import_fields13.relationship)({ ref: "Blog.categories", many: true }),
+    jobCategories: (0, import_fields13.relationship)({ ref: "JobCategory.category", many: true })
   }
 });
 
-// schemas/MediaGalery.ts
-var import_core6 = require("@keystone-6/core");
-var import_fields6 = require("@keystone-6/core/fields");
-var import_access6 = require("@keystone-6/core/access");
-var MediaGalery = (0, import_core6.list)({
-  access: import_access6.allowAll,
+// schemas/mediaGalery/MediaGalery.ts
+var import_core14 = require("@keystone-6/core");
+var import_fields14 = require("@keystone-6/core/fields");
+var import_cloudinary = require("@keystone-6/cloudinary");
+require("dotenv").config();
+var cloudinary = {
+  cloudName: process.env.CLOUDINARY_NAME,
+  apiKey: process.env.CLOUDINARY_KEY,
+  apiSecret: process.env.CLOUDINARY_SECRET,
+  folder: process.env.CLOUDINARY_API_FOLDER
+};
+var cloudname = process.env.CLOUDINARY_NAME;
+console.log(cloudname + "\u{1F44D}\u{1F3FD} Cloudinary is configured");
+var MediaGalery = (0, import_core14.list)({
+  access: {
+    operation: {
+      query: () => true,
+      create: permissions.canManageProducts,
+      update: permissions.canManageProducts,
+      delete: permissions.canManageProducts
+    }
+  },
   fields: {
-    //image: cloudinaryImage({
-    //   cloudinary,
-    //   label:'Source'
-    // }),
-    image: (0, import_fields6.image)({ storage: "my_local_storage" }),
-    altText: (0, import_fields6.text)(),
-    filename: (0, import_fields6.text)({
+    image: (0, import_cloudinary.cloudinaryImage)({
+      cloudinary,
+      label: "Source"
+    }),
+    //image : image ({storage:'my_local_storage'}),
+    altText: (0, import_fields14.text)(),
+    filename: (0, import_fields14.text)({
       isIndexed: "unique",
       validation: {
         isRequired: true
       }
     }),
-    blog: (0, import_fields6.relationship)({ ref: "Blog.photo" })
+    blog: (0, import_fields14.relationship)({
+      ref: "Blog.photo"
+    })
   },
   ui: {
     listView: {
       initialColumns: ["image", "altText", "product"]
     }
+  }
+});
+
+// schemas/location/CityIT.ts
+var import_core15 = require("@keystone-6/core");
+var import_fields15 = require("@keystone-6/core/fields");
+var CityIT = (0, import_core15.list)({
+  access: {
+    operation: {
+      query: () => true,
+      update: permissions.canManageLocations,
+      create: permissions.canManageLocations,
+      delete: permissions.canManageLocations
+    }
+  },
+  fields: {
+    name: (0, import_fields15.text)({
+      validation: { isRequired: true }
+    }),
+    createdAt: (0, import_fields15.timestamp)({
+      defaultValue: { kind: "now" },
+      validation: { isRequired: true },
+      isIndexed: true
+    })
+  }
+});
+
+// schemas/categories/SubCategory.ts
+var import_fields16 = require("@keystone-6/core/fields");
+var import_core16 = require("@keystone-6/core");
+var SubCategory = (0, import_core16.list)({
+  access: {
+    operation: {
+      query: () => true,
+      create: permissions.canManageCategories,
+      update: permissions.canManageCategories,
+      delete: permissions.canManageCategories
+    }
+  },
+  fields: {
+    name: (0, import_fields16.text)(),
+    category: (0, import_fields16.relationship)({
+      ref: "Category",
+      many: false
+    })
+  }
+});
+
+// schemas/categories/JobCategory.ts
+var import_core17 = require("@keystone-6/core");
+var import_fields17 = require("@keystone-6/core/fields");
+var JobCategory = (0, import_core17.list)({
+  access: {
+    operation: {
+      query: () => true,
+      update: permissions.canManageCategories,
+      create: permissions.canManageCategories,
+      delete: permissions.canManageCategories
+    }
+  },
+  fields: {
+    name: (0, import_fields17.text)({
+      validation: {
+        isRequired: true
+      }
+    }),
+    category: (0, import_fields17.relationship)({
+      ref: "Category.jobCategories",
+      many: false
+    }),
+    subcategories: (0, import_fields17.relationship)({
+      ref: "SubCategory",
+      many: true
+    }),
+    jobs: (0, import_fields17.relationship)({
+      ref: "Job.jobCategory",
+      many: true
+    })
   }
 });
 
@@ -276,7 +1002,17 @@ var lists = {
   Tag,
   Category,
   MediaGalery,
-  Language
+  Language,
+  Job,
+  JobApplication,
+  ContactForm,
+  Role,
+  Location,
+  Country,
+  CityRO,
+  CityIT,
+  SubCategory,
+  JobCategory
 };
 
 // keystone.ts
@@ -294,7 +1030,8 @@ var FRONTEND_URL = process.env.FRONTEND_URL;
 var DB_URL = DB_PROTOCOL + DB_USER + ":" + DB_PASSWORD + "@" + DB_DOMAIN + DB_PORT + "/";
 console.log("\u{1F4BE} \u{1F4BE} \u{1F4BE}" + DB_URL + DB_COLLECTION);
 console.log(BACKEND_URL + BACKEN_PORT);
-var db = {
+console.log(FRONTEND_URL);
+var db2 = {
   provider: "mysql",
   url: DB_URL + DB_COLLECTION + "?connect_timeout=300",
   async onConnect(context) {
@@ -304,12 +1041,12 @@ var db = {
   idField: { kind: "uuid" }
 };
 var keystone_default = withAuth(
-  (0, import_core7.config)({
+  (0, import_core18.config)({
     server: {
       port: Number(BACKEN_PORT),
       cors: { origin: [FRONTEND_URL], credentials: true }
     },
-    db,
+    db: db2,
     lists,
     session,
     storage: {

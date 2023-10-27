@@ -1,6 +1,6 @@
 {
-  "name": "keystone-app",
-  "version": "1.0.2",
+  "name": "humansource-app",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "keystone dev",
@@ -12,6 +12,31 @@
     "@keystone-6/auth": "^7.0.0",
     "@keystone-6/core": "^5.0.0",
     "@keystone-6/fields-document": "^7.0.0",
-    "typescript": "^4.9.5"
+    "@keystone-6/cloudinary": "7.0.2",
+    "@types/nodemailer": "6.4.11",
+    "typescript": "^5.0.4",
+    "dotenv":"^16.3.1",
+    "nodemailer": "6.9.5"
+
+  },
+
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "6.7.4",
+    "@typescript-eslint/parser": "6.7.4",
+    "babel-eslint":"^10.1.0",
+    "eslint": "8.51.0",
+    "eslint-config-airbnb": "19.0.4",
+    "eslint-config-airbnb-typescript": "17.1.0",
+    "eslint-config-prettier": "9.0.0",
+    "eslint-config-wesbos": "3.2.3",
+    "eslint-plugin-html": "7.1.0",
+    "eslint-plugin-import": "2.28.1",
+    "eslint-plugin-jsx-a11y": "6.7.1",
+    "eslint-plugin-prettier": "5.0.0",
+    "eslint-plugin-react": "7.33.2",
+    "eslint-plugin-react-hooks": "4.6.0",
+    "prettier": "3.0.3",
+    "typescript": "5.2.2"
+
   }
 }
