@@ -7,10 +7,10 @@ import { permissions } from "../access";
 export const Role: Lists.Role = list({
   access: {
     operation: {
-      query: permissions.canManageRoles,
-      create: permissions.canManageRoles,
-      update: permissions.canManageRoles,
-      delete: permissions.canManageRoles,
+      query: () => true,
+      create: () => true,
+      update: () => true,
+      delete: () => true,
     },
   },
   fields: {
