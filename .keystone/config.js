@@ -23,7 +23,7 @@ __export(keystone_exports, {
   default: () => keystone_default
 });
 module.exports = __toCommonJS(keystone_exports);
-var import_core18 = require("@keystone-6/core");
+var import_core21 = require("@keystone-6/core");
 
 // auth.ts
 var import_crypto = require("crypto");
@@ -40,7 +40,7 @@ var transport = (0, import_nodemailer.createTransport)({
     pass: process.env.MAIL_PASS
   }
 });
-function makeNiceEmail(text16) {
+function makeNiceEmail(text19) {
   return `
     <div style="
         border: 1px solid black;
@@ -50,7 +50,7 @@ function makeNiceEmail(text16) {
         font-size: 20px;
     ">
     <h2>Hello There!</h2>
-    <p>${text16}</p>
+    <p>${text19}</p>
     <p>\u{1F618}, Humansource</p>
     </div>
     `;
@@ -169,7 +169,7 @@ var session = (0, import_session.statelessSessions)({
   secret: sessionSecret
 });
 
-// schemas/location/CityRO.ts
+// schemas/forms/TransportForm.ts
 var import_core = require("@keystone-6/core");
 var import_fields2 = require("@keystone-6/core/fields");
 
@@ -236,8 +236,60 @@ var rules = {
   }
 };
 
+// schemas/forms/TransportForm.ts
+var TransportForm = (0, import_core.list)({
+  access: {
+    operation: {
+      query: permissions.canManageWorkerForms,
+      create: () => true,
+      update: permissions.canManageWorkerForms,
+      delete: permissions.canManageWorkerForms
+    }
+  },
+  fields: {
+    domeniu: (0, import_fields2.text)({ validation: { isRequired: true } }),
+    subDomeniu: (0, import_fields2.text)({ validation: { isRequired: true } }),
+    experienta: (0, import_fields2.text)({ validation: { isRequired: true } }),
+    locatia: (0, import_fields2.text)({ validation: { isRequired: true } }),
+    tahograf: (0, import_fields2.text)({ validation: { isRequired: true } }),
+    echipa: (0, import_fields2.text)({ validation: { isRequired: true } }),
+    turaNoapte: (0, import_fields2.text)({ validation: { isRequired: true } }),
+    experientaLimba: (0, import_fields2.text)({ validation: { isRequired: true } }),
+    ultimuSalar: (0, import_fields2.integer)({ validation: { isRequired: true } }),
+    salariuDorit: (0, import_fields2.integer)({ validation: { isRequired: true } })
+  }
+});
+
+// schemas/forms/MedicalForm.ts
+var import_core2 = require("@keystone-6/core");
+var import_fields3 = require("@keystone-6/core/fields");
+var MedicalForm = (0, import_core2.list)({
+  access: {
+    operation: {
+      query: permissions.canManageWorkerForms,
+      create: () => true,
+      update: permissions.canManageWorkerForms,
+      delete: permissions.canManageWorkerForms
+    }
+  },
+  fields: {
+    domeniu: (0, import_fields3.text)({ validation: { isRequired: true } }),
+    subDomeniu: (0, import_fields3.text)({ validation: { isRequired: true } }),
+    experienta: (0, import_fields3.text)({ validation: { isRequired: true } }),
+    bac: (0, import_fields3.text)({ validation: { isRequired: true } }),
+    amg: (0, import_fields3.text)({ validation: { isRequired: true } }),
+    absolvire: (0, import_fields3.text)({ validation: { isRequired: true } }),
+    experientaLimba: (0, import_fields3.text)({ validation: { isRequired: true } }),
+    locatia: (0, import_fields3.text)({ validation: { isRequired: true } }),
+    ultimuSalar: (0, import_fields3.integer)({ validation: { isRequired: true } }),
+    cursItaliana: (0, import_fields3.text)({ validation: { isRequired: true } })
+  }
+});
+
 // schemas/location/CityRO.ts
-var CityRO = (0, import_core.list)({
+var import_core3 = require("@keystone-6/core");
+var import_fields4 = require("@keystone-6/core/fields");
+var CityRO = (0, import_core3.list)({
   access: {
     operation: {
       query: () => true,
@@ -247,10 +299,10 @@ var CityRO = (0, import_core.list)({
     }
   },
   fields: {
-    name: (0, import_fields2.text)({
+    name: (0, import_fields4.text)({
       validation: { isRequired: true }
     }),
-    createdAt: (0, import_fields2.timestamp)({
+    createdAt: (0, import_fields4.timestamp)({
       defaultValue: { kind: "now" },
       validation: { isRequired: true },
       isIndexed: true
@@ -259,9 +311,9 @@ var CityRO = (0, import_core.list)({
 });
 
 // schemas/location/Country.ts
-var import_core2 = require("@keystone-6/core");
-var import_fields3 = require("@keystone-6/core/fields");
-var Country = (0, import_core2.list)({
+var import_core4 = require("@keystone-6/core");
+var import_fields5 = require("@keystone-6/core/fields");
+var Country = (0, import_core4.list)({
   access: {
     operation: {
       create: () => true,
@@ -271,7 +323,7 @@ var Country = (0, import_core2.list)({
     }
   },
   fields: {
-    name: (0, import_fields3.text)({
+    name: (0, import_fields5.text)({
       validation: {
         isRequired: true
       }
@@ -280,9 +332,9 @@ var Country = (0, import_core2.list)({
 });
 
 // schemas/location/Location.ts
-var import_core3 = require("@keystone-6/core");
-var import_fields4 = require("@keystone-6/core/fields");
-var Location = (0, import_core3.list)({
+var import_core5 = require("@keystone-6/core");
+var import_fields6 = require("@keystone-6/core/fields");
+var Location = (0, import_core5.list)({
   access: {
     operation: {
       query: () => true,
@@ -292,8 +344,8 @@ var Location = (0, import_core3.list)({
     }
   },
   fields: {
-    name: (0, import_fields4.text)(),
-    country: (0, import_fields4.relationship)({
+    name: (0, import_fields6.text)(),
+    country: (0, import_fields6.relationship)({
       ref: "Country",
       many: true,
       ui: {
@@ -302,7 +354,7 @@ var Location = (0, import_core3.list)({
       }
     }),
     //create a virtual field that returns the city names from the country relationship
-    cityRO: (0, import_fields4.relationship)({
+    cityRO: (0, import_fields6.relationship)({
       ref: "CityRO",
       many: true,
       ui: {
@@ -311,7 +363,7 @@ var Location = (0, import_core3.list)({
         searchFields: ["name"]
       }
     }),
-    cityIT: (0, import_fields4.relationship)({
+    cityIT: (0, import_fields6.relationship)({
       ref: "CityIT",
       many: true,
       ui: {
@@ -320,7 +372,7 @@ var Location = (0, import_core3.list)({
         searchFields: ["name"]
       }
     }),
-    zone: (0, import_fields4.select)({
+    zone: (0, import_fields6.select)({
       type: "string",
       options: [
         { label: "Local", value: "Local" },
@@ -328,7 +380,7 @@ var Location = (0, import_core3.list)({
         { label: "Tur-retur", value: "Tur-retur" }
       ]
     }),
-    jobs: (0, import_fields4.relationship)({
+    jobs: (0, import_fields6.relationship)({
       ref: "Job.location",
       many: true
     })
@@ -336,9 +388,9 @@ var Location = (0, import_core3.list)({
 });
 
 // schemas/Role.ts
-var import_fields5 = require("@keystone-6/core/fields");
-var import_core4 = require("@keystone-6/core");
-var Role = (0, import_core4.list)({
+var import_fields7 = require("@keystone-6/core/fields");
+var import_core6 = require("@keystone-6/core");
+var Role = (0, import_core6.list)({
   access: {
     operation: {
       query: permissions.canManageRoles,
@@ -348,11 +400,11 @@ var Role = (0, import_core4.list)({
     }
   },
   fields: {
-    name: (0, import_fields5.text)({
+    name: (0, import_fields7.text)({
       validation: { isRequired: true }
     }),
     ...permissionFields,
-    assignedTo: (0, import_fields5.relationship)({
+    assignedTo: (0, import_fields7.relationship)({
       ref: "User.role",
       many: true,
       ui: {
@@ -363,9 +415,9 @@ var Role = (0, import_core4.list)({
 });
 
 // schemas/forms/ContactForm.ts
-var import_core5 = require("@keystone-6/core");
-var import_fields6 = require("@keystone-6/core/fields");
-var ContactForm = (0, import_core5.list)({
+var import_core7 = require("@keystone-6/core");
+var import_fields8 = require("@keystone-6/core/fields");
+var ContactForm = (0, import_core7.list)({
   access: {
     operation: {
       query: () => false,
@@ -375,24 +427,24 @@ var ContactForm = (0, import_core5.list)({
     }
   },
   fields: {
-    name: (0, import_fields6.text)({
+    name: (0, import_fields8.text)({
       validation: {
         isRequired: true
       }
     }),
-    email: (0, import_fields6.text)({
+    email: (0, import_fields8.text)({
       validation: {
         isRequired: true,
         match: { regex: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/ }
       }
     }),
-    phone: (0, import_fields6.text)({
+    phone: (0, import_fields8.text)({
       validation: {
         isRequired: true,
         match: { regex: /^\d{1,3}\s?\d{1,14}$/ }
       }
     }),
-    message: (0, import_fields6.text)({
+    message: (0, import_fields8.text)({
       validation: { isRequired: true },
       ui: { displayMode: "textarea" }
     })
@@ -400,9 +452,9 @@ var ContactForm = (0, import_core5.list)({
 });
 
 // schemas/job/JobApplication.ts
-var import_core6 = require("@keystone-6/core");
-var import_fields7 = require("@keystone-6/core/fields");
-var JobApplication = (0, import_core6.list)({
+var import_core8 = require("@keystone-6/core");
+var import_fields9 = require("@keystone-6/core/fields");
+var JobApplication = (0, import_core8.list)({
   access: {
     operation: {
       query: permissions.canManageJobApplications,
@@ -418,41 +470,41 @@ var JobApplication = (0, import_core6.list)({
     }
   },
   fields: {
-    name: (0, import_fields7.text)({ validation: { isRequired: true } }),
-    email: (0, import_fields7.text)({
+    name: (0, import_fields9.text)({ validation: { isRequired: true } }),
+    email: (0, import_fields9.text)({
       validation: {
         isRequired: true,
         match: { regex: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/ }
       }
     }),
-    message: (0, import_fields7.text)({
+    message: (0, import_fields9.text)({
       validation: { isRequired: true },
       ui: { displayMode: "textarea" }
     }),
-    birthDate: (0, import_fields7.calendarDay)({
+    birthDate: (0, import_fields9.calendarDay)({
       validation: { isRequired: true }
     }),
-    phone: (0, import_fields7.text)({
+    phone: (0, import_fields9.text)({
       validation: {
         isRequired: true,
         match: { regex: /^\d{1,3}\s?\d{1,14}$/ }
       }
     }),
-    createdAt: (0, import_fields7.timestamp)({
+    createdAt: (0, import_fields9.timestamp)({
       defaultValue: { kind: "now" },
       ui: {
         itemView: { fieldMode: "hidden" },
         createView: { fieldMode: "hidden" }
       }
     }),
-    job: (0, import_fields7.relationship)({ ref: "Job.applyForm", many: false })
+    job: (0, import_fields9.relationship)({ ref: "Job.applyForm", many: false })
   }
 });
 
 // schemas/job/Job.ts
-var import_core7 = require("@keystone-6/core");
-var import_fields8 = require("@keystone-6/core/fields");
-var Job = (0, import_core7.list)({
+var import_core9 = require("@keystone-6/core");
+var import_fields10 = require("@keystone-6/core/fields");
+var Job = (0, import_core9.list)({
   access: {
     operation: {
       query: () => true,
@@ -468,28 +520,28 @@ var Job = (0, import_core7.list)({
     }
   },
   fields: {
-    title: (0, import_fields8.text)({
+    title: (0, import_fields10.text)({
       validation: {
         isRequired: true
       }
     }),
-    company: (0, import_fields8.text)({
+    company: (0, import_fields10.text)({
       validation: {
         isRequired: true
       }
     }),
-    salary: (0, import_fields8.text)({
+    salary: (0, import_fields10.text)({
       validation: {
         isRequired: true,
         match: { regex: /^\d+(?:\.\d+)?€?$/ }
       }
     }),
-    date: (0, import_fields8.calendarDay)(),
-    jobCategory: (0, import_fields8.relationship)({
+    date: (0, import_fields10.calendarDay)(),
+    jobCategory: (0, import_fields10.relationship)({
       ref: "JobCategory.jobs",
       many: false
     }),
-    location: (0, import_fields8.relationship)({
+    location: (0, import_fields10.relationship)({
       ref: "Location.jobs",
       many: false,
       ui: {
@@ -497,16 +549,16 @@ var Job = (0, import_core7.list)({
         labelField: "name"
       }
     }),
-    description: (0, import_fields8.text)({
+    description: (0, import_fields10.text)({
       ui: { displayMode: "textarea" }
     }),
-    requierments: (0, import_fields8.text)({
+    requierments: (0, import_fields10.text)({
       ui: { displayMode: "textarea" }
     }),
-    whyWork: (0, import_fields8.text)({
+    whyWork: (0, import_fields10.text)({
       ui: { displayMode: "textarea" }
     }),
-    applyForm: (0, import_fields8.relationship)({
+    applyForm: (0, import_fields10.relationship)({
       ref: "JobApplication.job",
       many: true,
       ui: {
@@ -514,7 +566,7 @@ var Job = (0, import_core7.list)({
         createView: { fieldMode: "hidden" }
       }
     }),
-    language: (0, import_fields8.relationship)({
+    language: (0, import_fields10.relationship)({
       ref: "Language.job",
       many: false,
       ui: {
@@ -523,7 +575,7 @@ var Job = (0, import_core7.list)({
         labelField: "languages"
       }
     }),
-    user: (0, import_fields8.relationship)({
+    user: (0, import_fields10.relationship)({
       ref: "User.job",
       many: false,
       ui: {
@@ -547,9 +599,9 @@ var Job = (0, import_core7.list)({
 });
 
 // schemas/Language.ts
-var import_core8 = require("@keystone-6/core");
-var import_fields9 = require("@keystone-6/core/fields");
-var Language = (0, import_core8.list)({
+var import_core10 = require("@keystone-6/core");
+var import_fields11 = require("@keystone-6/core/fields");
+var Language = (0, import_core10.list)({
   access: {
     operation: {
       query: () => true,
@@ -559,7 +611,7 @@ var Language = (0, import_core8.list)({
     }
   },
   fields: {
-    languages: (0, import_fields9.select)({
+    languages: (0, import_fields11.select)({
       type: "string",
       options: [
         { label: "IT", value: "IT" },
@@ -573,18 +625,18 @@ var Language = (0, import_core8.list)({
         createView: { fieldMode: "edit" }
       }
     }),
-    blog: (0, import_fields9.relationship)({ ref: "Blog.language", many: true }),
-    job: (0, import_fields9.relationship)({ ref: "Job.language", many: true })
+    blog: (0, import_fields11.relationship)({ ref: "Blog.language", many: true }),
+    job: (0, import_fields11.relationship)({ ref: "Job.language", many: true })
   }
 });
 
 // schemas/blog/Blog.ts
-var import_core10 = require("@keystone-6/core");
-var import_fields10 = require("@keystone-6/core/fields");
+var import_core12 = require("@keystone-6/core");
+var import_fields12 = require("@keystone-6/core/fields");
 var import_fields_document = require("@keystone-6/fields-document");
 
 // blocks/image.tsx
-var import_core9 = require("@keystone-ui/core");
+var import_core11 = require("@keystone-ui/core");
 var import_component_blocks = require("@keystone-6/fields-document/component-blocks");
 var image = (0, import_component_blocks.component)({
   label: "Image",
@@ -616,7 +668,7 @@ var image = (0, import_component_blocks.component)({
     })
   },
   preview: function Quote(props) {
-    return /* @__PURE__ */ (0, import_core9.jsx)("figure", { style: {
+    return /* @__PURE__ */ (0, import_core11.jsx)("figure", { style: {
       padding: props.fields.padding.value,
       border: `solid lightgrey ${props.fields.border.value}px`,
       margin: "0",
@@ -624,7 +676,7 @@ var image = (0, import_component_blocks.component)({
       backgroundImage: props.fields.imageSrc.value,
       width: props.fields.width.value + "px",
       marginInline: "auto"
-    } }, /* @__PURE__ */ (0, import_core9.jsx)(
+    } }, /* @__PURE__ */ (0, import_core11.jsx)(
       "img",
       {
         src: props.fields.imageSrc.value,
@@ -643,7 +695,7 @@ var componentBlocks = {
 };
 
 // schemas/blog/Blog.ts
-var Blog = (0, import_core10.list)({
+var Blog = (0, import_core12.list)({
   access: {
     operation: {
       query: () => true,
@@ -670,11 +722,11 @@ var Blog = (0, import_core10.list)({
     }
   },
   fields: {
-    title: (0, import_fields10.text)({ validation: { isRequired: true } }),
-    slug: (0, import_fields10.text)({ isIndexed: "unique", validation: { isRequired: true } }),
-    dateCreated: (0, import_fields10.timestamp)({ defaultValue: { kind: "now" } }),
-    dateModified: (0, import_fields10.timestamp)({ defaultValue: { kind: "now" } }),
-    status: (0, import_fields10.select)({
+    title: (0, import_fields12.text)({ validation: { isRequired: true } }),
+    slug: (0, import_fields12.text)({ isIndexed: "unique", validation: { isRequired: true } }),
+    dateCreated: (0, import_fields12.timestamp)({ defaultValue: { kind: "now" } }),
+    dateModified: (0, import_fields12.timestamp)({ defaultValue: { kind: "now" } }),
+    status: (0, import_fields12.select)({
       options: [
         { label: "Draft", value: "DRAFT" },
         { label: "Published", value: "PUBLISHED" },
@@ -686,7 +738,7 @@ var Blog = (0, import_core10.list)({
         createView: { fieldMode: "edit" }
       }
     }),
-    featured_image: (0, import_fields10.text)(),
+    featured_image: (0, import_fields12.text)(),
     content: (0, import_fields_document.document)({
       componentBlocks,
       ui: {
@@ -727,22 +779,22 @@ var Blog = (0, import_core10.list)({
       links: true,
       dividers: true
     }),
-    author: (0, import_fields10.relationship)({
+    author: (0, import_fields12.relationship)({
       ref: "User.blog",
       many: false,
       access: {
         read: () => true
       }
     }),
-    categories: (0, import_fields10.relationship)({
+    categories: (0, import_fields12.relationship)({
       ref: "Category.blog",
       many: true
     }),
-    tags: (0, import_fields10.relationship)({
+    tags: (0, import_fields12.relationship)({
       ref: "Tag.blog",
       many: true
     }),
-    photo: (0, import_fields10.relationship)({
+    photo: (0, import_fields12.relationship)({
       ref: "MediaGalery.blog",
       ui: {
         displayMode: "cards",
@@ -752,7 +804,7 @@ var Blog = (0, import_core10.list)({
         inlineConnect: true
       }
     }),
-    language: (0, import_fields10.relationship)({
+    language: (0, import_fields12.relationship)({
       ref: "Language.blog",
       ui: {
         hideCreate: true,
@@ -777,9 +829,9 @@ var Blog = (0, import_core10.list)({
 });
 
 // schemas/Users.ts
-var import_core11 = require("@keystone-6/core");
-var import_fields11 = require("@keystone-6/core/fields");
-var User = (0, import_core11.list)({
+var import_core13 = require("@keystone-6/core");
+var import_fields13 = require("@keystone-6/core/fields");
+var User = (0, import_core13.list)({
   access: {
     operation: {
       query: () => true,
@@ -790,49 +842,49 @@ var User = (0, import_core11.list)({
   },
   ui: {},
   fields: {
-    name: (0, import_fields11.text)({
+    name: (0, import_fields13.text)({
       validation: { isRequired: true },
       access: {
         read: () => true
       }
     }),
-    nameLast: (0, import_fields11.text)(),
-    email: (0, import_fields11.text)({
+    nameLast: (0, import_fields13.text)(),
+    email: (0, import_fields13.text)({
       validation: { isRequired: true },
       isIndexed: "unique",
       access: {
         read: permissions.canManageUsers
       }
     }),
-    password: (0, import_fields11.password)({ validation: { isRequired: true } }),
-    isAdmin: (0, import_fields11.checkbox)({ defaultValue: false }),
-    isActive: (0, import_fields11.checkbox)({ defaultValue: true }),
-    blog: (0, import_fields11.relationship)({
+    password: (0, import_fields13.password)({ validation: { isRequired: true } }),
+    isAdmin: (0, import_fields13.checkbox)({ defaultValue: false }),
+    isActive: (0, import_fields13.checkbox)({ defaultValue: true }),
+    blog: (0, import_fields13.relationship)({
       ref: "Blog.author",
       many: true,
       access: {
         read: () => true
       }
     }),
-    job: (0, import_fields11.relationship)({ ref: "Job.user" }),
-    role: (0, import_fields11.relationship)({
+    job: (0, import_fields13.relationship)({ ref: "Job.user" }),
+    role: (0, import_fields13.relationship)({
       ref: "Role.assignedTo",
       many: false,
       access: {
         read: permissions.canManageRoles
       }
     }),
-    createdAt: (0, import_fields11.timestamp)({
+    createdAt: (0, import_fields13.timestamp)({
       defaultValue: { kind: "now" }
     }),
-    dateModified: (0, import_fields11.timestamp)({ defaultValue: { kind: "now" } })
+    dateModified: (0, import_fields13.timestamp)({ defaultValue: { kind: "now" } })
   }
 });
 
 // schemas/blog/Tag.ts
-var import_core12 = require("@keystone-6/core");
-var import_fields12 = require("@keystone-6/core/fields");
-var Tag = (0, import_core12.list)({
+var import_core14 = require("@keystone-6/core");
+var import_fields14 = require("@keystone-6/core/fields");
+var Tag = (0, import_core14.list)({
   access: {
     operation: {
       query: () => true,
@@ -842,15 +894,15 @@ var Tag = (0, import_core12.list)({
     }
   },
   fields: {
-    name: (0, import_fields12.text)({ isIndexed: "unique", validation: { isRequired: true } }),
-    blog: (0, import_fields12.relationship)({ ref: "Blog.tags", many: true })
+    name: (0, import_fields14.text)({ isIndexed: "unique", validation: { isRequired: true } }),
+    blog: (0, import_fields14.relationship)({ ref: "Blog.tags", many: true })
   }
 });
 
 // schemas/categories/Category.ts
-var import_core13 = require("@keystone-6/core");
-var import_fields13 = require("@keystone-6/core/fields");
-var Category = (0, import_core13.list)({
+var import_core15 = require("@keystone-6/core");
+var import_fields15 = require("@keystone-6/core/fields");
+var Category = (0, import_core15.list)({
   access: {
     operation: {
       query: () => true,
@@ -860,20 +912,20 @@ var Category = (0, import_core13.list)({
     }
   },
   fields: {
-    name: (0, import_fields13.text)({ validation: { isRequired: true } }),
-    excerpt: (0, import_fields13.text)({
+    name: (0, import_fields15.text)({ validation: { isRequired: true } }),
+    excerpt: (0, import_fields15.text)({
       ui: {
         displayMode: "textarea"
       }
     }),
-    blog: (0, import_fields13.relationship)({ ref: "Blog.categories", many: true }),
-    jobCategories: (0, import_fields13.relationship)({ ref: "JobCategory.category", many: true })
+    blog: (0, import_fields15.relationship)({ ref: "Blog.categories", many: true }),
+    jobCategories: (0, import_fields15.relationship)({ ref: "JobCategory.category", many: true })
   }
 });
 
 // schemas/mediaGalery/MediaGalery.ts
-var import_core14 = require("@keystone-6/core");
-var import_fields14 = require("@keystone-6/core/fields");
+var import_core16 = require("@keystone-6/core");
+var import_fields16 = require("@keystone-6/core/fields");
 var import_cloudinary = require("@keystone-6/cloudinary");
 require("dotenv").config();
 var cloudinary = {
@@ -884,7 +936,7 @@ var cloudinary = {
 };
 var cloudname = process.env.CLOUDINARY_NAME;
 console.log(cloudname + "\u{1F44D}\u{1F3FD} Cloudinary is configured");
-var MediaGalery = (0, import_core14.list)({
+var MediaGalery = (0, import_core16.list)({
   access: {
     operation: {
       query: () => true,
@@ -899,14 +951,14 @@ var MediaGalery = (0, import_core14.list)({
       label: "Source"
     }),
     //image : image ({storage:'my_local_storage'}),
-    altText: (0, import_fields14.text)(),
-    filename: (0, import_fields14.text)({
+    altText: (0, import_fields16.text)(),
+    filename: (0, import_fields16.text)({
       isIndexed: "unique",
       validation: {
         isRequired: true
       }
     }),
-    blog: (0, import_fields14.relationship)({
+    blog: (0, import_fields16.relationship)({
       ref: "Blog.photo"
     })
   },
@@ -918,9 +970,9 @@ var MediaGalery = (0, import_core14.list)({
 });
 
 // schemas/location/CityIT.ts
-var import_core15 = require("@keystone-6/core");
-var import_fields15 = require("@keystone-6/core/fields");
-var CityIT = (0, import_core15.list)({
+var import_core17 = require("@keystone-6/core");
+var import_fields17 = require("@keystone-6/core/fields");
+var CityIT = (0, import_core17.list)({
   access: {
     operation: {
       query: () => true,
@@ -930,10 +982,10 @@ var CityIT = (0, import_core15.list)({
     }
   },
   fields: {
-    name: (0, import_fields15.text)({
+    name: (0, import_fields17.text)({
       validation: { isRequired: true }
     }),
-    createdAt: (0, import_fields15.timestamp)({
+    createdAt: (0, import_fields17.timestamp)({
       defaultValue: { kind: "now" },
       validation: { isRequired: true },
       isIndexed: true
@@ -942,9 +994,9 @@ var CityIT = (0, import_core15.list)({
 });
 
 // schemas/categories/SubCategory.ts
-var import_fields16 = require("@keystone-6/core/fields");
-var import_core16 = require("@keystone-6/core");
-var SubCategory = (0, import_core16.list)({
+var import_fields18 = require("@keystone-6/core/fields");
+var import_core18 = require("@keystone-6/core");
+var SubCategory = (0, import_core18.list)({
   access: {
     operation: {
       query: () => true,
@@ -954,8 +1006,8 @@ var SubCategory = (0, import_core16.list)({
     }
   },
   fields: {
-    name: (0, import_fields16.text)(),
-    category: (0, import_fields16.relationship)({
+    name: (0, import_fields18.text)(),
+    category: (0, import_fields18.relationship)({
       ref: "Category",
       many: false
     })
@@ -963,9 +1015,9 @@ var SubCategory = (0, import_core16.list)({
 });
 
 // schemas/categories/JobCategory.ts
-var import_core17 = require("@keystone-6/core");
-var import_fields17 = require("@keystone-6/core/fields");
-var JobCategory = (0, import_core17.list)({
+var import_core19 = require("@keystone-6/core");
+var import_fields19 = require("@keystone-6/core/fields");
+var JobCategory = (0, import_core19.list)({
   access: {
     operation: {
       query: () => true,
@@ -975,23 +1027,46 @@ var JobCategory = (0, import_core17.list)({
     }
   },
   fields: {
-    name: (0, import_fields17.text)({
+    name: (0, import_fields19.text)({
       validation: {
         isRequired: true
       }
     }),
-    category: (0, import_fields17.relationship)({
+    category: (0, import_fields19.relationship)({
       ref: "Category.jobCategories",
       many: false
     }),
-    subcategories: (0, import_fields17.relationship)({
+    subcategories: (0, import_fields19.relationship)({
       ref: "SubCategory",
       many: true
     }),
-    jobs: (0, import_fields17.relationship)({
+    jobs: (0, import_fields19.relationship)({
       ref: "Job.jobCategory",
       many: true
     })
+  }
+});
+
+// schemas/forms/EmployerForm.ts
+var import_core20 = require("@keystone-6/core");
+var import_fields20 = require("@keystone-6/core/fields");
+var EmployerForm = (0, import_core20.list)({
+  access: {
+    operation: {
+      query: permissions.canManageEmployerForms,
+      create: () => true,
+      update: permissions.canManageEmployerForms,
+      delete: permissions.canManageEmployerForms
+    }
+  },
+  fields: {
+    domeniu: (0, import_fields20.text)({ validation: { isRequired: true } }),
+    subDomeniu: (0, import_fields20.text)({ validation: { isRequired: true } }),
+    codFiscal: (0, import_fields20.text)({ validation: { isRequired: true } }),
+    nrPersoane: (0, import_fields20.text)({ validation: { isRequired: true } }),
+    dateContact: (0, import_fields20.text)({ validation: { isRequired: true } }),
+    email: (0, import_fields20.text)({ validation: { isRequired: true } }),
+    nrTel: (0, import_fields20.integer)({ validation: { isRequired: true } })
   }
 });
 
@@ -1001,18 +1076,21 @@ var lists = {
   Blog,
   Tag,
   Category,
-  MediaGalery,
-  Language,
+  SubCategory,
+  JobCategory,
   Job,
   JobApplication,
+  MediaGalery,
+  Language,
   ContactForm,
+  MedicalForm,
+  TransportForm,
+  EmployerForm,
   Role,
   Location,
   Country,
   CityRO,
-  CityIT,
-  SubCategory,
-  JobCategory
+  CityIT
 };
 
 // keystone.ts
@@ -1041,7 +1119,7 @@ var db2 = {
   idField: { kind: "uuid" }
 };
 var keystone_default = withAuth(
-  (0, import_core18.config)({
+  (0, import_core21.config)({
     server: {
       port: Number(BACKEN_PORT),
       cors: { origin: [FRONTEND_URL], credentials: true }
@@ -1062,3 +1140,4 @@ var keystone_default = withAuth(
     }
   })
 );
+//# sourceMappingURL=config.js.map

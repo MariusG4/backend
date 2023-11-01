@@ -69,19 +69,25 @@ model Category {
   from_SubCategory_category SubCategory[] @relation("SubCategory_category")
 }
 
-model MediaGalery {
-  id       String @id @default(uuid())
-  image    Json?
-  altText  String @default("")
-  filename String @unique @default("")
-  blog     Blog?  @relation("Blog_photo")
+model SubCategory {
+  id                             String        @id @default(uuid())
+  name                           String        @default("")
+  category                       Category?     @relation("SubCategory_category", fields: [categoryId], references: [id])
+  categoryId                     String?       @map("category")
+  from_JobCategory_subcategories JobCategory[] @relation("JobCategory_subcategories")
+
+  @@index([categoryId])
 }
 
-model Language {
-  id        String @id @default(uuid())
-  languages String @unique @default("RO")
-  blog      Blog[] @relation("Blog_language")
-  job       Job[]  @relation("Job_language")
+model JobCategory {
+  id            String        @id @default(uuid())
+  name          String        @default("")
+  category      Category?     @relation("JobCategory_category", fields: [categoryId], references: [id])
+  categoryId    String?       @map("category")
+  subcategories SubCategory[] @relation("JobCategory_subcategories")
+  jobs          Job[]         @relation("Job_jobCategory")
+
+  @@index([categoryId])
 }
 
 model Job {
@@ -122,12 +128,66 @@ model JobApplication {
   @@index([jobId])
 }
 
+model MediaGalery {
+  id       String @id @default(uuid())
+  image    Json?
+  altText  String @default("")
+  filename String @unique @default("")
+  blog     Blog?  @relation("Blog_photo")
+}
+
+model Language {
+  id        String @id @default(uuid())
+  languages String @unique @default("RO")
+  blog      Blog[] @relation("Blog_language")
+  job       Job[]  @relation("Job_language")
+}
+
 model ContactForm {
   id      String @id @default(uuid())
   name    String @default("")
   email   String @default("")
   phone   String @default("")
   message String @default("")
+}
+
+model MedicalForm {
+  id              String @id @default(uuid())
+  domeniu         String @default("")
+  subDomeniu      String @default("")
+  experienta      String @default("")
+  bac             String @default("")
+  amg             String @default("")
+  absolvire       String @default("")
+  experientaLimba String @default("")
+  locatia         String @default("")
+  ultimuSalar     Int
+  cursItaliana    String @default("")
+}
+
+model TransportForm {
+  id              String @id @default(uuid())
+  domeniu         String @default("")
+  subDomeniu      String @default("")
+  experienta      String @default("")
+  locatia         String @default("")
+  tahograf        String @default("")
+  echipa          String @default("")
+  turaNoapte      String @default("")
+  experientaLimba String @default("")
+  ultimuSalar     Int
+  salariuDorit    Int
+}
+
+model EmployerForm {
+  id          String @id @default(uuid())
+  domeniu     String @default("")
+  subDomeniu  String @default("")
+  codFiscal   String @default("")
+  nrPersoane  String @default("")
+  dateContact String @default("")
+  email       String @default("")
+  nrTel       Int
 }
 
 model Role {
@@ -181,25 +241,4 @@ model CityIT {
   from_Location_cityIT Location[] @relation("Location_cityIT")
 
   @@index([createdAt])
-}
-
-model SubCategory {
-  id                             String        @id @default(uuid())
-  name                           String        @default("")
-  category                       Category?     @relation("SubCategory_category", fields: [categoryId], references: [id])
-  categoryId                     String?       @map("category")
-  from_JobCategory_subcategories JobCategory[] @relation("JobCategory_subcategories")
-
-  @@index([categoryId])
-}
-
-model JobCategory {
-  id            String        @id @default(uuid())
-  name          String        @default("")
-  category      Category?     @relation("JobCategory_category", fields: [categoryId], references: [id])
-  categoryId    String?       @map("category")
-  subcategories SubCategory[] @relation("JobCategory_subcategories")
-  jobs          Job[]         @relation("Job_jobCategory")
-
-  @@index([categoryId])
 }

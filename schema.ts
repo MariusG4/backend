@@ -1,3 +1,5 @@
+import { TransportForm } from "./schemas/forms/TransportForm";
+import { MedicalForm } from "./schemas/forms/MedicalForm";
 import { CityRO } from "./schemas/location/CityRO";
 import { Country } from "./schemas/location/Country";
 import { Location } from "./schemas/location/Location";
@@ -15,22 +17,26 @@ import { MediaGalery } from "./schemas/mediaGalery/MediaGalery";
 import { CityIT } from "./schemas/location/CityIT";
 import { SubCategory } from "./schemas/categories/SubCategory";
 import { JobCategory } from "./schemas/categories/JobCategory";
+import { EmployerForm } from "./schemas/forms/EmployerForm";
 
 export const lists: Lists = {
   User,
   Blog,
   Tag,
   Category,
-  MediaGalery,
-  Language,
+  SubCategory,
+  JobCategory,
   Job,
   JobApplication,
+  MediaGalery,
+  Language,
   ContactForm,
+  MedicalForm,
+  TransportForm,
+  EmployerForm,
   Role,
   Location,
   Country,
   CityRO,
   CityIT,
-  SubCategory,
-  JobCategory,
 };

@@ -489,138 +489,85 @@ input JobCategoryRelateToManyForCreateInput {
   connect: [JobCategoryWhereUniqueInput!]
 }
 
-type MediaGalery {
+type SubCategory {
   id: ID!
-  image: CloudinaryImage_File
-  altText: String
-  filename: String
-  blog: Blog
+  name: String
+  category: Category
 }
 
-type CloudinaryImage_File {
+input SubCategoryWhereUniqueInput {
   id: ID
-  filename: String
-  originalFilename: String
-  mimetype: String
-  encoding: String
-  publicUrl: String
-  publicUrlTransformed(transformation: CloudinaryImageFormat): String
 }
 
-"""
-Mirrors the formatting options [Cloudinary provides](https://cloudinary.com/documentation/image_transformation_reference).
-All options are strings as they ultimately end up in a URL.
-"""
-input CloudinaryImageFormat {
-  """ Rewrites the filename to be this pretty string. Do not include `/` or `.`
-  """
-  prettyName: String
-  width: String
-  height: String
-  crop: String
-  aspect_ratio: String
-  gravity: String
-  zoom: String
-  x: String
-  y: String
-  format: String
-  fetch_format: String
-  quality: String
-  radius: String
-  angle: String
-  effect: String
-  opacity: String
-  border: String
-  background: String
-  overlay: String
-  underlay: String
-  default_image: String
-  delay: String
-  color: String
-  color_space: String
-  dpr: String
-  page: String
-  density: String
-  flags: String
-  transformation: String
-}
-
-input MediaGaleryWhereUniqueInput {
-  id: ID
-  filename: String
-}
-
-input MediaGaleryWhereInput {
-  AND: [MediaGaleryWhereInput!]
-  OR: [MediaGaleryWhereInput!]
-  NOT: [MediaGaleryWhereInput!]
+input SubCategoryWhereInput {
+  AND: [SubCategoryWhereInput!]
+  OR: [SubCategoryWhereInput!]
+  NOT: [SubCategoryWhereInput!]
   id: IDFilter
-  altText: StringFilter
-  filename: StringFilter
-  blog: BlogWhereInput
+  name: StringFilter
+  category: CategoryWhereInput
 }
 
-input MediaGaleryOrderByInput {
+input SubCategoryOrderByInput {
   id: OrderDirection
-  altText: OrderDirection
-  filename: OrderDirection
+  name: OrderDirection
 }
 
-input MediaGaleryUpdateInput {
-  image: Upload
-  altText: String
-  filename: String
-  blog: BlogRelateToOneForUpdateInput
+input SubCategoryUpdateInput {
+  name: String
+  category: CategoryRelateToOneForUpdateInput
 }
 
-"""The `Upload` scalar type represents a file upload."""
-scalar Upload
-
-input BlogRelateToOneForUpdateInput {
-  create: BlogCreateInput
-  connect: BlogWhereUniqueInput
+input CategoryRelateToOneForUpdateInput {
+  create: CategoryCreateInput
+  connect: CategoryWhereUniqueInput
   disconnect: Boolean
 }
 
-input MediaGaleryUpdateArgs {
-  where: MediaGaleryWhereUniqueInput!
-  data: MediaGaleryUpdateInput!
+input SubCategoryUpdateArgs {
+  where: SubCategoryWhereUniqueInput!
+  data: SubCategoryUpdateInput!
 }
 
-input MediaGaleryCreateInput {
-  image: Upload
-  altText: String
-  filename: String
-  blog: BlogRelateToOneForCreateInput
+input SubCategoryCreateInput {
+  name: String
+  category: CategoryRelateToOneForCreateInput
 }
 
-input BlogRelateToOneForCreateInput {
-  create: BlogCreateInput
-  connect: BlogWhereUniqueInput
+input CategoryRelateToOneForCreateInput {
+  create: CategoryCreateInput
+  connect: CategoryWhereUniqueInput
 }
 
-type Language {
+type JobCategory {
   id: ID!
-  languages: String
-  blog(where: BlogWhereInput! = {}, orderBy: [BlogOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: BlogWhereUniqueInput): [Blog!]
-  blogCount(where: BlogWhereInput! = {}): Int
-  job(where: JobWhereInput! = {}, orderBy: [JobOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: JobWhereUniqueInput): [Job!]
-  jobCount(where: JobWhereInput! = {}): Int
+  name: String
+  category: Category
+  subcategories(where: SubCategoryWhereInput! = {}, orderBy: [SubCategoryOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: SubCategoryWhereUniqueInput): [SubCategory!]
+  subcategoriesCount(where: SubCategoryWhereInput! = {}): Int
+  jobs(where: JobWhereInput! = {}, orderBy: [JobOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: JobWhereUniqueInput): [Job!]
+  jobsCount(where: JobWhereInput! = {}): Int
 }
 
-input LanguageWhereUniqueInput {
+input JobCategoryWhereUniqueInput {
   id: ID
-  languages: String
 }
 
-input LanguageWhereInput {
-  AND: [LanguageWhereInput!]
-  OR: [LanguageWhereInput!]
-  NOT: [LanguageWhereInput!]
+input JobCategoryWhereInput {
+  AND: [JobCategoryWhereInput!]
+  OR: [JobCategoryWhereInput!]
+  NOT: [JobCategoryWhereInput!]
   id: IDFilter
-  languages: StringFilter
-  blog: BlogManyRelationFilter
-  job: JobManyRelationFilter
+  name: StringFilter
+  category: CategoryWhereInput
+  subcategories: SubCategoryManyRelationFilter
+  jobs: JobManyRelationFilter
+}
+
+input SubCategoryManyRelationFilter {
+  every: SubCategoryWhereInput
+  some: SubCategoryWhereInput
+  none: SubCategoryWhereInput
 }
 
 input JobManyRelationFilter {
@@ -629,15 +576,23 @@ input JobManyRelationFilter {
   none: JobWhereInput
 }
 
-input LanguageOrderByInput {
+input JobCategoryOrderByInput {
   id: OrderDirection
-  languages: OrderDirection
+  name: OrderDirection
 }
 
-input LanguageUpdateInput {
-  languages: String
-  blog: BlogRelateToManyForUpdateInput
-  job: JobRelateToManyForUpdateInput
+input JobCategoryUpdateInput {
+  name: String
+  category: CategoryRelateToOneForUpdateInput
+  subcategories: SubCategoryRelateToManyForUpdateInput
+  jobs: JobRelateToManyForUpdateInput
+}
+
+input SubCategoryRelateToManyForUpdateInput {
+  disconnect: [SubCategoryWhereUniqueInput!]
+  set: [SubCategoryWhereUniqueInput!]
+  create: [SubCategoryCreateInput!]
+  connect: [SubCategoryWhereUniqueInput!]
 }
 
 input JobRelateToManyForUpdateInput {
@@ -647,15 +602,21 @@ input JobRelateToManyForUpdateInput {
   connect: [JobWhereUniqueInput!]
 }
 
-input LanguageUpdateArgs {
-  where: LanguageWhereUniqueInput!
-  data: LanguageUpdateInput!
+input JobCategoryUpdateArgs {
+  where: JobCategoryWhereUniqueInput!
+  data: JobCategoryUpdateInput!
 }
 
-input LanguageCreateInput {
-  languages: String
-  blog: BlogRelateToManyForCreateInput
-  job: JobRelateToManyForCreateInput
+input JobCategoryCreateInput {
+  name: String
+  category: CategoryRelateToOneForCreateInput
+  subcategories: SubCategoryRelateToManyForCreateInput
+  jobs: JobRelateToManyForCreateInput
+}
+
+input SubCategoryRelateToManyForCreateInput {
+  create: [SubCategoryCreateInput!]
+  connect: [SubCategoryWhereUniqueInput!]
 }
 
 input JobRelateToManyForCreateInput {
@@ -877,6 +838,162 @@ input JobApplicationCreateInput {
   job: JobRelateToOneForCreateInput
 }
 
+type MediaGalery {
+  id: ID!
+  image: CloudinaryImage_File
+  altText: String
+  filename: String
+  blog: Blog
+}
+
+type CloudinaryImage_File {
+  id: ID
+  filename: String
+  originalFilename: String
+  mimetype: String
+  encoding: String
+  publicUrl: String
+  publicUrlTransformed(transformation: CloudinaryImageFormat): String
+}
+
+"""
+Mirrors the formatting options [Cloudinary provides](https://cloudinary.com/documentation/image_transformation_reference).
+All options are strings as they ultimately end up in a URL.
+"""
+input CloudinaryImageFormat {
+  """ Rewrites the filename to be this pretty string. Do not include `/` or `.`
+  """
+  prettyName: String
+  width: String
+  height: String
+  crop: String
+  aspect_ratio: String
+  gravity: String
+  zoom: String
+  x: String
+  y: String
+  format: String
+  fetch_format: String
+  quality: String
+  radius: String
+  angle: String
+  effect: String
+  opacity: String
+  border: String
+  background: String
+  overlay: String
+  underlay: String
+  default_image: String
+  delay: String
+  color: String
+  color_space: String
+  dpr: String
+  page: String
+  density: String
+  flags: String
+  transformation: String
+}
+
+input MediaGaleryWhereUniqueInput {
+  id: ID
+  filename: String
+}
+
+input MediaGaleryWhereInput {
+  AND: [MediaGaleryWhereInput!]
+  OR: [MediaGaleryWhereInput!]
+  NOT: [MediaGaleryWhereInput!]
+  id: IDFilter
+  altText: StringFilter
+  filename: StringFilter
+  blog: BlogWhereInput
+}
+
+input MediaGaleryOrderByInput {
+  id: OrderDirection
+  altText: OrderDirection
+  filename: OrderDirection
+}
+
+input MediaGaleryUpdateInput {
+  image: Upload
+  altText: String
+  filename: String
+  blog: BlogRelateToOneForUpdateInput
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+input BlogRelateToOneForUpdateInput {
+  create: BlogCreateInput
+  connect: BlogWhereUniqueInput
+  disconnect: Boolean
+}
+
+input MediaGaleryUpdateArgs {
+  where: MediaGaleryWhereUniqueInput!
+  data: MediaGaleryUpdateInput!
+}
+
+input MediaGaleryCreateInput {
+  image: Upload
+  altText: String
+  filename: String
+  blog: BlogRelateToOneForCreateInput
+}
+
+input BlogRelateToOneForCreateInput {
+  create: BlogCreateInput
+  connect: BlogWhereUniqueInput
+}
+
+type Language {
+  id: ID!
+  languages: String
+  blog(where: BlogWhereInput! = {}, orderBy: [BlogOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: BlogWhereUniqueInput): [Blog!]
+  blogCount(where: BlogWhereInput! = {}): Int
+  job(where: JobWhereInput! = {}, orderBy: [JobOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: JobWhereUniqueInput): [Job!]
+  jobCount(where: JobWhereInput! = {}): Int
+}
+
+input LanguageWhereUniqueInput {
+  id: ID
+  languages: String
+}
+
+input LanguageWhereInput {
+  AND: [LanguageWhereInput!]
+  OR: [LanguageWhereInput!]
+  NOT: [LanguageWhereInput!]
+  id: IDFilter
+  languages: StringFilter
+  blog: BlogManyRelationFilter
+  job: JobManyRelationFilter
+}
+
+input LanguageOrderByInput {
+  id: OrderDirection
+  languages: OrderDirection
+}
+
+input LanguageUpdateInput {
+  languages: String
+  blog: BlogRelateToManyForUpdateInput
+  job: JobRelateToManyForUpdateInput
+}
+
+input LanguageUpdateArgs {
+  where: LanguageWhereUniqueInput!
+  data: LanguageUpdateInput!
+}
+
+input LanguageCreateInput {
+  languages: String
+  blog: BlogRelateToManyForCreateInput
+  job: JobRelateToManyForCreateInput
+}
+
 type ContactForm {
   id: ID!
   name: String
@@ -925,6 +1042,242 @@ input ContactFormCreateInput {
   email: String
   phone: String
   message: String
+}
+
+type MedicalForm {
+  id: ID!
+  domeniu: String
+  subDomeniu: String
+  experienta: String
+  bac: String
+  amg: String
+  absolvire: String
+  experientaLimba: String
+  locatia: String
+  ultimuSalar: Int
+  cursItaliana: String
+}
+
+input MedicalFormWhereUniqueInput {
+  id: ID
+}
+
+input MedicalFormWhereInput {
+  AND: [MedicalFormWhereInput!]
+  OR: [MedicalFormWhereInput!]
+  NOT: [MedicalFormWhereInput!]
+  id: IDFilter
+  domeniu: StringFilter
+  subDomeniu: StringFilter
+  experienta: StringFilter
+  bac: StringFilter
+  amg: StringFilter
+  absolvire: StringFilter
+  experientaLimba: StringFilter
+  locatia: StringFilter
+  ultimuSalar: IntFilter
+  cursItaliana: StringFilter
+}
+
+input IntFilter {
+  equals: Int
+  in: [Int!]
+  notIn: [Int!]
+  lt: Int
+  lte: Int
+  gt: Int
+  gte: Int
+  not: IntFilter
+}
+
+input MedicalFormOrderByInput {
+  id: OrderDirection
+  domeniu: OrderDirection
+  subDomeniu: OrderDirection
+  experienta: OrderDirection
+  bac: OrderDirection
+  amg: OrderDirection
+  absolvire: OrderDirection
+  experientaLimba: OrderDirection
+  locatia: OrderDirection
+  ultimuSalar: OrderDirection
+  cursItaliana: OrderDirection
+}
+
+input MedicalFormUpdateInput {
+  domeniu: String
+  subDomeniu: String
+  experienta: String
+  bac: String
+  amg: String
+  absolvire: String
+  experientaLimba: String
+  locatia: String
+  ultimuSalar: Int
+  cursItaliana: String
+}
+
+input MedicalFormUpdateArgs {
+  where: MedicalFormWhereUniqueInput!
+  data: MedicalFormUpdateInput!
+}
+
+input MedicalFormCreateInput {
+  domeniu: String
+  subDomeniu: String
+  experienta: String
+  bac: String
+  amg: String
+  absolvire: String
+  experientaLimba: String
+  locatia: String
+  ultimuSalar: Int
+  cursItaliana: String
+}
+
+type TransportForm {
+  id: ID!
+  domeniu: String
+  subDomeniu: String
+  experienta: String
+  locatia: String
+  tahograf: String
+  echipa: String
+  turaNoapte: String
+  experientaLimba: String
+  ultimuSalar: Int
+  salariuDorit: Int
+}
+
+input TransportFormWhereUniqueInput {
+  id: ID
+}
+
+input TransportFormWhereInput {
+  AND: [TransportFormWhereInput!]
+  OR: [TransportFormWhereInput!]
+  NOT: [TransportFormWhereInput!]
+  id: IDFilter
+  domeniu: StringFilter
+  subDomeniu: StringFilter
+  experienta: StringFilter
+  locatia: StringFilter
+  tahograf: StringFilter
+  echipa: StringFilter
+  turaNoapte: StringFilter
+  experientaLimba: StringFilter
+  ultimuSalar: IntFilter
+  salariuDorit: IntFilter
+}
+
+input TransportFormOrderByInput {
+  id: OrderDirection
+  domeniu: OrderDirection
+  subDomeniu: OrderDirection
+  experienta: OrderDirection
+  locatia: OrderDirection
+  tahograf: OrderDirection
+  echipa: OrderDirection
+  turaNoapte: OrderDirection
+  experientaLimba: OrderDirection
+  ultimuSalar: OrderDirection
+  salariuDorit: OrderDirection
+}
+
+input TransportFormUpdateInput {
+  domeniu: String
+  subDomeniu: String
+  experienta: String
+  locatia: String
+  tahograf: String
+  echipa: String
+  turaNoapte: String
+  experientaLimba: String
+  ultimuSalar: Int
+  salariuDorit: Int
+}
+
+input TransportFormUpdateArgs {
+  where: TransportFormWhereUniqueInput!
+  data: TransportFormUpdateInput!
+}
+
+input TransportFormCreateInput {
+  domeniu: String
+  subDomeniu: String
+  experienta: String
+  locatia: String
+  tahograf: String
+  echipa: String
+  turaNoapte: String
+  experientaLimba: String
+  ultimuSalar: Int
+  salariuDorit: Int
+}
+
+type EmployerForm {
+  id: ID!
+  domeniu: String
+  subDomeniu: String
+  codFiscal: String
+  nrPersoane: String
+  dateContact: String
+  email: String
+  nrTel: Int
+}
+
+input EmployerFormWhereUniqueInput {
+  id: ID
+}
+
+input EmployerFormWhereInput {
+  AND: [EmployerFormWhereInput!]
+  OR: [EmployerFormWhereInput!]
+  NOT: [EmployerFormWhereInput!]
+  id: IDFilter
+  domeniu: StringFilter
+  subDomeniu: StringFilter
+  codFiscal: StringFilter
+  nrPersoane: StringFilter
+  dateContact: StringFilter
+  email: StringFilter
+  nrTel: IntFilter
+}
+
+input EmployerFormOrderByInput {
+  id: OrderDirection
+  domeniu: OrderDirection
+  subDomeniu: OrderDirection
+  codFiscal: OrderDirection
+  nrPersoane: OrderDirection
+  dateContact: OrderDirection
+  email: OrderDirection
+  nrTel: OrderDirection
+}
+
+input EmployerFormUpdateInput {
+  domeniu: String
+  subDomeniu: String
+  codFiscal: String
+  nrPersoane: String
+  dateContact: String
+  email: String
+  nrTel: Int
+}
+
+input EmployerFormUpdateArgs {
+  where: EmployerFormWhereUniqueInput!
+  data: EmployerFormUpdateInput!
+}
+
+input EmployerFormCreateInput {
+  domeniu: String
+  subDomeniu: String
+  codFiscal: String
+  nrPersoane: String
+  dateContact: String
+  email: String
+  nrTel: Int
 }
 
 type Role {
@@ -1290,123 +1643,6 @@ input CityITCreateInput {
   createdAt: DateTime
 }
 
-type SubCategory {
-  id: ID!
-  name: String
-  category: Category
-}
-
-input SubCategoryWhereUniqueInput {
-  id: ID
-}
-
-input SubCategoryWhereInput {
-  AND: [SubCategoryWhereInput!]
-  OR: [SubCategoryWhereInput!]
-  NOT: [SubCategoryWhereInput!]
-  id: IDFilter
-  name: StringFilter
-  category: CategoryWhereInput
-}
-
-input SubCategoryOrderByInput {
-  id: OrderDirection
-  name: OrderDirection
-}
-
-input SubCategoryUpdateInput {
-  name: String
-  category: CategoryRelateToOneForUpdateInput
-}
-
-input CategoryRelateToOneForUpdateInput {
-  create: CategoryCreateInput
-  connect: CategoryWhereUniqueInput
-  disconnect: Boolean
-}
-
-input SubCategoryUpdateArgs {
-  where: SubCategoryWhereUniqueInput!
-  data: SubCategoryUpdateInput!
-}
-
-input SubCategoryCreateInput {
-  name: String
-  category: CategoryRelateToOneForCreateInput
-}
-
-input CategoryRelateToOneForCreateInput {
-  create: CategoryCreateInput
-  connect: CategoryWhereUniqueInput
-}
-
-type JobCategory {
-  id: ID!
-  name: String
-  category: Category
-  subcategories(where: SubCategoryWhereInput! = {}, orderBy: [SubCategoryOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: SubCategoryWhereUniqueInput): [SubCategory!]
-  subcategoriesCount(where: SubCategoryWhereInput! = {}): Int
-  jobs(where: JobWhereInput! = {}, orderBy: [JobOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: JobWhereUniqueInput): [Job!]
-  jobsCount(where: JobWhereInput! = {}): Int
-}
-
-input JobCategoryWhereUniqueInput {
-  id: ID
-}
-
-input JobCategoryWhereInput {
-  AND: [JobCategoryWhereInput!]
-  OR: [JobCategoryWhereInput!]
-  NOT: [JobCategoryWhereInput!]
-  id: IDFilter
-  name: StringFilter
-  category: CategoryWhereInput
-  subcategories: SubCategoryManyRelationFilter
-  jobs: JobManyRelationFilter
-}
-
-input SubCategoryManyRelationFilter {
-  every: SubCategoryWhereInput
-  some: SubCategoryWhereInput
-  none: SubCategoryWhereInput
-}
-
-input JobCategoryOrderByInput {
-  id: OrderDirection
-  name: OrderDirection
-}
-
-input JobCategoryUpdateInput {
-  name: String
-  category: CategoryRelateToOneForUpdateInput
-  subcategories: SubCategoryRelateToManyForUpdateInput
-  jobs: JobRelateToManyForUpdateInput
-}
-
-input SubCategoryRelateToManyForUpdateInput {
-  disconnect: [SubCategoryWhereUniqueInput!]
-  set: [SubCategoryWhereUniqueInput!]
-  create: [SubCategoryCreateInput!]
-  connect: [SubCategoryWhereUniqueInput!]
-}
-
-input JobCategoryUpdateArgs {
-  where: JobCategoryWhereUniqueInput!
-  data: JobCategoryUpdateInput!
-}
-
-input JobCategoryCreateInput {
-  name: String
-  category: CategoryRelateToOneForCreateInput
-  subcategories: SubCategoryRelateToManyForCreateInput
-  jobs: JobRelateToManyForCreateInput
-}
-
-input SubCategoryRelateToManyForCreateInput {
-  create: [SubCategoryCreateInput!]
-  connect: [SubCategoryWhereUniqueInput!]
-}
-
 """
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
@@ -1437,18 +1673,18 @@ type Mutation {
   updateCategories(data: [CategoryUpdateArgs!]!): [Category]
   deleteCategory(where: CategoryWhereUniqueInput!): Category
   deleteCategories(where: [CategoryWhereUniqueInput!]!): [Category]
-  createMediaGalery(data: MediaGaleryCreateInput!): MediaGalery
-  createMediaGaleries(data: [MediaGaleryCreateInput!]!): [MediaGalery]
-  updateMediaGalery(where: MediaGaleryWhereUniqueInput!, data: MediaGaleryUpdateInput!): MediaGalery
-  updateMediaGaleries(data: [MediaGaleryUpdateArgs!]!): [MediaGalery]
-  deleteMediaGalery(where: MediaGaleryWhereUniqueInput!): MediaGalery
-  deleteMediaGaleries(where: [MediaGaleryWhereUniqueInput!]!): [MediaGalery]
-  createLanguage(data: LanguageCreateInput!): Language
-  createLanguages(data: [LanguageCreateInput!]!): [Language]
-  updateLanguage(where: LanguageWhereUniqueInput!, data: LanguageUpdateInput!): Language
-  updateLanguages(data: [LanguageUpdateArgs!]!): [Language]
-  deleteLanguage(where: LanguageWhereUniqueInput!): Language
-  deleteLanguages(where: [LanguageWhereUniqueInput!]!): [Language]
+  createSubCategory(data: SubCategoryCreateInput!): SubCategory
+  createSubCategories(data: [SubCategoryCreateInput!]!): [SubCategory]
+  updateSubCategory(where: SubCategoryWhereUniqueInput!, data: SubCategoryUpdateInput!): SubCategory
+  updateSubCategories(data: [SubCategoryUpdateArgs!]!): [SubCategory]
+  deleteSubCategory(where: SubCategoryWhereUniqueInput!): SubCategory
+  deleteSubCategories(where: [SubCategoryWhereUniqueInput!]!): [SubCategory]
+  createJobCategory(data: JobCategoryCreateInput!): JobCategory
+  createJobCategories(data: [JobCategoryCreateInput!]!): [JobCategory]
+  updateJobCategory(where: JobCategoryWhereUniqueInput!, data: JobCategoryUpdateInput!): JobCategory
+  updateJobCategories(data: [JobCategoryUpdateArgs!]!): [JobCategory]
+  deleteJobCategory(where: JobCategoryWhereUniqueInput!): JobCategory
+  deleteJobCategories(where: [JobCategoryWhereUniqueInput!]!): [JobCategory]
   createJob(data: JobCreateInput!): Job
   createJobs(data: [JobCreateInput!]!): [Job]
   updateJob(where: JobWhereUniqueInput!, data: JobUpdateInput!): Job
@@ -1461,12 +1697,42 @@ type Mutation {
   updateJobApplications(data: [JobApplicationUpdateArgs!]!): [JobApplication]
   deleteJobApplication(where: JobApplicationWhereUniqueInput!): JobApplication
   deleteJobApplications(where: [JobApplicationWhereUniqueInput!]!): [JobApplication]
+  createMediaGalery(data: MediaGaleryCreateInput!): MediaGalery
+  createMediaGaleries(data: [MediaGaleryCreateInput!]!): [MediaGalery]
+  updateMediaGalery(where: MediaGaleryWhereUniqueInput!, data: MediaGaleryUpdateInput!): MediaGalery
+  updateMediaGaleries(data: [MediaGaleryUpdateArgs!]!): [MediaGalery]
+  deleteMediaGalery(where: MediaGaleryWhereUniqueInput!): MediaGalery
+  deleteMediaGaleries(where: [MediaGaleryWhereUniqueInput!]!): [MediaGalery]
+  createLanguage(data: LanguageCreateInput!): Language
+  createLanguages(data: [LanguageCreateInput!]!): [Language]
+  updateLanguage(where: LanguageWhereUniqueInput!, data: LanguageUpdateInput!): Language
+  updateLanguages(data: [LanguageUpdateArgs!]!): [Language]
+  deleteLanguage(where: LanguageWhereUniqueInput!): Language
+  deleteLanguages(where: [LanguageWhereUniqueInput!]!): [Language]
   createContactForm(data: ContactFormCreateInput!): ContactForm
   createContactForms(data: [ContactFormCreateInput!]!): [ContactForm]
   updateContactForm(where: ContactFormWhereUniqueInput!, data: ContactFormUpdateInput!): ContactForm
   updateContactForms(data: [ContactFormUpdateArgs!]!): [ContactForm]
   deleteContactForm(where: ContactFormWhereUniqueInput!): ContactForm
   deleteContactForms(where: [ContactFormWhereUniqueInput!]!): [ContactForm]
+  createMedicalForm(data: MedicalFormCreateInput!): MedicalForm
+  createMedicalForms(data: [MedicalFormCreateInput!]!): [MedicalForm]
+  updateMedicalForm(where: MedicalFormWhereUniqueInput!, data: MedicalFormUpdateInput!): MedicalForm
+  updateMedicalForms(data: [MedicalFormUpdateArgs!]!): [MedicalForm]
+  deleteMedicalForm(where: MedicalFormWhereUniqueInput!): MedicalForm
+  deleteMedicalForms(where: [MedicalFormWhereUniqueInput!]!): [MedicalForm]
+  createTransportForm(data: TransportFormCreateInput!): TransportForm
+  createTransportForms(data: [TransportFormCreateInput!]!): [TransportForm]
+  updateTransportForm(where: TransportFormWhereUniqueInput!, data: TransportFormUpdateInput!): TransportForm
+  updateTransportForms(data: [TransportFormUpdateArgs!]!): [TransportForm]
+  deleteTransportForm(where: TransportFormWhereUniqueInput!): TransportForm
+  deleteTransportForms(where: [TransportFormWhereUniqueInput!]!): [TransportForm]
+  createEmployerForm(data: EmployerFormCreateInput!): EmployerForm
+  createEmployerForms(data: [EmployerFormCreateInput!]!): [EmployerForm]
+  updateEmployerForm(where: EmployerFormWhereUniqueInput!, data: EmployerFormUpdateInput!): EmployerForm
+  updateEmployerForms(data: [EmployerFormUpdateArgs!]!): [EmployerForm]
+  deleteEmployerForm(where: EmployerFormWhereUniqueInput!): EmployerForm
+  deleteEmployerForms(where: [EmployerFormWhereUniqueInput!]!): [EmployerForm]
   createRole(data: RoleCreateInput!): Role
   createRoles(data: [RoleCreateInput!]!): [Role]
   updateRole(where: RoleWhereUniqueInput!, data: RoleUpdateInput!): Role
@@ -1497,18 +1763,6 @@ type Mutation {
   updateCityITS(data: [CityITUpdateArgs!]!): [CityIT]
   deleteCityIT(where: CityITWhereUniqueInput!): CityIT
   deleteCityITS(where: [CityITWhereUniqueInput!]!): [CityIT]
-  createSubCategory(data: SubCategoryCreateInput!): SubCategory
-  createSubCategories(data: [SubCategoryCreateInput!]!): [SubCategory]
-  updateSubCategory(where: SubCategoryWhereUniqueInput!, data: SubCategoryUpdateInput!): SubCategory
-  updateSubCategories(data: [SubCategoryUpdateArgs!]!): [SubCategory]
-  deleteSubCategory(where: SubCategoryWhereUniqueInput!): SubCategory
-  deleteSubCategories(where: [SubCategoryWhereUniqueInput!]!): [SubCategory]
-  createJobCategory(data: JobCategoryCreateInput!): JobCategory
-  createJobCategories(data: [JobCategoryCreateInput!]!): [JobCategory]
-  updateJobCategory(where: JobCategoryWhereUniqueInput!, data: JobCategoryUpdateInput!): JobCategory
-  updateJobCategories(data: [JobCategoryUpdateArgs!]!): [JobCategory]
-  deleteJobCategory(where: JobCategoryWhereUniqueInput!): JobCategory
-  deleteJobCategories(where: [JobCategoryWhereUniqueInput!]!): [JobCategory]
   endSession: Boolean!
   authenticateUserWithPassword(email: String!, password: String!): UserAuthenticationWithPasswordResult
   createInitialUser(data: CreateInitialUserInput!): UserAuthenticationWithPasswordSuccess!
@@ -1557,21 +1811,36 @@ type Query {
   categories(where: CategoryWhereInput! = {}, orderBy: [CategoryOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CategoryWhereUniqueInput): [Category!]
   category(where: CategoryWhereUniqueInput!): Category
   categoriesCount(where: CategoryWhereInput! = {}): Int
-  mediaGaleries(where: MediaGaleryWhereInput! = {}, orderBy: [MediaGaleryOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: MediaGaleryWhereUniqueInput): [MediaGalery!]
-  mediaGalery(where: MediaGaleryWhereUniqueInput!): MediaGalery
-  mediaGaleriesCount(where: MediaGaleryWhereInput! = {}): Int
-  languages(where: LanguageWhereInput! = {}, orderBy: [LanguageOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: LanguageWhereUniqueInput): [Language!]
-  language(where: LanguageWhereUniqueInput!): Language
-  languagesCount(where: LanguageWhereInput! = {}): Int
+  subCategories(where: SubCategoryWhereInput! = {}, orderBy: [SubCategoryOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: SubCategoryWhereUniqueInput): [SubCategory!]
+  subCategory(where: SubCategoryWhereUniqueInput!): SubCategory
+  subCategoriesCount(where: SubCategoryWhereInput! = {}): Int
+  jobCategories(where: JobCategoryWhereInput! = {}, orderBy: [JobCategoryOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: JobCategoryWhereUniqueInput): [JobCategory!]
+  jobCategory(where: JobCategoryWhereUniqueInput!): JobCategory
+  jobCategoriesCount(where: JobCategoryWhereInput! = {}): Int
   jobs(where: JobWhereInput! = {}, orderBy: [JobOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: JobWhereUniqueInput): [Job!]
   job(where: JobWhereUniqueInput!): Job
   jobsCount(where: JobWhereInput! = {}): Int
   jobApplications(where: JobApplicationWhereInput! = {}, orderBy: [JobApplicationOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: JobApplicationWhereUniqueInput): [JobApplication!]
   jobApplication(where: JobApplicationWhereUniqueInput!): JobApplication
   jobApplicationsCount(where: JobApplicationWhereInput! = {}): Int
+  mediaGaleries(where: MediaGaleryWhereInput! = {}, orderBy: [MediaGaleryOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: MediaGaleryWhereUniqueInput): [MediaGalery!]
+  mediaGalery(where: MediaGaleryWhereUniqueInput!): MediaGalery
+  mediaGaleriesCount(where: MediaGaleryWhereInput! = {}): Int
+  languages(where: LanguageWhereInput! = {}, orderBy: [LanguageOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: LanguageWhereUniqueInput): [Language!]
+  language(where: LanguageWhereUniqueInput!): Language
+  languagesCount(where: LanguageWhereInput! = {}): Int
   contactForms(where: ContactFormWhereInput! = {}, orderBy: [ContactFormOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: ContactFormWhereUniqueInput): [ContactForm!]
   contactForm(where: ContactFormWhereUniqueInput!): ContactForm
   contactFormsCount(where: ContactFormWhereInput! = {}): Int
+  medicalForms(where: MedicalFormWhereInput! = {}, orderBy: [MedicalFormOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: MedicalFormWhereUniqueInput): [MedicalForm!]
+  medicalForm(where: MedicalFormWhereUniqueInput!): MedicalForm
+  medicalFormsCount(where: MedicalFormWhereInput! = {}): Int
+  transportForms(where: TransportFormWhereInput! = {}, orderBy: [TransportFormOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: TransportFormWhereUniqueInput): [TransportForm!]
+  transportForm(where: TransportFormWhereUniqueInput!): TransportForm
+  transportFormsCount(where: TransportFormWhereInput! = {}): Int
+  employerForms(where: EmployerFormWhereInput! = {}, orderBy: [EmployerFormOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: EmployerFormWhereUniqueInput): [EmployerForm!]
+  employerForm(where: EmployerFormWhereUniqueInput!): EmployerForm
+  employerFormsCount(where: EmployerFormWhereInput! = {}): Int
   roles(where: RoleWhereInput! = {}, orderBy: [RoleOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: RoleWhereUniqueInput): [Role!]
   role(where: RoleWhereUniqueInput!): Role
   rolesCount(where: RoleWhereInput! = {}): Int
@@ -1587,12 +1856,6 @@ type Query {
   cityITS(where: CityITWhereInput! = {}, orderBy: [CityITOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CityITWhereUniqueInput): [CityIT!]
   cityIT(where: CityITWhereUniqueInput!): CityIT
   cityITSCount(where: CityITWhereInput! = {}): Int
-  subCategories(where: SubCategoryWhereInput! = {}, orderBy: [SubCategoryOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: SubCategoryWhereUniqueInput): [SubCategory!]
-  subCategory(where: SubCategoryWhereUniqueInput!): SubCategory
-  subCategoriesCount(where: SubCategoryWhereInput! = {}): Int
-  jobCategories(where: JobCategoryWhereInput! = {}, orderBy: [JobCategoryOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: JobCategoryWhereUniqueInput): [JobCategory!]
-  jobCategory(where: JobCategoryWhereUniqueInput!): JobCategory
-  jobCategoriesCount(where: JobCategoryWhereInput! = {}): Int
   keystone: KeystoneMeta!
   authenticatedItem: AuthenticatedItem
   validateUserPasswordResetToken(email: String!, token: String!): ValidateUserPasswordResetTokenResult
