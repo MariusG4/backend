@@ -1,6 +1,7 @@
 import { createTransport } from "nodemailer";
 
 const transport = createTransport({
+  //@ts-ignore
   host: process.env.MAIL_HOST,
   port: process.env.MAIL_PORT,
   auth: {
@@ -45,13 +46,13 @@ export async function sendPasswordResetEmail(
   to: string
 ): Promise<void> {
   // email the user a token
-  const info = (await transport.sendMail({
+  const info = await transport.sendMail({
     to,
     from: "backend@humansource.ro",
     subject: "Your password reset token!",
     html: makeNiceEmail(`Your Password Reset Token is here!
         <a href="${process.env.FRONTEND_URL}/reset?token=${resetToken}">Click Here to Reset</a>
         `),
-  })) as MailResponse;
+  });
   console.log(info);
 }

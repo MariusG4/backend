@@ -25,12 +25,15 @@ const DB_COLLECTION = process.env.DB_COLLECTION;
 const BACKEND_URL = process.env.BACKEND_URL;
 const BACKEN_PORT = process.env.BACKEND_PORT;
 const FRONTEND_URL = process.env.FRONTEND_URL;
+const MAIL_HOST = process.env.MAIL_HOST;
 
 const DB_URL =
   DB_PROTOCOL + DB_USER + ":" + DB_PASSWORD + "@" + DB_DOMAIN + DB_PORT + "/";
 console.log("💾 💾 💾" + DB_URL + DB_COLLECTION);
 console.log(BACKEND_URL + BACKEN_PORT);
 console.log(FRONTEND_URL);
+console.log(MAIL_HOST);
+
 const db: KeystoneConfig<TypeInfo>["db"] = {
   provider: "mysql",
   url: DB_URL + DB_COLLECTION + "?connect_timeout=300",
