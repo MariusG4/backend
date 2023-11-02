@@ -32,15 +32,29 @@ var import_session = require("@keystone-6/core/session");
 
 // lib/mail.ts
 var import_nodemailer = require("nodemailer");
+require("dotenv").config();
 var transport = (0, import_nodemailer.createTransport)({
   //@ts-ignore
   host: process.env.MAIL_HOST,
   port: process.env.MAIL_PORT,
+  secure: false,
   auth: {
     user: process.env.MAIL_USER,
     pass: process.env.MAIL_PASS
   }
 });
+transport.verify(function(error, success) {
+  if (error) {
+    console.log(error);
+  } else {
+    console.log("Server is ready to take our messages");
+  }
+});
+var MAIL_HOST = process.env.MAIL_HOST;
+var MAIL_PORT = process.env.MAIL_PORT;
+var MAIL_USER = process.env.MAIL_USER;
+var MAIL_PASS = process.env.MAIL_PASS;
+console.log(MAIL_HOST, MAIL_PORT, MAIL_USER, MAIL_PASS);
 function makeNiceEmail(text19) {
   return `
     <div style="
@@ -65,6 +79,7 @@ async function sendPasswordResetEmail(resetToken, to) {
         <a href="${process.env.FRONTEND_URL}/reset?token=${resetToken}">Click Here to Reset</a>
         `)
   });
+  console.log(MAIL_HOST, MAIL_PORT, MAIL_USER, MAIL_PASS);
   console.log(info);
 }
 
@@ -1106,12 +1121,12 @@ var DB_COLLECTION = process.env.DB_COLLECTION;
 var BACKEND_URL = process.env.BACKEND_URL;
 var BACKEN_PORT = process.env.BACKEND_PORT;
 var FRONTEND_URL = process.env.FRONTEND_URL;
-var MAIL_HOST = process.env.MAIL_HOST;
+var MAIL_HOST2 = process.env.MAIL_HOST;
 var DB_URL = DB_PROTOCOL + DB_USER + ":" + DB_PASSWORD + "@" + DB_DOMAIN + DB_PORT + "/";
 console.log("\u{1F4BE} \u{1F4BE} \u{1F4BE}" + DB_URL + DB_COLLECTION);
 console.log(BACKEND_URL + BACKEN_PORT);
 console.log(FRONTEND_URL);
-console.log(MAIL_HOST);
+console.log(MAIL_HOST2);
 var db2 = {
   provider: "mysql",
   url: DB_URL + DB_COLLECTION + "?connect_timeout=300",
