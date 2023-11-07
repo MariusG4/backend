@@ -2,6 +2,7 @@ import { list } from "@keystone-6/core";
 import type { Lists } from ".keystone/types";
 import { text } from "@keystone-6/core/fields";
 import { permissions } from "../../access";
+import { sendContactUsEmail } from "../../lib/mail";
 
 export const ContactForm: Lists.ContactForm = list({
   access: {
@@ -36,5 +37,18 @@ export const ContactForm: Lists.ContactForm = list({
       validation: { isRequired: true },
       ui: { displayMode: "textarea" },
     }),
+  },
+  hooks: {
+    afterOperation: async ({
+      operation,
+      listKey,
+      item,
+      originalItem,
+      context,
+    }) => {
+      if (operation === "create") {
+        sendContactUsEmail(item.name, item.email, item.phone, item.message);
+      }
+    },
   },
 });

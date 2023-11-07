@@ -29,10 +29,6 @@ const MAIL_HOST = process.env.MAIL_HOST;
 
 const DB_URL =
   DB_PROTOCOL + DB_USER + ":" + DB_PASSWORD + "@" + DB_DOMAIN + DB_PORT + "/";
-console.log("💾 💾 💾" + DB_URL + DB_COLLECTION);
-console.log(BACKEND_URL + BACKEN_PORT);
-console.log(FRONTEND_URL);
-console.log(MAIL_HOST);
 
 const db: KeystoneConfig<TypeInfo>["db"] = {
   provider: "mysql",
@@ -55,7 +51,7 @@ export default withAuth(
   config({
     server: {
       port: Number(BACKEN_PORT),
-      cors: { origin: [FRONTEND_URL], credentials: true },
+      cors: { origin: "*", credentials: true },
     },
     db,
     lists,

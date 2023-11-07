@@ -12,12 +12,12 @@ export const Job: Lists.Job = list({
       create: permissions.canManageJobs,
       delete: permissions.canManageJobs,
     },
-    filter: {
-      query: () => true,
-      create: rules.canManageJobs,
-      update: rules.canManageJobs,
-      delete: rules.canManageJobs,
-    },
+    //filter: {
+    //  query: () => true,
+    //  create: rules.canManageJobs,
+    //  update: rules.canManageJobs,
+    //  delete: rules.canManageJobs,
+    //},
   },
 
   fields: {

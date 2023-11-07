@@ -1,9 +1,17 @@
 import { createTransport } from "nodemailer";
 require("dotenv").config();
+
+const host = process.env.MAIL_HOST;
+const port = process.env.MAIL_PORT;
+const jobEmail = process.env.JOB_EMAIL_ADDRESS;
+const formsEmail = process.env.FORMS_EMAIL_ADDRESS;
+const contactEmail = process.env.CONTACT_EMAIL_ADDRESS;
+const employerForms = process.env.EMPLOYER_EMAIL_ADDRESS;
+
 const transport = createTransport({
   //@ts-ignore
-  host: process.env.MAIL_HOST,
-  port: process.env.MAIL_PORT,
+  host,
+  port,
   secure: false,
   auth: {
     user: process.env.MAIL_USER,
@@ -19,11 +27,6 @@ transport.verify(function (error, success) {
   }
 });
 
-const MAIL_HOST = process.env.MAIL_HOST;
-const MAIL_PORT = process.env.MAIL_PORT;
-const MAIL_USER = process.env.MAIL_USER;
-const MAIL_PASS = process.env.MAIL_PASS;
-console.log(MAIL_HOST, MAIL_PORT, MAIL_USER, MAIL_PASS);
 function makeNiceEmail(text: string) {
   return `
     <div style="
@@ -67,7 +70,115 @@ export async function sendPasswordResetEmail(
     html: makeNiceEmail(`Your Password Reset Token is here!
         <a href="${process.env.FRONTEND_URL}/reset?token=${resetToken}">Click Here to Reset</a>
         `),
-  })) as MailResponse;
-  console.log(MAIL_HOST, MAIL_PORT, MAIL_USER, MAIL_PASS);
+  })) as unknown as MailResponse;
+}
+
+export async function sendContactUsEmail(
+  name: string,
+  email: string,
+  phone: string,
+  message: string
+): Promise<void> {
+  // email the user a token
+  const info = await transport.sendMail({
+    to: contactEmail,
+    from: "backend@humansource.ro",
+    subject: "New Contact Us Message!",
+    html: makeNiceEmail(`New Contact Us Message!
+        <p>Name: ${name}</p>
+        <p>Email: ${email}</p>
+        <p>Phone: ${phone}</p>
+        <p>Message: ${message}</p>
+        `),
+  });
+  console.log(info);
+}
+
+export async function sendJobApplicationEmail(
+  name: string,
+  email: string,
+  phone: string,
+  message: string,
+  birthDate: string,
+  job: string
+): Promise<void> {
+  // email the user a token
+  const info = await transport.sendMail({
+    to: jobEmail,
+    from: "backend@humansource.ro",
+    subject: "New Job Application!",
+    html: makeNiceEmail(`New Job Application!
+        <p>Name: ${name}</p>
+        <p>Email: ${email}</p>
+        <p>Phone: ${phone}</p>
+        <p>Birth Date: ${birthDate}</p>
+        <p>Job: ${job}</p>
+        <p>Message: ${message}</p>
+        `),
+  });
+  console.log(info);
+}
+
+export async function sendMedicalFormEmail(
+  domeniu: string,
+  subDomeniu: string,
+  experienta: string,
+  bac: string,
+  amg: string,
+  absolvire: string,
+  experientaLimba: string,
+  locatia: string,
+  ultimuSalar: number,
+  cursItaliana: string
+): Promise<void> {
+  const info = await transport.sendMail({
+    to: formsEmail,
+    from: "backend@humansource.ro",
+    subject: "New Medical Form!",
+    html: makeNiceEmail(`New Medical Form!
+        <p>Domeniu: ${domeniu}</p>
+        <p>SubDomeniu: ${subDomeniu}</p>
+        <p>Experienta: ${experienta}</p>
+        <p>Bac: ${bac}</p>
+        <p>AMG: ${amg}</p>
+        <p>Absolvire: ${absolvire}</p>
+        <p>Experienta Limba: ${experientaLimba}</p>
+        <p>Locatie: ${locatia}</p>
+        <p>Ultima Salar: ${ultimuSalar}</p>
+        <p>Curs Italiana: ${cursItaliana}</p>
+        `),
+  });
+  console.log(info);
+}
+
+export async function sendTransportFormEmail(
+  domeniu: string,
+  subDomeniu: string,
+  experienta: string,
+  locatia: string,
+  tahograf: string,
+  echipa: string,
+  turaNoapte: string,
+  experientaLimba: string,
+  ultimuSalar: number,
+  salariuDorit: number
+): Promise<void> {
+  const info = await transport.sendMail({
+    to: formsEmail,
+    from: "backend@humansource.ro",
+    subject: "New Transport Form!",
+    html: makeNiceEmail(`New Transport Form!
+        <p>Domeniu: ${domeniu}</p>
+        <p>SubDomeniu: ${subDomeniu}</p>
+        <p>Experienta: ${experienta}</p>
+        <p>Locatie: ${locatia}</p>
+        <p>Tahograf: ${tahograf}</p>
+        <p>Echipa: ${echipa}</p>
+        <p>Tura Noapte: ${turaNoapte}</p>
+        <p>Experienta Limba: ${experientaLimba}</p>
+        <p>Ultima Salar: ${ultimuSalar}</p>
+        <p>Salariu Dorit: ${salariuDorit}</p>
+        `),
+  });
   console.log(info);
 }

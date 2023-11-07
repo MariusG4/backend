@@ -2,6 +2,7 @@ import type { Lists } from ".keystone/types";
 import { list } from "@keystone-6/core";
 import { integer, text } from "@keystone-6/core/fields";
 import { permissions } from "../../access";
+import { sendMedicalFormEmail } from "../../lib/mail";
 
 export const MedicalForm: Lists.MedicalForm = list({
   access: {
@@ -23,5 +24,23 @@ export const MedicalForm: Lists.MedicalForm = list({
     locatia: text({ validation: { isRequired: true } }),
     ultimuSalar: integer({ validation: { isRequired: true } }),
     cursItaliana: text({ validation: { isRequired: true } }),
+  },
+  hooks: {
+    afterOperation: async ({ context, operation, item, originalItem }) => {
+      if (operation === "create") {
+        sendMedicalFormEmail(
+          item.domeniu,
+          item.subDomeniu,
+          item.experienta,
+          item.bac,
+          item.amg,
+          item.absolvire,
+          item.experientaLimba,
+          item.locatia,
+          item.ultimuSalar,
+          item.cursItaliana
+        );
+      }
+    },
   },
 });

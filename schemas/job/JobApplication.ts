@@ -7,6 +7,7 @@ import {
   timestamp,
 } from "@keystone-6/core/fields";
 import { permissions, rules } from "../../access";
+import { sendJobApplicationEmail } from "../../lib/mail";
 
 export const JobApplication: Lists.JobApplication = list({
   access: {
@@ -52,5 +53,30 @@ export const JobApplication: Lists.JobApplication = list({
       },
     }),
     job: relationship({ ref: "Job.applyForm", many: false }),
+  },
+  hooks: {
+    afterOperation: async ({
+      operation,
+      listKey,
+      item,
+      originalItem,
+      context,
+    }) => {
+      if (operation === "create") {
+        const birthDateString = item.birthDate.toISOString().slice(0, 10);
+        const jobTitle = await context.db.Job.findOne({
+          where: { id: item.jobId },
+        });
+        const job = jobTitle?.title;
+        sendJobApplicationEmail(
+          item.name,
+          item.email,
+          item.phone,
+          item.message,
+          birthDateString,
+          job || ""
+        );
+      }
+    },
   },
 });

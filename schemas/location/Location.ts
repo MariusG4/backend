@@ -1,7 +1,7 @@
 import type { Lists } from ".keystone/types";
 import { graphql, list } from "@keystone-6/core";
 import { permissions } from "../../access";
-import { relationship, select, text, virtual } from "@keystone-6/core/fields";
+import { relationship, select, text } from "@keystone-6/core/fields";
 
 export const Location: Lists.Location = list({
   access: {
@@ -22,7 +22,7 @@ export const Location: Lists.Location = list({
         labelField: "name",
       },
     }),
-    //create a virtual field that returns the city names from the country relationship
+
     cityRO: relationship({
       ref: "CityRO",
       many: true,

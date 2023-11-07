@@ -33,10 +33,16 @@ var import_session = require("@keystone-6/core/session");
 // lib/mail.ts
 var import_nodemailer = require("nodemailer");
 require("dotenv").config();
+var host = process.env.MAIL_HOST;
+var port = process.env.MAIL_PORT;
+var jobEmail = process.env.JOB_EMAIL_ADDRESS;
+var formsEmail = process.env.FORMS_EMAIL_ADDRESS;
+var contactEmail = process.env.CONTACT_EMAIL_ADDRESS;
+var employerForms = process.env.EMPLOYER_EMAIL_ADDRESS;
 var transport = (0, import_nodemailer.createTransport)({
   //@ts-ignore
-  host: process.env.MAIL_HOST,
-  port: process.env.MAIL_PORT,
+  host,
+  port,
   secure: false,
   auth: {
     user: process.env.MAIL_USER,
@@ -50,11 +56,6 @@ transport.verify(function(error, success) {
     console.log("Server is ready to take our messages");
   }
 });
-var MAIL_HOST = process.env.MAIL_HOST;
-var MAIL_PORT = process.env.MAIL_PORT;
-var MAIL_USER = process.env.MAIL_USER;
-var MAIL_PASS = process.env.MAIL_PASS;
-console.log(MAIL_HOST, MAIL_PORT, MAIL_USER, MAIL_PASS);
 function makeNiceEmail(text19) {
   return `
     <div style="
@@ -79,7 +80,75 @@ async function sendPasswordResetEmail(resetToken, to) {
         <a href="${process.env.FRONTEND_URL}/reset?token=${resetToken}">Click Here to Reset</a>
         `)
   });
-  console.log(MAIL_HOST, MAIL_PORT, MAIL_USER, MAIL_PASS);
+}
+async function sendContactUsEmail(name, email, phone, message) {
+  const info = await transport.sendMail({
+    to: contactEmail,
+    from: "backend@humansource.ro",
+    subject: "New Contact Us Message!",
+    html: makeNiceEmail(`New Contact Us Message!
+        <p>Name: ${name}</p>
+        <p>Email: ${email}</p>
+        <p>Phone: ${phone}</p>
+        <p>Message: ${message}</p>
+        `)
+  });
+  console.log(info);
+}
+async function sendJobApplicationEmail(name, email, phone, message, birthDate, job) {
+  const info = await transport.sendMail({
+    to: jobEmail,
+    from: "backend@humansource.ro",
+    subject: "New Job Application!",
+    html: makeNiceEmail(`New Job Application!
+        <p>Name: ${name}</p>
+        <p>Email: ${email}</p>
+        <p>Phone: ${phone}</p>
+        <p>Birth Date: ${birthDate}</p>
+        <p>Job: ${job}</p>
+        <p>Message: ${message}</p>
+        `)
+  });
+  console.log(info);
+}
+async function sendMedicalFormEmail(domeniu, subDomeniu, experienta, bac, amg, absolvire, experientaLimba, locatia, ultimuSalar, cursItaliana) {
+  const info = await transport.sendMail({
+    to: formsEmail,
+    from: "backend@humansource.ro",
+    subject: "New Medical Form!",
+    html: makeNiceEmail(`New Medical Form!
+        <p>Domeniu: ${domeniu}</p>
+        <p>SubDomeniu: ${subDomeniu}</p>
+        <p>Experienta: ${experienta}</p>
+        <p>Bac: ${bac}</p>
+        <p>AMG: ${amg}</p>
+        <p>Absolvire: ${absolvire}</p>
+        <p>Experienta Limba: ${experientaLimba}</p>
+        <p>Locatie: ${locatia}</p>
+        <p>Ultima Salar: ${ultimuSalar}</p>
+        <p>Curs Italiana: ${cursItaliana}</p>
+        `)
+  });
+  console.log(info);
+}
+async function sendTransportFormEmail(domeniu, subDomeniu, experienta, locatia, tahograf, echipa, turaNoapte, experientaLimba, ultimuSalar, salariuDorit) {
+  const info = await transport.sendMail({
+    to: formsEmail,
+    from: "backend@humansource.ro",
+    subject: "New Transport Form!",
+    html: makeNiceEmail(`New Transport Form!
+        <p>Domeniu: ${domeniu}</p>
+        <p>SubDomeniu: ${subDomeniu}</p>
+        <p>Experienta: ${experienta}</p>
+        <p>Locatie: ${locatia}</p>
+        <p>Tahograf: ${tahograf}</p>
+        <p>Echipa: ${echipa}</p>
+        <p>Tura Noapte: ${turaNoapte}</p>
+        <p>Experienta Limba: ${experientaLimba}</p>
+        <p>Ultima Salar: ${ultimuSalar}</p>
+        <p>Salariu Dorit: ${salariuDorit}</p>
+        `)
+  });
   console.log(info);
 }
 
@@ -273,6 +342,30 @@ var TransportForm = (0, import_core.list)({
     experientaLimba: (0, import_fields2.text)({ validation: { isRequired: true } }),
     ultimuSalar: (0, import_fields2.integer)({ validation: { isRequired: true } }),
     salariuDorit: (0, import_fields2.integer)({ validation: { isRequired: true } })
+  },
+  hooks: {
+    afterOperation: async ({
+      operation,
+      listKey,
+      item,
+      originalItem,
+      context
+    }) => {
+      if (operation === "create") {
+        sendTransportFormEmail(
+          item.domeniu,
+          item.subDomeniu,
+          item.experienta,
+          item.locatia,
+          item.tahograf,
+          item.echipa,
+          item.turaNoapte,
+          item.experientaLimba,
+          item.ultimuSalar,
+          item.salariuDorit
+        );
+      }
+    }
   }
 });
 
@@ -299,6 +392,24 @@ var MedicalForm = (0, import_core2.list)({
     locatia: (0, import_fields3.text)({ validation: { isRequired: true } }),
     ultimuSalar: (0, import_fields3.integer)({ validation: { isRequired: true } }),
     cursItaliana: (0, import_fields3.text)({ validation: { isRequired: true } })
+  },
+  hooks: {
+    afterOperation: async ({ context, operation, item, originalItem }) => {
+      if (operation === "create") {
+        sendMedicalFormEmail(
+          item.domeniu,
+          item.subDomeniu,
+          item.experienta,
+          item.bac,
+          item.amg,
+          item.absolvire,
+          item.experientaLimba,
+          item.locatia,
+          item.ultimuSalar,
+          item.cursItaliana
+        );
+      }
+    }
   }
 });
 
@@ -369,7 +480,6 @@ var Location = (0, import_core5.list)({
         labelField: "name"
       }
     }),
-    //create a virtual field that returns the city names from the country relationship
     cityRO: (0, import_fields6.relationship)({
       ref: "CityRO",
       many: true,
@@ -464,6 +574,19 @@ var ContactForm = (0, import_core7.list)({
       validation: { isRequired: true },
       ui: { displayMode: "textarea" }
     })
+  },
+  hooks: {
+    afterOperation: async ({
+      operation,
+      listKey,
+      item,
+      originalItem,
+      context
+    }) => {
+      if (operation === "create") {
+        sendContactUsEmail(item.name, item.email, item.phone, item.message);
+      }
+    }
   }
 });
 
@@ -514,6 +637,31 @@ var JobApplication = (0, import_core8.list)({
       }
     }),
     job: (0, import_fields9.relationship)({ ref: "Job.applyForm", many: false })
+  },
+  hooks: {
+    afterOperation: async ({
+      operation,
+      listKey,
+      item,
+      originalItem,
+      context
+    }) => {
+      if (operation === "create") {
+        const birthDateString = item.birthDate.toISOString().slice(0, 10);
+        const jobTitle = await context.db.Job.findOne({
+          where: { id: item.jobId }
+        });
+        const job = jobTitle?.title;
+        sendJobApplicationEmail(
+          item.name,
+          item.email,
+          item.phone,
+          item.message,
+          birthDateString,
+          job || ""
+        );
+      }
+    }
   }
 });
 
@@ -527,13 +675,13 @@ var Job = (0, import_core9.list)({
       update: permissions.canManageJobs,
       create: permissions.canManageJobs,
       delete: permissions.canManageJobs
-    },
-    filter: {
-      query: () => true,
-      create: rules.canManageJobs,
-      update: rules.canManageJobs,
-      delete: rules.canManageJobs
     }
+    //filter: {
+    //  query: () => true,
+    //  create: rules.canManageJobs,
+    //  update: rules.canManageJobs,
+    //  delete: rules.canManageJobs,
+    //},
   },
   fields: {
     title: (0, import_fields10.text)({
@@ -943,15 +1091,18 @@ var Category = (0, import_core15.list)({
 var import_core16 = require("@keystone-6/core");
 var import_fields16 = require("@keystone-6/core/fields");
 var import_cloudinary = require("@keystone-6/cloudinary");
+var import_cuid2 = require("@paralleldrive/cuid2");
 require("dotenv").config();
+function makeCustomIdentifier(filename) {
+  return `${filename.split(".")[0].replace(/\s+/g, "-")}-${(0, import_cuid2.createId)()}`;
+}
 var cloudinary = {
   cloudName: process.env.CLOUDINARY_NAME,
   apiKey: process.env.CLOUDINARY_KEY,
   apiSecret: process.env.CLOUDINARY_SECRET,
   folder: process.env.CLOUDINARY_API_FOLDER
 };
-var cloudname = process.env.CLOUDINARY_NAME;
-console.log(cloudname + "\u{1F44D}\u{1F3FD} Cloudinary is configured");
+console.log("\u{1F44D}\u{1F3FD} Cloudinary is configured");
 var MediaGalery = (0, import_core16.list)({
   access: {
     operation: {
@@ -961,12 +1112,17 @@ var MediaGalery = (0, import_core16.list)({
       delete: permissions.canManageProducts
     }
   },
+  db: { idField: { kind: "string" } },
   fields: {
     image: (0, import_cloudinary.cloudinaryImage)({
+      // @ts-ignore
       cloudinary,
       label: "Source"
     }),
-    //image : image ({storage:'my_local_storage'}),
+    //image : image ({
+    //  storage:'my_local_storage'
+    //
+    //}),
     altText: (0, import_fields16.text)(),
     filename: (0, import_fields16.text)({
       isIndexed: "unique",
@@ -981,6 +1137,18 @@ var MediaGalery = (0, import_core16.list)({
   ui: {
     listView: {
       initialColumns: ["image", "altText", "product"]
+    }
+  },
+  hooks: {
+    resolveInput: {
+      create: async ({ operation, item, inputData, resolvedData }) => {
+        const imageData = resolvedData.image;
+        const imageFilename = imageData?.filename;
+        return {
+          ...resolvedData,
+          id: makeCustomIdentifier(imageFilename)
+        };
+      }
     }
   }
 });
@@ -1121,12 +1289,8 @@ var DB_COLLECTION = process.env.DB_COLLECTION;
 var BACKEND_URL = process.env.BACKEND_URL;
 var BACKEN_PORT = process.env.BACKEND_PORT;
 var FRONTEND_URL = process.env.FRONTEND_URL;
-var MAIL_HOST2 = process.env.MAIL_HOST;
+var MAIL_HOST = process.env.MAIL_HOST;
 var DB_URL = DB_PROTOCOL + DB_USER + ":" + DB_PASSWORD + "@" + DB_DOMAIN + DB_PORT + "/";
-console.log("\u{1F4BE} \u{1F4BE} \u{1F4BE}" + DB_URL + DB_COLLECTION);
-console.log(BACKEND_URL + BACKEN_PORT);
-console.log(FRONTEND_URL);
-console.log(MAIL_HOST2);
 var db2 = {
   provider: "mysql",
   url: DB_URL + DB_COLLECTION + "?connect_timeout=300",
@@ -1140,7 +1304,7 @@ var keystone_default = withAuth(
   (0, import_core21.config)({
     server: {
       port: Number(BACKEN_PORT),
-      cors: { origin: [FRONTEND_URL], credentials: true }
+      cors: { origin: "*", credentials: true }
     },
     db: db2,
     lists,

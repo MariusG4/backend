@@ -129,7 +129,7 @@ model JobApplication {
 }
 
 model MediaGalery {
-  id       String @id @default(uuid())
+  id       String @id
   image    Json?
   altText  String @default("")
   filename String @unique @default("")
