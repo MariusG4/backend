@@ -6,8 +6,8 @@ import { permissions } from "../../access";
 export const Country: Lists.Country = list({
   access: {
     operation: {
-      create: () => true,
-      query: permissions.canManageLocations,
+      create: permissions.canManageLocations,
+      query: () => true,
       update: permissions.canManageLocations,
       delete: permissions.canManageLocations,
     },
