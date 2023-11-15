@@ -16,6 +16,9 @@ export const CityRO: Lists.CityRO = list({
     name: text({
       validation: { isRequired: true },
     }),
+    nameIT: text({
+      validation: { isRequired: true },
+    }),
     createdAt: timestamp({
       defaultValue: { kind: "now" },
       validation: { isRequired: true },

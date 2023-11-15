@@ -14,6 +14,7 @@ export const SubCategory: Lists.SubCategory = list({
   },
   fields: {
     name: text(),
+    nameIT: text(),
     category: relationship({
       ref: "Category",
       many: false,

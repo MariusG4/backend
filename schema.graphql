@@ -424,7 +424,9 @@ input TagCreateInput {
 type Category {
   id: ID!
   name: String
+  nameIT: String
   excerpt: String
+  excerptIT: String
   blog(where: BlogWhereInput! = {}, orderBy: [BlogOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: BlogWhereUniqueInput): [Blog!]
   blogCount(where: BlogWhereInput! = {}): Int
   jobCategories(where: JobCategoryWhereInput! = {}, orderBy: [JobCategoryOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: JobCategoryWhereUniqueInput): [JobCategory!]
@@ -441,7 +443,9 @@ input CategoryWhereInput {
   NOT: [CategoryWhereInput!]
   id: IDFilter
   name: StringFilter
+  nameIT: StringFilter
   excerpt: StringFilter
+  excerptIT: StringFilter
   blog: BlogManyRelationFilter
   jobCategories: JobCategoryManyRelationFilter
 }
@@ -455,12 +459,16 @@ input JobCategoryManyRelationFilter {
 input CategoryOrderByInput {
   id: OrderDirection
   name: OrderDirection
+  nameIT: OrderDirection
   excerpt: OrderDirection
+  excerptIT: OrderDirection
 }
 
 input CategoryUpdateInput {
   name: String
+  nameIT: String
   excerpt: String
+  excerptIT: String
   blog: BlogRelateToManyForUpdateInput
   jobCategories: JobCategoryRelateToManyForUpdateInput
 }
@@ -479,7 +487,9 @@ input CategoryUpdateArgs {
 
 input CategoryCreateInput {
   name: String
+  nameIT: String
   excerpt: String
+  excerptIT: String
   blog: BlogRelateToManyForCreateInput
   jobCategories: JobCategoryRelateToManyForCreateInput
 }
@@ -492,6 +502,7 @@ input JobCategoryRelateToManyForCreateInput {
 type SubCategory {
   id: ID!
   name: String
+  nameIT: String
   category: Category
 }
 
@@ -505,16 +516,19 @@ input SubCategoryWhereInput {
   NOT: [SubCategoryWhereInput!]
   id: IDFilter
   name: StringFilter
+  nameIT: StringFilter
   category: CategoryWhereInput
 }
 
 input SubCategoryOrderByInput {
   id: OrderDirection
   name: OrderDirection
+  nameIT: OrderDirection
 }
 
 input SubCategoryUpdateInput {
   name: String
+  nameIT: String
   category: CategoryRelateToOneForUpdateInput
 }
 
@@ -531,6 +545,7 @@ input SubCategoryUpdateArgs {
 
 input SubCategoryCreateInput {
   name: String
+  nameIT: String
   category: CategoryRelateToOneForCreateInput
 }
 
@@ -542,6 +557,7 @@ input CategoryRelateToOneForCreateInput {
 type JobCategory {
   id: ID!
   name: String
+  nameIT: String
   category: Category
   subcategories(where: SubCategoryWhereInput! = {}, orderBy: [SubCategoryOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: SubCategoryWhereUniqueInput): [SubCategory!]
   subcategoriesCount(where: SubCategoryWhereInput! = {}): Int
@@ -559,6 +575,7 @@ input JobCategoryWhereInput {
   NOT: [JobCategoryWhereInput!]
   id: IDFilter
   name: StringFilter
+  nameIT: StringFilter
   category: CategoryWhereInput
   subcategories: SubCategoryManyRelationFilter
   jobs: JobManyRelationFilter
@@ -579,10 +596,12 @@ input JobManyRelationFilter {
 input JobCategoryOrderByInput {
   id: OrderDirection
   name: OrderDirection
+  nameIT: OrderDirection
 }
 
 input JobCategoryUpdateInput {
   name: String
+  nameIT: String
   category: CategoryRelateToOneForUpdateInput
   subcategories: SubCategoryRelateToManyForUpdateInput
   jobs: JobRelateToManyForUpdateInput
@@ -609,6 +628,7 @@ input JobCategoryUpdateArgs {
 
 input JobCategoryCreateInput {
   name: String
+  nameIT: String
   category: CategoryRelateToOneForCreateInput
   subcategories: SubCategoryRelateToManyForCreateInput
   jobs: JobRelateToManyForCreateInput
@@ -639,6 +659,7 @@ type Job {
   applyFormCount(where: JobApplicationWhereInput! = {}): Int
   language: Language
   user: User
+  createdAt: DateTime
 }
 
 scalar CalendarDay @specifiedBy(url: "https://datatracker.ietf.org/doc/html/rfc3339#section-5.6")
@@ -664,6 +685,7 @@ input JobWhereInput {
   applyForm: JobApplicationManyRelationFilter
   language: LanguageWhereInput
   user: UserWhereInput
+  createdAt: DateTimeNullableFilter
 }
 
 input CalendarDayNullableFilter {
@@ -692,6 +714,7 @@ input JobOrderByInput {
   description: OrderDirection
   requierments: OrderDirection
   whyWork: OrderDirection
+  createdAt: OrderDirection
 }
 
 input JobUpdateInput {
@@ -707,6 +730,7 @@ input JobUpdateInput {
   applyForm: JobApplicationRelateToManyForUpdateInput
   language: LanguageRelateToOneForUpdateInput
   user: UserRelateToOneForUpdateInput
+  createdAt: DateTime
 }
 
 input JobCategoryRelateToOneForUpdateInput {
@@ -746,6 +770,7 @@ input JobCreateInput {
   applyForm: JobApplicationRelateToManyForCreateInput
   language: LanguageRelateToOneForCreateInput
   user: UserRelateToOneForCreateInput
+  createdAt: DateTime
 }
 
 input JobCategoryRelateToOneForCreateInput {
@@ -1406,6 +1431,7 @@ input UserRelateToManyForCreateInput {
 type Location {
   id: ID!
   name: String
+  nameIT: String
   country(where: CountryWhereInput! = {}, orderBy: [CountryOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CountryWhereUniqueInput): [Country!]
   countryCount(where: CountryWhereInput! = {}): Int
   cityRO(where: CityROWhereInput! = {}, orderBy: [CityROOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CityROWhereUniqueInput): [CityRO!]
@@ -1427,6 +1453,7 @@ input LocationWhereInput {
   NOT: [LocationWhereInput!]
   id: IDFilter
   name: StringFilter
+  nameIT: StringFilter
   country: CountryManyRelationFilter
   cityRO: CityROManyRelationFilter
   cityIT: CityITManyRelationFilter
@@ -1455,11 +1482,13 @@ input CityITManyRelationFilter {
 input LocationOrderByInput {
   id: OrderDirection
   name: OrderDirection
+  nameIT: OrderDirection
   zone: OrderDirection
 }
 
 input LocationUpdateInput {
   name: String
+  nameIT: String
   country: CountryRelateToManyForUpdateInput
   cityRO: CityRORelateToManyForUpdateInput
   cityIT: CityITRelateToManyForUpdateInput
@@ -1495,6 +1524,7 @@ input LocationUpdateArgs {
 
 input LocationCreateInput {
   name: String
+  nameIT: String
   country: CountryRelateToManyForCreateInput
   cityRO: CityRORelateToManyForCreateInput
   cityIT: CityITRelateToManyForCreateInput
@@ -1520,6 +1550,7 @@ input CityITRelateToManyForCreateInput {
 type Country {
   id: ID!
   name: String
+  nameIT: String
 }
 
 input CountryWhereUniqueInput {
@@ -1532,15 +1563,18 @@ input CountryWhereInput {
   NOT: [CountryWhereInput!]
   id: IDFilter
   name: StringFilter
+  nameIT: StringFilter
 }
 
 input CountryOrderByInput {
   id: OrderDirection
   name: OrderDirection
+  nameIT: OrderDirection
 }
 
 input CountryUpdateInput {
   name: String
+  nameIT: String
 }
 
 input CountryUpdateArgs {
@@ -1550,11 +1584,13 @@ input CountryUpdateArgs {
 
 input CountryCreateInput {
   name: String
+  nameIT: String
 }
 
 type CityRO {
   id: ID!
   name: String
+  nameIT: String
   createdAt: DateTime
 }
 
@@ -1568,6 +1604,7 @@ input CityROWhereInput {
   NOT: [CityROWhereInput!]
   id: IDFilter
   name: StringFilter
+  nameIT: StringFilter
   createdAt: DateTimeFilter
 }
 
@@ -1585,11 +1622,13 @@ input DateTimeFilter {
 input CityROOrderByInput {
   id: OrderDirection
   name: OrderDirection
+  nameIT: OrderDirection
   createdAt: OrderDirection
 }
 
 input CityROUpdateInput {
   name: String
+  nameIT: String
   createdAt: DateTime
 }
 
@@ -1600,12 +1639,14 @@ input CityROUpdateArgs {
 
 input CityROCreateInput {
   name: String
+  nameIT: String
   createdAt: DateTime
 }
 
 type CityIT {
   id: ID!
   name: String
+  nameIT: String
   createdAt: DateTime
 }
 
@@ -1619,17 +1660,20 @@ input CityITWhereInput {
   NOT: [CityITWhereInput!]
   id: IDFilter
   name: StringFilter
+  nameIT: StringFilter
   createdAt: DateTimeFilter
 }
 
 input CityITOrderByInput {
   id: OrderDirection
   name: OrderDirection
+  nameIT: OrderDirection
   createdAt: OrderDirection
 }
 
 input CityITUpdateInput {
   name: String
+  nameIT: String
   createdAt: DateTime
 }
 
@@ -1640,6 +1684,7 @@ input CityITUpdateArgs {
 
 input CityITCreateInput {
   name: String
+  nameIT: String
   createdAt: DateTime
 }
 

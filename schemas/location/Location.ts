@@ -14,6 +14,7 @@ export const Location: Lists.Location = list({
   },
   fields: {
     name: text(),
+    nameIT: text(),
     country: relationship({
       ref: "Country",
       many: true,

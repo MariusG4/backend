@@ -18,5 +18,10 @@ export const Country: Lists.Country = list({
         isRequired: true,
       },
     }),
+    nameIT: text({
+      validation: {
+        isRequired: true,
+      },
+    }),
   },
 });

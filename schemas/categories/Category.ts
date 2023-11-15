@@ -14,7 +14,13 @@ export const Category: Lists.Category = list({
   },
   fields: {
     name: text({ validation: { isRequired: true } }),
+    nameIT: text({ validation: { isRequired: true } }),
     excerpt: text({
+      ui: {
+        displayMode: "textarea",
+      },
+    }),
+    excerptIT: text({
       ui: {
         displayMode: "textarea",
       },

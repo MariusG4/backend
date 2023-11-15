@@ -93,7 +93,6 @@ async function sendContactUsEmail(name, email, phone, message) {
         <p>Message: ${message}</p>
         `)
   });
-  console.log(info);
 }
 async function sendJobApplicationEmail(name, email, phone, message, birthDate, job) {
   const info = await transport.sendMail({
@@ -129,7 +128,6 @@ async function sendMedicalFormEmail(domeniu, subDomeniu, experienta, bac, amg, a
         <p>Curs Italiana: ${cursItaliana}</p>
         `)
   });
-  console.log(info);
 }
 async function sendTransportFormEmail(domeniu, subDomeniu, experienta, locatia, tahograf, echipa, turaNoapte, experientaLimba, ultimuSalar, salariuDorit) {
   const info = await transport.sendMail({
@@ -149,7 +147,6 @@ async function sendTransportFormEmail(domeniu, subDomeniu, experienta, locatia, 
         <p>Salariu Dorit: ${salariuDorit}</p>
         `)
   });
-  console.log(info);
 }
 
 // schemas/permissions.ts
@@ -429,6 +426,9 @@ var CityRO = (0, import_core3.list)({
     name: (0, import_fields4.text)({
       validation: { isRequired: true }
     }),
+    nameIT: (0, import_fields4.text)({
+      validation: { isRequired: true }
+    }),
     createdAt: (0, import_fields4.timestamp)({
       defaultValue: { kind: "now" },
       validation: { isRequired: true },
@@ -443,14 +443,19 @@ var import_fields5 = require("@keystone-6/core/fields");
 var Country = (0, import_core4.list)({
   access: {
     operation: {
-      create: () => true,
-      query: permissions.canManageLocations,
+      create: permissions.canManageLocations,
+      query: () => true,
       update: permissions.canManageLocations,
       delete: permissions.canManageLocations
     }
   },
   fields: {
     name: (0, import_fields5.text)({
+      validation: {
+        isRequired: true
+      }
+    }),
+    nameIT: (0, import_fields5.text)({
       validation: {
         isRequired: true
       }
@@ -472,6 +477,7 @@ var Location = (0, import_core5.list)({
   },
   fields: {
     name: (0, import_fields6.text)(),
+    nameIT: (0, import_fields6.text)(),
     country: (0, import_fields6.relationship)({
       ref: "Country",
       many: true,
@@ -745,6 +751,14 @@ var Job = (0, import_core9.list)({
       ui: {
         itemView: { fieldMode: "hidden" },
         createView: { fieldMode: "hidden" }
+      }
+    }),
+    createdAt: (0, import_fields10.timestamp)({
+      defaultValue: { kind: "now" },
+      ui: {
+        itemView: {
+          fieldMode: "hidden"
+        }
       }
     })
   },
@@ -1077,7 +1091,13 @@ var Category = (0, import_core15.list)({
   },
   fields: {
     name: (0, import_fields15.text)({ validation: { isRequired: true } }),
+    nameIT: (0, import_fields15.text)({ validation: { isRequired: true } }),
     excerpt: (0, import_fields15.text)({
+      ui: {
+        displayMode: "textarea"
+      }
+    }),
+    excerptIT: (0, import_fields15.text)({
       ui: {
         displayMode: "textarea"
       }
@@ -1169,6 +1189,9 @@ var CityIT = (0, import_core17.list)({
     name: (0, import_fields17.text)({
       validation: { isRequired: true }
     }),
+    nameIT: (0, import_fields17.text)({
+      validation: { isRequired: true }
+    }),
     createdAt: (0, import_fields17.timestamp)({
       defaultValue: { kind: "now" },
       validation: { isRequired: true },
@@ -1191,6 +1214,7 @@ var SubCategory = (0, import_core18.list)({
   },
   fields: {
     name: (0, import_fields18.text)(),
+    nameIT: (0, import_fields18.text)(),
     category: (0, import_fields18.relationship)({
       ref: "Category",
       many: false
@@ -1212,6 +1236,11 @@ var JobCategory = (0, import_core19.list)({
   },
   fields: {
     name: (0, import_fields19.text)({
+      validation: {
+        isRequired: true
+      }
+    }),
+    nameIT: (0, import_fields19.text)({
       validation: {
         isRequired: true
       }
@@ -1251,6 +1280,21 @@ var EmployerForm = (0, import_core20.list)({
     dateContact: (0, import_fields20.text)({ validation: { isRequired: true } }),
     email: (0, import_fields20.text)({ validation: { isRequired: true } }),
     nrTel: (0, import_fields20.integer)({ validation: { isRequired: true } })
+  },
+  hooks: {
+    afterOperation: async ({ context, operation, item, originalItem }) => {
+      if (operation === "create") {
+        sendEmployerFormEmail(
+          item.domeniu,
+          item.subDomeniu,
+          item.codFiscal,
+          item.nrPersoane,
+          item.dateContact,
+          item.email,
+          item.nrTel
+        );
+      }
+    }
   }
 });
 

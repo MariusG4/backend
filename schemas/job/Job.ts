@@ -1,8 +1,13 @@
 import { list } from "@keystone-6/core";
 import type { Lists } from ".keystone/types";
 import { allowAll } from "@keystone-6/core/access";
-import { calendarDay, relationship, text } from "@keystone-6/core/fields";
-import { permissions, rules } from "../../access";
+import {
+  calendarDay,
+  relationship,
+  text,
+  timestamp,
+} from "@keystone-6/core/fields";
+import { permissions } from "../../access";
 
 export const Job: Lists.Job = list({
   access: {
@@ -84,6 +89,15 @@ export const Job: Lists.Job = list({
       ui: {
         itemView: { fieldMode: "hidden" },
         createView: { fieldMode: "hidden" },
+      },
+    }),
+
+    createdAt: timestamp({
+      defaultValue: { kind: "now" },
+      ui: {
+        itemView: {
+          fieldMode: "hidden",
+        },
       },
     }),
   },

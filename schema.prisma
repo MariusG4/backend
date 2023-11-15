@@ -63,7 +63,9 @@ model Tag {
 model Category {
   id                        String        @id @default(uuid())
   name                      String        @default("")
+  nameIT                    String        @default("")
   excerpt                   String        @default("")
+  excerptIT                 String        @default("")
   blog                      Blog[]        @relation("Blog_categories")
   jobCategories             JobCategory[] @relation("JobCategory_category")
   from_SubCategory_category SubCategory[] @relation("SubCategory_category")
@@ -72,6 +74,7 @@ model Category {
 model SubCategory {
   id                             String        @id @default(uuid())
   name                           String        @default("")
+  nameIT                         String        @default("")
   category                       Category?     @relation("SubCategory_category", fields: [categoryId], references: [id])
   categoryId                     String?       @map("category")
   from_JobCategory_subcategories JobCategory[] @relation("JobCategory_subcategories")
@@ -82,6 +85,7 @@ model SubCategory {
 model JobCategory {
   id            String        @id @default(uuid())
   name          String        @default("")
+  nameIT        String        @default("")
   category      Category?     @relation("JobCategory_category", fields: [categoryId], references: [id])
   categoryId    String?       @map("category")
   subcategories SubCategory[] @relation("JobCategory_subcategories")
@@ -108,6 +112,7 @@ model Job {
   languageId    String?          @map("language")
   user          User?            @relation("Job_user", fields: [userId], references: [id])
   userId        String?          @unique @map("user")
+  createdAt     DateTime?        @default(now())
 
   @@index([jobCategoryId])
   @@index([locationId])
@@ -212,6 +217,7 @@ model Role {
 model Location {
   id      String    @id @default(uuid())
   name    String    @default("")
+  nameIT  String    @default("")
   country Country[] @relation("Location_country")
   cityRO  CityRO[]  @relation("Location_cityRO")
   cityIT  CityIT[]  @relation("Location_cityIT")
@@ -222,12 +228,14 @@ model Location {
 model Country {
   id                    String     @id @default(uuid())
   name                  String     @default("")
+  nameIT                String     @default("")
   from_Location_country Location[] @relation("Location_country")
 }
 
 model CityRO {
   id                   String     @id @default(uuid())
   name                 String     @default("")
+  nameIT               String     @default("")
   createdAt            DateTime   @default(now())
   from_Location_cityRO Location[] @relation("Location_cityRO")
 
@@ -237,6 +245,7 @@ model CityRO {
 model CityIT {
   id                   String     @id @default(uuid())
   name                 String     @default("")
+  nameIT               String     @default("")
   createdAt            DateTime   @default(now())
   from_Location_cityIT Location[] @relation("Location_cityIT")
 

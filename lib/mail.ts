@@ -91,7 +91,6 @@ export async function sendContactUsEmail(
         <p>Message: ${message}</p>
         `),
   });
-  console.log(info);
 }
 
 export async function sendJobApplicationEmail(
@@ -148,7 +147,6 @@ export async function sendMedicalFormEmail(
         <p>Curs Italiana: ${cursItaliana}</p>
         `),
   });
-  console.log(info);
 }
 
 export async function sendTransportFormEmail(
@@ -180,5 +178,29 @@ export async function sendTransportFormEmail(
         <p>Salariu Dorit: ${salariuDorit}</p>
         `),
   });
-  console.log(info);
+}
+
+export async function sendEmployerFormEmail(
+  domeniu: string,
+  subDomeniu: string,
+  codFiscal: string,
+  nrPersoane: string,
+  dateContact: string,
+  email: string,
+  nrTel: number
+): Promise<void> {
+  const info = await transport.sendMail({
+    to: employerForms,
+    from: "backend@humansource.ro",
+    subject: "New Employer Form!",
+    html: makeNiceEmail(`New Employer Form!
+        <p>Domeniu: ${domeniu}</p>
+        <p>SubDomeniu: ${subDomeniu}</p>
+        <p>Cod Fiscal: ${codFiscal}</p>
+        <p>Nr Persoane: ${nrPersoane}</p>
+        <p>Date Contact: ${dateContact}</p>
+        <p>Email: ${email}</p>
+        <p>Nr Tel: ${nrTel}</p>
+        `),
+  });
 }

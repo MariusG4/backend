@@ -18,6 +18,11 @@ export const JobCategory: Lists.JobCategory = list({
         isRequired: true,
       },
     }),
+    nameIT: text({
+      validation: {
+        isRequired: true,
+      },
+    }),
     category: relationship({
       ref: "Category.jobCategories",
       many: false,

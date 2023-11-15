@@ -2,6 +2,7 @@ import { permissions } from "../../access";
 import type { Lists } from ".keystone/types";
 import { list } from "@keystone-6/core";
 import { integer, text } from "@keystone-6/core/fields";
+import { sendEmployerFormEmail } from "../../lib/mail";
 
 export const EmployerForm: Lists.EmployerForm = list({
   access: {
@@ -20,5 +21,20 @@ export const EmployerForm: Lists.EmployerForm = list({
     dateContact: text({ validation: { isRequired: true } }),
     email: text({ validation: { isRequired: true } }),
     nrTel: integer({ validation: { isRequired: true } }),
+  },
+  hooks: {
+    afterOperation: async ({ context, operation, item, originalItem }) => {
+      if (operation === "create") {
+        sendEmployerFormEmail(
+          item.domeniu,
+          item.subDomeniu,
+          item.codFiscal,
+          item.nrPersoane,
+          item.dateContact,
+          item.email,
+          item.nrTel
+        );
+      }
+    },
   },
 });
