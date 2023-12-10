@@ -1,10 +1,19 @@
 import type { Lists } from ".keystone/types";
 import { list } from "@keystone-6/core";
-import { allowAll } from "@keystone-6/core/access";
+import { permitIfHasId } from "@keystone-6/core/access";
 import { relationship, select, text, timestamp } from "@keystone-6/core/fields";
 import { document } from "@keystone-6/fields-document";
 import { componentBlocks } from "../../blocks";
 import { permissions, rules } from "../../access";
+
+export function slugify(str: string): string {
+  return str
+    .replace(/^\s+|\s+$/g, "") // trim leading/trailing white space
+    .toLowerCase() // convert string to lowercase
+    .replace(/[^a-z0-9 -]/g, "") // remove any non-alphanumeric characters
+    .replace(/\s+/g, "-") // replace spaces with hyphens
+    .replace(/-+/g, "-"); // remove consecutive hyphens
+}
 
 export const Blog: Lists.Blog = list({
   access: {
@@ -35,9 +44,26 @@ export const Blog: Lists.Blog = list({
   },
   fields: {
     title: text({ validation: { isRequired: true } }),
-    slug: text({ isIndexed: "unique", validation: { isRequired: true } }),
-    dateCreated: timestamp({ defaultValue: { kind: "now" } }),
-    dateModified: timestamp({ defaultValue: { kind: "now" } }),
+    slug: text({ isIndexed: "unique" }),
+    dateCreated: timestamp({
+      ui: {
+        itemView: { fieldMode: "hidden" },
+      },
+      access: {
+        update: () => false,
+      },
+      validation: { isRequired: true },
+      defaultValue: { kind: "now" },
+    }),
+    dateModified: timestamp({
+      ui: {
+        itemView: { fieldMode: "hidden" },
+      },
+      db: {
+        updatedAt: true,
+      },
+      defaultValue: { kind: "now" },
+    }),
     status: select({
       options: [
         { label: "Draft", value: "DRAFT" },
@@ -50,8 +76,17 @@ export const Blog: Lists.Blog = list({
         createView: { fieldMode: "edit" },
       },
     }),
+    photo: relationship({
+      ref: "MediaGalery.blog",
+      ui: {
+        displayMode: "cards",
+        cardFields: ["image", "altText", "filename"],
+        inlineCreate: { fields: ["image", "altText", "filename"] },
+        inlineEdit: { fields: ["image", "altText", "filename"] },
+        inlineConnect: true,
+      },
+    }),
 
-    featured_image: text(),
     content: document({
       componentBlocks,
       ui: {
@@ -111,16 +146,6 @@ export const Blog: Lists.Blog = list({
       many: true,
     }),
 
-    photo: relationship({
-      ref: "MediaGalery.blog",
-      ui: {
-        displayMode: "cards",
-        cardFields: ["image", "altText", "filename"],
-        inlineCreate: { fields: ["image", "altText", "filename"] },
-        inlineEdit: { fields: ["image", "altText", "filename"] },
-        inlineConnect: true,
-      },
-    }),
     language: relationship({
       ref: "Language.blog",
       ui: {
@@ -138,6 +163,9 @@ export const Blog: Lists.Blog = list({
         if (resolvedData && !resolvedData.author) {
           const currentUserId = await context.session.itemId;
           resolvedData.author = { connect: { id: currentUserId } };
+        }
+        if (resolvedData && !resolvedData.slug) {
+          resolvedData.slug = slugify(resolvedData.title as string);
         }
       } catch (err) {
         console.log(err);

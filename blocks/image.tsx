@@ -2,7 +2,7 @@
 /** @jsx jsx */
 
 import { jsx } from '@keystone-ui/core';
-import { component, fields, NotEditable } from '@keystone-6/fields-document/component-blocks';
+import { component, fields } from '@keystone-6/fields-document/component-blocks';
 
 export const image = component({
   label: 'Image',
@@ -11,14 +11,9 @@ export const image = component({
     imageCld: fields.relationship({
         label: 'Image',
         listKey: 'MediaGalery',
-        selection:'id ',
-        
+        selection:'image {publicUrlTransformed}',
+         
    }),
-
-    imageSrc: fields.url({
-      label: 'Image URL',
-      defaultValue: 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809',
-    }),
     color: fields.text({
       label: 'Fallback background color',
       defaultValue: 'lightgray'
@@ -33,9 +28,16 @@ export const image = component({
     }),
     width: fields.integer({
       label: 'Frame Width',
-      defaultValue: 500
+      defaultValue: 100
     }),
+    height: fields.integer({
+      label: 'Frame Height',
+      defaultValue: 100  
+    })
+    
   },
+
+  
 
   
   preview: function Quote(props) {
@@ -45,19 +47,21 @@ export const image = component({
           border: `solid lightgrey ${props.fields.border.value}px`,
           margin: '0',
           backgroundColor: props.fields.color.value,
-          backgroundImage: props.fields.imageSrc.value,
+          backgroundImage: props.fields.imageCld.value?.data?.image?.publicUrlTransformed,
           width: props.fields.width.value + 'px',
+          height: props.fields.height.value + 'px',
           marginInline: 'auto',
         }}>
           <img 
-            src={props.fields.imageSrc.value} 
+            src={props.fields.imageCld.value?.data?.image?.publicUrlTransformed} 
             style={{
               width: '100%',
               objectFit: 'contain',
             }}
           />
-          
+         
         </figure>
+         
     );
   },
 });

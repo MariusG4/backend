@@ -148,6 +148,22 @@ async function sendTransportFormEmail(domeniu, subDomeniu, experienta, locatia, 
         `)
   });
 }
+async function sendEmployerFormEmail(domeniu, subDomeniu, codFiscal, nrPersoane, dateContact, email, nrTel) {
+  const info = await transport.sendMail({
+    to: employerForms,
+    from: "backend@humansource.ro",
+    subject: "New Employer Form!",
+    html: makeNiceEmail(`New Employer Form!
+        <p>Domeniu: ${domeniu}</p>
+        <p>SubDomeniu: ${subDomeniu}</p>
+        <p>Cod Fiscal: ${codFiscal}</p>
+        <p>Nr Persoane: ${nrPersoane}</p>
+        <p>Date Contact: ${dateContact}</p>
+        <p>Email: ${email}</p>
+        <p>Nr Tel: ${nrTel}</p>
+        `)
+  });
+}
 
 // schemas/permissions.ts
 var import_fields = require("@keystone-6/core/fields");
@@ -822,11 +838,7 @@ var image = (0, import_component_blocks.component)({
     imageCld: import_component_blocks.fields.relationship({
       label: "Image",
       listKey: "MediaGalery",
-      selection: "id "
-    }),
-    imageSrc: import_component_blocks.fields.url({
-      label: "Image URL",
-      defaultValue: "https://images.unsplash.com/photo-1579546929518-9e396f3cc809"
+      selection: "image {publicUrlTransformed}"
     }),
     color: import_component_blocks.fields.text({
       label: "Fallback background color",
@@ -842,7 +854,11 @@ var image = (0, import_component_blocks.component)({
     }),
     width: import_component_blocks.fields.integer({
       label: "Frame Width",
-      defaultValue: 500
+      defaultValue: 100
+    }),
+    height: import_component_blocks.fields.integer({
+      label: "Frame Height",
+      defaultValue: 100
     })
   },
   preview: function Quote(props) {
@@ -851,13 +867,14 @@ var image = (0, import_component_blocks.component)({
       border: `solid lightgrey ${props.fields.border.value}px`,
       margin: "0",
       backgroundColor: props.fields.color.value,
-      backgroundImage: props.fields.imageSrc.value,
+      backgroundImage: props.fields.imageCld.value?.data?.image?.publicUrlTransformed,
       width: props.fields.width.value + "px",
+      height: props.fields.height.value + "px",
       marginInline: "auto"
     } }, /* @__PURE__ */ (0, import_core11.jsx)(
       "img",
       {
-        src: props.fields.imageSrc.value,
+        src: props.fields.imageCld.value?.data?.image?.publicUrlTransformed,
         style: {
           width: "100%",
           objectFit: "contain"
@@ -873,6 +890,9 @@ var componentBlocks = {
 };
 
 // schemas/blog/Blog.ts
+function slugify(str) {
+  return str.replace(/^\s+|\s+$/g, "").toLowerCase().replace(/[^a-z0-9 -]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-");
+}
 var Blog = (0, import_core12.list)({
   access: {
     operation: {
@@ -901,9 +921,26 @@ var Blog = (0, import_core12.list)({
   },
   fields: {
     title: (0, import_fields12.text)({ validation: { isRequired: true } }),
-    slug: (0, import_fields12.text)({ isIndexed: "unique", validation: { isRequired: true } }),
-    dateCreated: (0, import_fields12.timestamp)({ defaultValue: { kind: "now" } }),
-    dateModified: (0, import_fields12.timestamp)({ defaultValue: { kind: "now" } }),
+    slug: (0, import_fields12.text)({ isIndexed: "unique" }),
+    dateCreated: (0, import_fields12.timestamp)({
+      ui: {
+        itemView: { fieldMode: "hidden" }
+      },
+      access: {
+        update: () => false
+      },
+      validation: { isRequired: true },
+      defaultValue: { kind: "now" }
+    }),
+    dateModified: (0, import_fields12.timestamp)({
+      ui: {
+        itemView: { fieldMode: "hidden" }
+      },
+      db: {
+        updatedAt: true
+      },
+      defaultValue: { kind: "now" }
+    }),
     status: (0, import_fields12.select)({
       options: [
         { label: "Draft", value: "DRAFT" },
@@ -916,7 +953,16 @@ var Blog = (0, import_core12.list)({
         createView: { fieldMode: "edit" }
       }
     }),
-    featured_image: (0, import_fields12.text)(),
+    photo: (0, import_fields12.relationship)({
+      ref: "MediaGalery.blog",
+      ui: {
+        displayMode: "cards",
+        cardFields: ["image", "altText", "filename"],
+        inlineCreate: { fields: ["image", "altText", "filename"] },
+        inlineEdit: { fields: ["image", "altText", "filename"] },
+        inlineConnect: true
+      }
+    }),
     content: (0, import_fields_document.document)({
       componentBlocks,
       ui: {
@@ -972,16 +1018,6 @@ var Blog = (0, import_core12.list)({
       ref: "Tag.blog",
       many: true
     }),
-    photo: (0, import_fields12.relationship)({
-      ref: "MediaGalery.blog",
-      ui: {
-        displayMode: "cards",
-        cardFields: ["image", "altText", "filename"],
-        inlineCreate: { fields: ["image", "altText", "filename"] },
-        inlineEdit: { fields: ["image", "altText", "filename"] },
-        inlineConnect: true
-      }
-    }),
     language: (0, import_fields12.relationship)({
       ref: "Language.blog",
       ui: {
@@ -998,6 +1034,9 @@ var Blog = (0, import_core12.list)({
         if (resolvedData && !resolvedData.author) {
           const currentUserId = await context.session.itemId;
           resolvedData.author = { connect: { id: currentUserId } };
+        }
+        if (resolvedData && !resolvedData.slug) {
+          resolvedData.slug = slugify(resolvedData.title);
         }
       } catch (err) {
         console.log(err);

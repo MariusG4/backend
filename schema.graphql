@@ -214,14 +214,13 @@ type Blog {
   dateCreated: DateTime
   dateModified: DateTime
   status: String
-  featured_image: String
+  photo: MediaGalery
   content: Blog_content_Document
   author: User
   categories(where: CategoryWhereInput! = {}, orderBy: [CategoryOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CategoryWhereUniqueInput): [Category!]
   categoriesCount(where: CategoryWhereInput! = {}): Int
   tags(where: TagWhereInput! = {}, orderBy: [TagOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: TagWhereUniqueInput): [Tag!]
   tagsCount(where: TagWhereInput! = {}): Int
-  photo: MediaGalery
   language: Language
 }
 
@@ -241,15 +240,25 @@ input BlogWhereInput {
   id: IDFilter
   title: StringFilter
   slug: StringFilter
-  dateCreated: DateTimeNullableFilter
+  dateCreated: DateTimeFilter
   dateModified: DateTimeNullableFilter
   status: StringNullableFilter
-  featured_image: StringFilter
+  photo: MediaGaleryWhereInput
   author: UserWhereInput
   categories: CategoryManyRelationFilter
   tags: TagManyRelationFilter
-  photo: MediaGaleryWhereInput
   language: LanguageWhereInput
+}
+
+input DateTimeFilter {
+  equals: DateTime
+  in: [DateTime!]
+  notIn: [DateTime!]
+  lt: DateTime
+  lte: DateTime
+  gt: DateTime
+  gte: DateTime
+  not: DateTimeFilter
 }
 
 input StringNullableFilter {
@@ -285,7 +294,6 @@ input BlogOrderByInput {
   dateCreated: OrderDirection
   dateModified: OrderDirection
   status: OrderDirection
-  featured_image: OrderDirection
 }
 
 input BlogUpdateInput {
@@ -294,13 +302,18 @@ input BlogUpdateInput {
   dateCreated: DateTime
   dateModified: DateTime
   status: String
-  featured_image: String
+  photo: MediaGaleryRelateToOneForUpdateInput
   content: JSON
   author: UserRelateToOneForUpdateInput
   categories: CategoryRelateToManyForUpdateInput
   tags: TagRelateToManyForUpdateInput
-  photo: MediaGaleryRelateToOneForUpdateInput
   language: LanguageRelateToOneForUpdateInput
+}
+
+input MediaGaleryRelateToOneForUpdateInput {
+  create: MediaGaleryCreateInput
+  connect: MediaGaleryWhereUniqueInput
+  disconnect: Boolean
 }
 
 input UserRelateToOneForUpdateInput {
@@ -323,12 +336,6 @@ input TagRelateToManyForUpdateInput {
   connect: [TagWhereUniqueInput!]
 }
 
-input MediaGaleryRelateToOneForUpdateInput {
-  create: MediaGaleryCreateInput
-  connect: MediaGaleryWhereUniqueInput
-  disconnect: Boolean
-}
-
 input LanguageRelateToOneForUpdateInput {
   create: LanguageCreateInput
   connect: LanguageWhereUniqueInput
@@ -346,13 +353,17 @@ input BlogCreateInput {
   dateCreated: DateTime
   dateModified: DateTime
   status: String
-  featured_image: String
+  photo: MediaGaleryRelateToOneForCreateInput
   content: JSON
   author: UserRelateToOneForCreateInput
   categories: CategoryRelateToManyForCreateInput
   tags: TagRelateToManyForCreateInput
-  photo: MediaGaleryRelateToOneForCreateInput
   language: LanguageRelateToOneForCreateInput
+}
+
+input MediaGaleryRelateToOneForCreateInput {
+  create: MediaGaleryCreateInput
+  connect: MediaGaleryWhereUniqueInput
 }
 
 input UserRelateToOneForCreateInput {
@@ -368,11 +379,6 @@ input CategoryRelateToManyForCreateInput {
 input TagRelateToManyForCreateInput {
   create: [TagCreateInput!]
   connect: [TagWhereUniqueInput!]
-}
-
-input MediaGaleryRelateToOneForCreateInput {
-  create: MediaGaleryCreateInput
-  connect: MediaGaleryWhereUniqueInput
 }
 
 input LanguageRelateToOneForCreateInput {
@@ -1606,17 +1612,6 @@ input CityROWhereInput {
   name: StringFilter
   nameIT: StringFilter
   createdAt: DateTimeFilter
-}
-
-input DateTimeFilter {
-  equals: DateTime
-  in: [DateTime!]
-  notIn: [DateTime!]
-  lt: DateTime
-  lte: DateTime
-  gt: DateTime
-  gte: DateTime
-  not: DateTimeFilter
 }
 
 input CityROOrderByInput {
