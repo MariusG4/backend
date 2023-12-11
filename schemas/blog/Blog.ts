@@ -58,6 +58,7 @@ export const Blog: Lists.Blog = list({
     dateModified: timestamp({
       ui: {
         itemView: { fieldMode: "hidden" },
+        createView: { fieldMode: "hidden" },
       },
       db: {
         updatedAt: true,
