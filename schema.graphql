@@ -803,6 +803,8 @@ type JobApplication {
   phone: String
   createdAt: DateTime
   job: Job
+  transport: TransportForm
+  medical: MedicalForm
 }
 
 input JobApplicationWhereUniqueInput {
@@ -821,6 +823,8 @@ input JobApplicationWhereInput {
   phone: StringFilter
   createdAt: DateTimeNullableFilter
   job: JobWhereInput
+  transport: TransportFormWhereInput
+  medical: MedicalFormWhereInput
 }
 
 input CalendarDayFilter {
@@ -852,6 +856,20 @@ input JobApplicationUpdateInput {
   phone: String
   createdAt: DateTime
   job: JobRelateToOneForUpdateInput
+  transport: TransportFormRelateToOneForUpdateInput
+  medical: MedicalFormRelateToOneForUpdateInput
+}
+
+input TransportFormRelateToOneForUpdateInput {
+  create: TransportFormCreateInput
+  connect: TransportFormWhereUniqueInput
+  disconnect: Boolean
+}
+
+input MedicalFormRelateToOneForUpdateInput {
+  create: MedicalFormCreateInput
+  connect: MedicalFormWhereUniqueInput
+  disconnect: Boolean
 }
 
 input JobApplicationUpdateArgs {
@@ -867,6 +885,18 @@ input JobApplicationCreateInput {
   phone: String
   createdAt: DateTime
   job: JobRelateToOneForCreateInput
+  transport: TransportFormRelateToOneForCreateInput
+  medical: MedicalFormRelateToOneForCreateInput
+}
+
+input TransportFormRelateToOneForCreateInput {
+  create: TransportFormCreateInput
+  connect: TransportFormWhereUniqueInput
+}
+
+input MedicalFormRelateToOneForCreateInput {
+  create: MedicalFormCreateInput
+  connect: MedicalFormWhereUniqueInput
 }
 
 type MediaGalery {

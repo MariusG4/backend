@@ -658,7 +658,9 @@ var JobApplication = (0, import_core8.list)({
         createView: { fieldMode: "hidden" }
       }
     }),
-    job: (0, import_fields9.relationship)({ ref: "Job.applyForm", many: false })
+    job: (0, import_fields9.relationship)({ ref: "Job.applyForm", many: false }),
+    transport: (0, import_fields9.relationship)({ ref: "TransportForm", many: false }),
+    medical: (0, import_fields9.relationship)({ ref: "MedicalForm", many: false })
   },
   hooks: {
     afterOperation: async ({
@@ -840,36 +842,28 @@ var image = (0, import_component_blocks.component)({
       listKey: "MediaGalery",
       selection: "image {publicUrlTransformed}"
     }),
-    color: import_component_blocks.fields.text({
-      label: "Fallback background color",
-      defaultValue: "lightgray"
-    }),
     padding: import_component_blocks.fields.integer({
       label: "Frame Padding",
       defaultValue: 20
     }),
-    border: import_component_blocks.fields.integer({
-      label: "Frame Border",
-      defaultValue: 0
-    }),
     width: import_component_blocks.fields.integer({
       label: "Frame Width",
-      defaultValue: 100
+      defaultValue: 75
     }),
-    height: import_component_blocks.fields.integer({
-      label: "Frame Height",
-      defaultValue: 100
+    color: import_component_blocks.fields.text({
+      label: "Fallback background color",
+      defaultValue: "lightgray"
     })
   },
   preview: function Quote(props) {
     return /* @__PURE__ */ (0, import_core11.jsx)("figure", { style: {
       padding: props.fields.padding.value,
-      border: `solid lightgrey ${props.fields.border.value}px`,
+      border: `solid lightgrey 10px`,
       margin: "0",
       backgroundColor: props.fields.color.value,
       backgroundImage: props.fields.imageCld.value?.data?.image?.publicUrlTransformed,
-      width: props.fields.width.value + "px",
-      height: props.fields.height.value + "px",
+      width: "50%",
+      height: "auto",
       marginInline: "auto"
     } }, /* @__PURE__ */ (0, import_core11.jsx)(
       "img",
@@ -934,7 +928,8 @@ var Blog = (0, import_core12.list)({
     }),
     dateModified: (0, import_fields12.timestamp)({
       ui: {
-        itemView: { fieldMode: "hidden" }
+        itemView: { fieldMode: "hidden" },
+        createView: { fieldMode: "hidden" }
       },
       db: {
         updatedAt: true

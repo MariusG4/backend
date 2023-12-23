@@ -101,7 +101,6 @@ export async function sendJobApplicationEmail(
   birthDate: string,
   job: string
 ): Promise<void> {
-  // email the user a token
   const info = await transport.sendMail({
     to: jobEmail,
     from: "backend@humansource.ro",

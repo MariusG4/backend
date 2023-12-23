@@ -14,26 +14,18 @@ export const image = component({
         selection:'image {publicUrlTransformed}',
          
    }),
-    color: fields.text({
-      label: 'Fallback background color',
-      defaultValue: 'lightgray'
-    }),
     padding: fields.integer({
       label: 'Frame Padding',
       defaultValue: 20
     }),
-    border: fields.integer({
-      label: 'Frame Border',
-      defaultValue: 0
-    }),
     width: fields.integer({
       label: 'Frame Width',
-      defaultValue: 100
+      defaultValue: 75
     }),
-    height: fields.integer({
-      label: 'Frame Height',
-      defaultValue: 100  
-    })
+    color: fields.text({
+      label: 'Fallback background color',
+      defaultValue: 'lightgray'
+    }),
     
   },
 
@@ -44,12 +36,12 @@ export const image = component({
     return (
         <figure style={{
           padding: props.fields.padding.value,
-          border: `solid lightgrey ${props.fields.border.value}px`,
+          border: `solid lightgrey 10px`,
           margin: '0',
           backgroundColor: props.fields.color.value,
           backgroundImage: props.fields.imageCld.value?.data?.image?.publicUrlTransformed,
-          width: props.fields.width.value + 'px',
-          height: props.fields.height.value + 'px',
+          width: '50%',
+          height: 'auto',
           marginInline: 'auto',
         }}>
           <img 

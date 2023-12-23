@@ -53,6 +53,8 @@ export const JobApplication: Lists.JobApplication = list({
       },
     }),
     job: relationship({ ref: "Job.applyForm", many: false }),
+    transport: relationship({ ref: "TransportForm", many: false }),
+    medical: relationship({ ref: "MedicalForm", many: false }),
   },
   hooks: {
     afterOperation: async ({
@@ -68,14 +70,24 @@ export const JobApplication: Lists.JobApplication = list({
           where: { id: item.jobId },
         });
         const job = jobTitle?.title;
-        sendJobApplicationEmail(
-          item.name,
-          item.email,
-          item.phone,
-          item.message,
-          birthDateString,
-          job || ""
-        );
+        if (item.medicalId) {
+          const medicalForm = await context.db.MedicalForm.findOne({
+            where: { id: item.medicalId },
+          });
+        } else if (item.transportId) {
+          const transportForm = await context.db.TransportForm.findOne({
+            where: { id: item.transportId },
+          });
+        } else {
+          sendJobApplicationEmail(
+            item.name,
+            item.email,
+            item.phone,
+            item.message,
+            birthDateString,
+            job || ""
+          );
+        }
       }
     },
   },
