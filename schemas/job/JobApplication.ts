@@ -53,8 +53,11 @@ export const JobApplication: Lists.JobApplication = list({
       },
     }),
     job: relationship({ ref: "Job.applyForm", many: false }),
-    transport: relationship({ ref: "TransportForm", many: false }),
-    medical: relationship({ ref: "MedicalForm", many: false }),
+    transport: relationship({
+      ref: "TransportForm.jobApplication",
+      many: false,
+    }),
+    medical: relationship({ ref: "MedicalForm.jobApplication", many: false }),
   },
   hooks: {
     afterOperation: async ({

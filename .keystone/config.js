@@ -338,23 +338,77 @@ var rules = {
 var TransportForm = (0, import_core.list)({
   access: {
     operation: {
-      query: permissions.canManageWorkerForms,
+      query: () => true,
       create: () => true,
       update: permissions.canManageWorkerForms,
       delete: permissions.canManageWorkerForms
     }
   },
   fields: {
-    domeniu: (0, import_fields2.text)({ validation: { isRequired: true } }),
-    subDomeniu: (0, import_fields2.text)({ validation: { isRequired: true } }),
-    experienta: (0, import_fields2.text)({ validation: { isRequired: true } }),
-    locatia: (0, import_fields2.text)({ validation: { isRequired: true } }),
-    tahograf: (0, import_fields2.text)({ validation: { isRequired: true } }),
-    echipa: (0, import_fields2.text)({ validation: { isRequired: true } }),
-    turaNoapte: (0, import_fields2.text)({ validation: { isRequired: true } }),
-    experientaLimba: (0, import_fields2.text)({ validation: { isRequired: true } }),
-    ultimuSalar: (0, import_fields2.integer)({ validation: { isRequired: true } }),
-    salariuDorit: (0, import_fields2.integer)({ validation: { isRequired: true } })
+    domeniu: (0, import_fields2.text)({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms
+      }
+    }),
+    subDomeniu: (0, import_fields2.text)({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms
+      }
+    }),
+    experienta: (0, import_fields2.text)({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms
+      }
+    }),
+    locatia: (0, import_fields2.text)({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms
+      }
+    }),
+    tahograf: (0, import_fields2.text)({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms
+      }
+    }),
+    echipa: (0, import_fields2.text)({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms
+      }
+    }),
+    turaNoapte: (0, import_fields2.text)({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms
+      }
+    }),
+    experientaLimba: (0, import_fields2.text)({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms
+      }
+    }),
+    ultimuSalar: (0, import_fields2.integer)({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms
+      }
+    }),
+    salariuDorit: (0, import_fields2.integer)({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms
+      }
+    }),
+    jobApplication: (0, import_fields2.relationship)({
+      ref: "JobApplication.transport",
+      many: false
+    })
   },
   hooks: {
     afterOperation: async ({
@@ -388,23 +442,81 @@ var import_fields3 = require("@keystone-6/core/fields");
 var MedicalForm = (0, import_core2.list)({
   access: {
     operation: {
-      query: permissions.canManageWorkerForms,
+      query: () => true,
       create: () => true,
       update: permissions.canManageWorkerForms,
       delete: permissions.canManageWorkerForms
     }
   },
   fields: {
-    domeniu: (0, import_fields3.text)({ validation: { isRequired: true } }),
-    subDomeniu: (0, import_fields3.text)({ validation: { isRequired: true } }),
-    experienta: (0, import_fields3.text)({ validation: { isRequired: true } }),
-    bac: (0, import_fields3.text)({ validation: { isRequired: true } }),
-    amg: (0, import_fields3.text)({ validation: { isRequired: true } }),
-    absolvire: (0, import_fields3.text)({ validation: { isRequired: true } }),
-    experientaLimba: (0, import_fields3.text)({ validation: { isRequired: true } }),
-    locatia: (0, import_fields3.text)({ validation: { isRequired: true } }),
-    ultimuSalar: (0, import_fields3.integer)({ validation: { isRequired: true } }),
-    cursItaliana: (0, import_fields3.text)({ validation: { isRequired: true } })
+    domeniu: (0, import_fields3.text)({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms
+      }
+    }),
+    subDomeniu: (0, import_fields3.text)({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms
+      }
+    }),
+    experienta: (0, import_fields3.text)({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms
+      }
+    }),
+    bac: (0, import_fields3.text)({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms
+      }
+    }),
+    amg: (0, import_fields3.text)({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms
+      }
+    }),
+    absolvire: (0, import_fields3.text)({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms
+      }
+    }),
+    experientaLimba: (0, import_fields3.text)({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms
+      }
+    }),
+    locatia: (0, import_fields3.text)({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms
+      }
+    }),
+    ultimuSalar: (0, import_fields3.integer)({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms
+      }
+    }),
+    cursItaliana: (0, import_fields3.text)({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms
+      }
+    }),
+    jobApplication: (0, import_fields3.relationship)({
+      ref: "JobApplication.medical",
+      many: false,
+      ui: {
+        itemView: { fieldMode: "hidden" },
+        createView: { fieldMode: "hidden" }
+      }
+    })
   },
   hooks: {
     afterOperation: async ({ context, operation, item, originalItem }) => {
@@ -659,8 +771,11 @@ var JobApplication = (0, import_core8.list)({
       }
     }),
     job: (0, import_fields9.relationship)({ ref: "Job.applyForm", many: false }),
-    transport: (0, import_fields9.relationship)({ ref: "TransportForm", many: false }),
-    medical: (0, import_fields9.relationship)({ ref: "MedicalForm", many: false })
+    transport: (0, import_fields9.relationship)({
+      ref: "TransportForm.jobApplication",
+      many: false
+    }),
+    medical: (0, import_fields9.relationship)({ ref: "MedicalForm.jobApplication", many: false })
   },
   hooks: {
     afterOperation: async ({
@@ -676,14 +791,24 @@ var JobApplication = (0, import_core8.list)({
           where: { id: item.jobId }
         });
         const job = jobTitle?.title;
-        sendJobApplicationEmail(
-          item.name,
-          item.email,
-          item.phone,
-          item.message,
-          birthDateString,
-          job || ""
-        );
+        if (item.medicalId) {
+          const medicalForm = await context.db.MedicalForm.findOne({
+            where: { id: item.medicalId }
+          });
+        } else if (item.transportId) {
+          const transportForm = await context.db.TransportForm.findOne({
+            where: { id: item.transportId }
+          });
+        } else {
+          sendJobApplicationEmail(
+            item.name,
+            item.email,
+            item.phone,
+            item.message,
+            birthDateString,
+            job || ""
+          );
+        }
       }
     }
   }

@@ -7,24 +7,77 @@ import { sendTransportFormEmail } from "../../lib/mail";
 export const TransportForm: Lists.TransportForm = list({
   access: {
     operation: {
-      query: permissions.canManageWorkerForms,
+      query: () => true,
       create: () => true,
       update: permissions.canManageWorkerForms,
       delete: permissions.canManageWorkerForms,
     },
   },
   fields: {
-    domeniu: text({ validation: { isRequired: true } }),
-    subDomeniu: text({ validation: { isRequired: true } }),
-    experienta: text({ validation: { isRequired: true } }),
-    locatia: text({ validation: { isRequired: true } }),
-    tahograf: text({ validation: { isRequired: true } }),
-    echipa: text({ validation: { isRequired: true } }),
-    turaNoapte: text({ validation: { isRequired: true } }),
-    experientaLimba: text({ validation: { isRequired: true } }),
-    ultimuSalar: integer({ validation: { isRequired: true } }),
-    salariuDorit: integer({ validation: { isRequired: true } }),
-    jobForm: relationship({ ref: "JobApplication", many: false }),
+    domeniu: text({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms,
+      },
+    }),
+    subDomeniu: text({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms,
+      },
+    }),
+    experienta: text({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms,
+      },
+    }),
+    locatia: text({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms,
+      },
+    }),
+    tahograf: text({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms,
+      },
+    }),
+    echipa: text({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms,
+      },
+    }),
+    turaNoapte: text({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms,
+      },
+    }),
+    experientaLimba: text({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms,
+      },
+    }),
+    ultimuSalar: integer({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms,
+      },
+    }),
+    salariuDorit: integer({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms,
+      },
+    }),
+    jobApplication: relationship({
+      ref: "JobApplication.transport",
+      many: false,
+    }),
   },
   hooks: {
     afterOperation: async ({

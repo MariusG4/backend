@@ -1117,6 +1117,7 @@ type MedicalForm {
   locatia: String
   ultimuSalar: Int
   cursItaliana: String
+  jobApplication: JobApplication
 }
 
 input MedicalFormWhereUniqueInput {
@@ -1138,6 +1139,7 @@ input MedicalFormWhereInput {
   locatia: StringFilter
   ultimuSalar: IntFilter
   cursItaliana: StringFilter
+  jobApplication: JobApplicationWhereInput
 }
 
 input IntFilter {
@@ -1176,6 +1178,13 @@ input MedicalFormUpdateInput {
   locatia: String
   ultimuSalar: Int
   cursItaliana: String
+  jobApplication: JobApplicationRelateToOneForUpdateInput
+}
+
+input JobApplicationRelateToOneForUpdateInput {
+  create: JobApplicationCreateInput
+  connect: JobApplicationWhereUniqueInput
+  disconnect: Boolean
 }
 
 input MedicalFormUpdateArgs {
@@ -1194,6 +1203,12 @@ input MedicalFormCreateInput {
   locatia: String
   ultimuSalar: Int
   cursItaliana: String
+  jobApplication: JobApplicationRelateToOneForCreateInput
+}
+
+input JobApplicationRelateToOneForCreateInput {
+  create: JobApplicationCreateInput
+  connect: JobApplicationWhereUniqueInput
 }
 
 type TransportForm {
@@ -1208,6 +1223,7 @@ type TransportForm {
   experientaLimba: String
   ultimuSalar: Int
   salariuDorit: Int
+  jobApplication: JobApplication
 }
 
 input TransportFormWhereUniqueInput {
@@ -1229,6 +1245,7 @@ input TransportFormWhereInput {
   experientaLimba: StringFilter
   ultimuSalar: IntFilter
   salariuDorit: IntFilter
+  jobApplication: JobApplicationWhereInput
 }
 
 input TransportFormOrderByInput {
@@ -1256,6 +1273,7 @@ input TransportFormUpdateInput {
   experientaLimba: String
   ultimuSalar: Int
   salariuDorit: Int
+  jobApplication: JobApplicationRelateToOneForUpdateInput
 }
 
 input TransportFormUpdateArgs {
@@ -1274,6 +1292,7 @@ input TransportFormCreateInput {
   experientaLimba: String
   ultimuSalar: Int
   salariuDorit: Int
+  jobApplication: JobApplicationRelateToOneForCreateInput
 }
 
 type EmployerForm {

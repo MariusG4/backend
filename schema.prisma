@@ -129,13 +129,11 @@ model JobApplication {
   job         Job?           @relation("JobApplication_job", fields: [jobId], references: [id])
   jobId       String?        @map("job")
   transport   TransportForm? @relation("JobApplication_transport", fields: [transportId], references: [id])
-  transportId String?        @map("transport")
+  transportId String?        @unique @map("transport")
   medical     MedicalForm?   @relation("JobApplication_medical", fields: [medicalId], references: [id])
-  medicalId   String?        @map("medical")
+  medicalId   String?        @unique @map("medical")
 
   @@index([jobId])
-  @@index([transportId])
-  @@index([medicalId])
 }
 
 model MediaGalery {
@@ -162,33 +160,33 @@ model ContactForm {
 }
 
 model MedicalForm {
-  id                          String           @id @default(uuid())
-  domeniu                     String           @default("")
-  subDomeniu                  String           @default("")
-  experienta                  String           @default("")
-  bac                         String           @default("")
-  amg                         String           @default("")
-  absolvire                   String           @default("")
-  experientaLimba             String           @default("")
-  locatia                     String           @default("")
-  ultimuSalar                 Int
-  cursItaliana                String           @default("")
-  from_JobApplication_medical JobApplication[] @relation("JobApplication_medical")
+  id              String          @id @default(uuid())
+  domeniu         String          @default("")
+  subDomeniu      String          @default("")
+  experienta      String          @default("")
+  bac             String          @default("")
+  amg             String          @default("")
+  absolvire       String          @default("")
+  experientaLimba String          @default("")
+  locatia         String          @default("")
+  ultimuSalar     Int
+  cursItaliana    String          @default("")
+  jobApplication  JobApplication? @relation("JobApplication_medical")
 }
 
 model TransportForm {
-  id                            String           @id @default(uuid())
-  domeniu                       String           @default("")
-  subDomeniu                    String           @default("")
-  experienta                    String           @default("")
-  locatia                       String           @default("")
-  tahograf                      String           @default("")
-  echipa                        String           @default("")
-  turaNoapte                    String           @default("")
-  experientaLimba               String           @default("")
-  ultimuSalar                   Int
-  salariuDorit                  Int
-  from_JobApplication_transport JobApplication[] @relation("JobApplication_transport")
+  id              String          @id @default(uuid())
+  domeniu         String          @default("")
+  subDomeniu      String          @default("")
+  experienta      String          @default("")
+  locatia         String          @default("")
+  tahograf        String          @default("")
+  echipa          String          @default("")
+  turaNoapte      String          @default("")
+  experientaLimba String          @default("")
+  ultimuSalar     Int
+  salariuDorit    Int
+  jobApplication  JobApplication? @relation("JobApplication_transport")
 }
 
 model EmployerForm {

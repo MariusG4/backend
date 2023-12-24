@@ -1,29 +1,88 @@
 import type { Lists } from ".keystone/types";
 import { list } from "@keystone-6/core";
-import { integer, text } from "@keystone-6/core/fields";
+import { integer, text, relationship } from "@keystone-6/core/fields";
 import { permissions } from "../../access";
 import { sendMedicalFormEmail } from "../../lib/mail";
 
 export const MedicalForm: Lists.MedicalForm = list({
   access: {
     operation: {
-      query: permissions.canManageWorkerForms,
+      query: () => true,
       create: () => true,
       update: permissions.canManageWorkerForms,
       delete: permissions.canManageWorkerForms,
     },
   },
+
   fields: {
-    domeniu: text({ validation: { isRequired: true } }),
-    subDomeniu: text({ validation: { isRequired: true } }),
-    experienta: text({ validation: { isRequired: true } }),
-    bac: text({ validation: { isRequired: true } }),
-    amg: text({ validation: { isRequired: true } }),
-    absolvire: text({ validation: { isRequired: true } }),
-    experientaLimba: text({ validation: { isRequired: true } }),
-    locatia: text({ validation: { isRequired: true } }),
-    ultimuSalar: integer({ validation: { isRequired: true } }),
-    cursItaliana: text({ validation: { isRequired: true } }),
+    domeniu: text({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms,
+      },
+    }),
+    subDomeniu: text({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms,
+      },
+    }),
+    experienta: text({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms,
+      },
+    }),
+    bac: text({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms,
+      },
+    }),
+    amg: text({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms,
+      },
+    }),
+    absolvire: text({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms,
+      },
+    }),
+    experientaLimba: text({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms,
+      },
+    }),
+    locatia: text({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms,
+      },
+    }),
+    ultimuSalar: integer({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms,
+      },
+    }),
+    cursItaliana: text({
+      validation: { isRequired: true },
+      access: {
+        read: permissions.canManageWorkerForms,
+      },
+    }),
+    jobApplication: relationship({
+      ref: "JobApplication.medical",
+      many: false,
+      ui: {
+        itemView: { fieldMode: "hidden" },
+        createView: { fieldMode: "hidden" },
+      },
+    }),
   },
   hooks: {
     afterOperation: async ({ context, operation, item, originalItem }) => {
