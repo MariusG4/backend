@@ -1118,6 +1118,8 @@ type MedicalForm {
   ultimuSalar: Int
   cursItaliana: String
   jobApplication: JobApplication
+  phone: String
+  createdAt: DateTime
 }
 
 input MedicalFormWhereUniqueInput {
@@ -1140,6 +1142,8 @@ input MedicalFormWhereInput {
   ultimuSalar: IntFilter
   cursItaliana: StringFilter
   jobApplication: JobApplicationWhereInput
+  phone: StringFilter
+  createdAt: DateTimeNullableFilter
 }
 
 input IntFilter {
@@ -1165,6 +1169,8 @@ input MedicalFormOrderByInput {
   locatia: OrderDirection
   ultimuSalar: OrderDirection
   cursItaliana: OrderDirection
+  phone: OrderDirection
+  createdAt: OrderDirection
 }
 
 input MedicalFormUpdateInput {
@@ -1179,6 +1185,8 @@ input MedicalFormUpdateInput {
   ultimuSalar: Int
   cursItaliana: String
   jobApplication: JobApplicationRelateToOneForUpdateInput
+  phone: String
+  createdAt: DateTime
 }
 
 input JobApplicationRelateToOneForUpdateInput {
@@ -1204,6 +1212,8 @@ input MedicalFormCreateInput {
   ultimuSalar: Int
   cursItaliana: String
   jobApplication: JobApplicationRelateToOneForCreateInput
+  phone: String
+  createdAt: DateTime
 }
 
 input JobApplicationRelateToOneForCreateInput {
@@ -1224,6 +1234,8 @@ type TransportForm {
   ultimuSalar: Int
   salariuDorit: Int
   jobApplication: JobApplication
+  phone: String
+  createdAt: DateTime
 }
 
 input TransportFormWhereUniqueInput {
@@ -1246,6 +1258,8 @@ input TransportFormWhereInput {
   ultimuSalar: IntFilter
   salariuDorit: IntFilter
   jobApplication: JobApplicationWhereInput
+  phone: StringFilter
+  createdAt: DateTimeNullableFilter
 }
 
 input TransportFormOrderByInput {
@@ -1260,6 +1274,8 @@ input TransportFormOrderByInput {
   experientaLimba: OrderDirection
   ultimuSalar: OrderDirection
   salariuDorit: OrderDirection
+  phone: OrderDirection
+  createdAt: OrderDirection
 }
 
 input TransportFormUpdateInput {
@@ -1274,6 +1290,8 @@ input TransportFormUpdateInput {
   ultimuSalar: Int
   salariuDorit: Int
   jobApplication: JobApplicationRelateToOneForUpdateInput
+  phone: String
+  createdAt: DateTime
 }
 
 input TransportFormUpdateArgs {
@@ -1293,6 +1311,8 @@ input TransportFormCreateInput {
   ultimuSalar: Int
   salariuDorit: Int
   jobApplication: JobApplicationRelateToOneForCreateInput
+  phone: String
+  createdAt: DateTime
 }
 
 type EmployerForm {

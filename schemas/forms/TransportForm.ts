@@ -1,6 +1,11 @@
 import type { Lists } from ".keystone/types";
 import { list } from "@keystone-6/core";
-import { integer, relationship, text } from "@keystone-6/core/fields";
+import {
+  integer,
+  relationship,
+  text,
+  timestamp,
+} from "@keystone-6/core/fields";
 import { permissions } from "../../access";
 import { sendTransportFormEmail } from "../../lib/mail";
 
@@ -77,6 +82,23 @@ export const TransportForm: Lists.TransportForm = list({
     jobApplication: relationship({
       ref: "JobApplication.transport",
       many: false,
+    }),
+    phone: text({
+      validation: {
+        isRequired: true,
+        match: { regex: /^\d{1,3}\s?\d{1,14}$/ },
+      },
+      access: {
+        read: permissions.canManageWorkerForms,
+      },
+    }),
+
+    createdAt: timestamp({
+      defaultValue: { kind: "now" },
+      ui: {
+        itemView: { fieldMode: "hidden" },
+        createView: { fieldMode: "hidden" },
+      },
     }),
   },
   hooks: {

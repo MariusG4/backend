@@ -408,6 +408,22 @@ var TransportForm = (0, import_core.list)({
     jobApplication: (0, import_fields2.relationship)({
       ref: "JobApplication.transport",
       many: false
+    }),
+    phone: (0, import_fields2.text)({
+      validation: {
+        isRequired: true,
+        match: { regex: /^\d{1,3}\s?\d{1,14}$/ }
+      },
+      access: {
+        read: permissions.canManageWorkerForms
+      }
+    }),
+    createdAt: (0, import_fields2.timestamp)({
+      defaultValue: { kind: "now" },
+      ui: {
+        itemView: { fieldMode: "hidden" },
+        createView: { fieldMode: "hidden" }
+      }
     })
   },
   hooks: {
@@ -512,6 +528,25 @@ var MedicalForm = (0, import_core2.list)({
     jobApplication: (0, import_fields3.relationship)({
       ref: "JobApplication.medical",
       many: false,
+      ui: {
+        itemView: { fieldMode: "hidden" },
+        createView: { fieldMode: "hidden" }
+      }
+    }),
+    phone: (0, import_fields3.text)({
+      validation: {
+        isRequired: true,
+        match: {
+          regex: /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/,
+          explanation: "Must be a valid phone number"
+        }
+      },
+      access: {
+        read: permissions.canManageWorkerForms
+      }
+    }),
+    createdAt: (0, import_fields3.timestamp)({
+      defaultValue: { kind: "now" },
       ui: {
         itemView: { fieldMode: "hidden" },
         createView: { fieldMode: "hidden" }

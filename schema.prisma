@@ -172,6 +172,8 @@ model MedicalForm {
   ultimuSalar     Int
   cursItaliana    String          @default("")
   jobApplication  JobApplication? @relation("JobApplication_medical")
+  phone           String          @default("")
+  createdAt       DateTime?       @default(now())
 }
 
 model TransportForm {
@@ -187,6 +189,8 @@ model TransportForm {
   ultimuSalar     Int
   salariuDorit    Int
   jobApplication  JobApplication? @relation("JobApplication_transport")
+  phone           String          @default("")
+  createdAt       DateTime?       @default(now())
 }
 
 model EmployerForm {

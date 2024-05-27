@@ -1,6 +1,11 @@
 import type { Lists } from ".keystone/types";
 import { list } from "@keystone-6/core";
-import { integer, text, relationship } from "@keystone-6/core/fields";
+import {
+  integer,
+  text,
+  relationship,
+  timestamp,
+} from "@keystone-6/core/fields";
 import { permissions } from "../../access";
 import { sendMedicalFormEmail } from "../../lib/mail";
 
@@ -78,6 +83,25 @@ export const MedicalForm: Lists.MedicalForm = list({
     jobApplication: relationship({
       ref: "JobApplication.medical",
       many: false,
+      ui: {
+        itemView: { fieldMode: "hidden" },
+        createView: { fieldMode: "hidden" },
+      },
+    }),
+    phone: text({
+      validation: {
+        isRequired: true,
+        match: {
+          regex: /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/,
+          explanation: "Must be a valid phone number",
+        },
+      },
+      access: {
+        read: permissions.canManageWorkerForms,
+      },
+    }),
+    createdAt: timestamp({
+      defaultValue: { kind: "now" },
       ui: {
         itemView: { fieldMode: "hidden" },
         createView: { fieldMode: "hidden" },
