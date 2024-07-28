@@ -1044,9 +1044,6 @@ var componentBlocks = {
 };
 
 // schemas/blog/Blog.ts
-function slugify(str) {
-  return str.replace(/^\s+|\s+$/g, "").toLowerCase().replace(/[^a-z0-9 -]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-");
-}
 var Blog = (0, import_core12.list)({
   access: {
     operation: {
@@ -1054,25 +1051,20 @@ var Blog = (0, import_core12.list)({
       update: permissions.canManageBlogs,
       create: permissions.canManageBlogs,
       delete: permissions.canManageBlogs
-    },
-    filter: {
-      query: () => true,
-      update: rules.canManageBlogs,
-      delete: rules.canManageBlogs
     }
   },
-  ui: {
+  /**ui: {
     listView: {
       initialColumns: [
         "title",
         "status",
         "dateModified",
         "author",
-        "categories"
+        "categories",
       ],
-      initialSort: { field: "start", direction: "DESC" }
-    }
-  },
+      initialSort: { field: "start", direction: "DESC" },
+    },
+  }, */
   fields: {
     title: (0, import_fields12.text)({ validation: { isRequired: true } }),
     slug: (0, import_fields12.text)({ isIndexed: "unique" }),
@@ -1199,6 +1191,9 @@ var Blog = (0, import_core12.list)({
     }
   }
 });
+function slugify(str) {
+  return str.replace(/^\s+|\s+$/g, "").toLowerCase().replace(/[^a-z0-9 -]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-");
+}
 
 // schemas/Users.ts
 var import_core13 = require("@keystone-6/core");

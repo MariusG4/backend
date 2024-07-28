@@ -5,15 +5,6 @@ import { document } from "@keystone-6/fields-document";
 import { componentBlocks } from "../../blocks";
 import { permissions, rules } from "../../access";
 
-export function slugify(str: string): string {
-  return str
-    .replace(/^\s+|\s+$/g, "") // trim leading/trailing white space
-    .toLowerCase() // convert string to lowercase
-    .replace(/[^a-z0-9 -]/g, "") // remove any non-alphanumeric characters
-    .replace(/\s+/g, "-") // replace spaces with hyphens
-    .replace(/-+/g, "-"); // remove consecutive hyphens
-}
-
 export const Blog: Lists.Blog = list({
   access: {
     operation: {
@@ -22,14 +13,8 @@ export const Blog: Lists.Blog = list({
       create: permissions.canManageBlogs,
       delete: permissions.canManageBlogs,
     },
-    filter: {
-      query: () => true,
-      update: rules.canManageBlogs,
-      delete: rules.canManageBlogs,
-    },
   },
-
-  ui: {
+  /**ui: {
     listView: {
       initialColumns: [
         "title",
@@ -39,8 +24,8 @@ export const Blog: Lists.Blog = list({
         "categories",
       ],
       initialSort: { field: "start", direction: "DESC" },
-    },
-  },
+    },¬
+  }, */
   fields: {
     title: text({ validation: { isRequired: true } }),
     slug: text({ isIndexed: "unique" }),
@@ -173,3 +158,12 @@ export const Blog: Lists.Blog = list({
     },
   },
 });
+
+export function slugify(str: string): string {
+  return str
+    .replace(/^\s+|\s+$/g, "") // trim leading/trailing white space
+    .toLowerCase() // convert string to lowercase
+    .replace(/[^a-z0-9 -]/g, "") // remove any non-alphanumeric characters
+    .replace(/\s+/g, "-") // replace spaces with hyphens
+    .replace(/-+/g, "-"); // remove consecutive hyphens
+}
